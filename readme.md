@@ -8,18 +8,6 @@
 
 **Install a Banano node on your server with a vast variety of tools in a couple of minutes!** 💫
 
-### Banano is designed to be a feeless, instant, high throughput cryptocurrency.
-
-- Banano utilizes a novel block-lettuce architecture.
-- Instant and Feeless transactions.
-- Fungible (& Edible).
-- Daily potassium airdrops.
-- Ripe for memes.
-- Literally grows on tree's, no mining required.
-- Not a Shitcoin (until digested).
-- No more confusing prefix, Bananos contain Banoshis.
-- Replay Protection to stop attackers from executing replay attacks from chain X on chain Y and vice versa.
-
 <!--<table>
 	<tr>
         <th>Note</th>
