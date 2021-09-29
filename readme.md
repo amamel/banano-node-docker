@@ -1,7 +1,7 @@
 # Banano Node Docker
 
 <div align="center">
-    <img src="banano-node-docker.png" alt="Logo" width='180px' height='auto'/>
+    <img src="banano-node-docker.png" alt="Logo" width='600px' height='auto'/>
 </div>
 
 ## **Description**
