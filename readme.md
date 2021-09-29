@@ -153,7 +153,10 @@ Just add the `-f` flag to your installer command:
 ```
 $ sudo ./banano.sh -f
 ```
+<span style="color:#FBDD11;">
+
 **WARNING: You are strongly advised to BACKUP your wallet seed before trying to fast-sync an existing node.**
+</span>
 
 ### **Install with a different Banano node image**
 
