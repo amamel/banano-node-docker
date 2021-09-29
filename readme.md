@@ -146,7 +146,7 @@ The email (-e) argument is optional and would used by Let's Encrypt to warn you 
 
 ### Install with fast-syncing
 
-Banano Node Docker stack can also bootstrap any newly created node (or an existing one) with the latest ledger files. This implies that you are willing to trust third-party sources for your node history. The latest ledger files are obtained from the Steam Powered Taco [disk](https://banano.steampoweredtaco.com/).
+Banano Node Docker stack can also bootstrap any newly created node (or an existing one) with the latest ledger files. This implies that you are willing to trust third-party sources for your node history. The latest ledger files are obtained from [Steam Powered Taco](https://banano.steampoweredtaco.com/).
 
 Just add the `-f` flag to your installer command:
 
