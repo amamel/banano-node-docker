@@ -8,7 +8,7 @@
 
 **Install a Banano node on your server with a vast variety of tools in a couple of minutes!** 💫
 
-<table>
+<!--<table>
 	<tr>
         <th>Note</th>
     </tr>
@@ -17,7 +17,7 @@
         For hosting a Banano node in the <a href="https://beta.nano.org/" target="_blank">BETA network</a>, checkout the "<a href="https://github.com/lephleg/nano-node-docker/tree/beta"><b>beta</b></a>" branch.
         </td>
     </tr>
-</table>
+</table>-->
 
 This project will build and deploy the following containers on your Docker host:
 
@@ -146,7 +146,7 @@ The email (-e) argument is optional and would used by Let's Encrypt to warn you 
 
 ### Install with fast-syncing
 
-Banano Node Docker stack can also bootstrap any newly created node (or an existing one) with the latest ledger files. This implies that you are willing to trust third-party sources for your node history. The latest ledger files are obtained from the Banano Foundation's Yandex [disk](https://yadi.sk/d/fcZgyES73Jzj5T) while My Nano Ninja [API](https://mynano.ninja/api) handles the extraction and final redirect.
+Banano Node Docker stack can also bootstrap any newly created node (or an existing one) with the latest ledger files. This implies that you are willing to trust third-party sources for your node history. The latest ledger files are obtained from the Steam Powered Taco [disk](https://banano.steampoweredtaco.com/).
 
 Just add the `-f` flag to your installer command:
 
@@ -185,10 +185,11 @@ Please check the [wiki](https://github.com/amamel/banano-node-docker/wiki)
 
 * **[lephleg/nano-node-docker](https://github.com/lephleg/nano-node-docker)**
 * **[Nanocurrency](https://github.com/nanocurrency/nano-node)**
-* **[NANO Node Monitor](https://github.com/NanoTools/nanoNodeMonitor)**
+* **[Banano Node Monitor](https://github.com/NanoTools/nanoNodeMonitor)**
 * **[jwilder/nginx-proxy](https://github.com/jwilder/nginx-proxy)**
 * **[JrCs/docker-letsencrypt-nginx-proxy-companion](https://github.com/JrCs/docker-letsencrypt-nginx-proxy-companion)**
 * **[v2tec/watchtower](https://github.com/v2tec/watchtower)**
+* **[Banano Ledger](https://banano.steampoweredtaco.com/)**
 
 ## **Support**
 
