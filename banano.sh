@@ -162,11 +162,11 @@ fi
 [[ $quiet = 'false' ]] && echo ""
 [[ $quiet = 'false' ]] && printf "=> ${yellow}Waiting for Banano node to fully initialize... "
 
-isRpcLive="$(curl -s -d '{"action": "version"}' [::1]:7074 | grep "rpc_version")"
+isRpcLive="$(curl -s -d '{"action": "version"}' [::1]:7071 | grep "rpc_version")"
 while [ ! -n "$isRpcLive" ];
 do
     sleep 1s
-    isRpcLive="$(curl -s -d '{"action": "version"}' [::1]:7074 | grep "rpc_version")"
+    isRpcLive="$(curl -s -d '{"action": "version"}' [::1]:7071 | grep "rpc_version")"
 done
 
 [[ $quiet = 'false' ]] && printf "${green}done.${reset}\n\n"
@@ -220,14 +220,14 @@ fi
 
 [[ $quiet = 'false' ]] && printf "=> ${yellow}Configuring BANANO Node Monitor... ${reset}"
 
-sed -i -e "s/\/\/ \$nanoNodeRPCIP.*;/\$nanoNodeRPCIP/g" ./banano-node-monitor/config.php
-sed -i -e "s/\$nanoNodeRPCIP.*/\$nanoNodeRPCIP = 'banano-node';/g" ./banano-node-monitor/config.php
+sed -i -e "s/\/\/ \$bananoNodeRPCIP.*;/\$bananoNodeRPCIP/g" ./banano-node-monitor/config.php
+sed -i -e "s/\$bananoNodeRPCIP.*/\$bananoNodeRPCIP = 'banano-node';/g" ./banano-node-monitor/config.php
 
-sed -i -e "s/\/\/ \$nanoNodeAccount.*;/\$nanoNodeAccount/g" ./banano-node-monitor/config.php
-sed -i -e "s/\$nanoNodeAccount.*/\$nanoNodeAccount = '$address';/g" ./banano-node-monitor/config.php
+sed -i -e "s/\/\/ \$bananoNodeAccount.*;/\$bananoNodeAccount/g" ./banano-node-monitor/config.php
+sed -i -e "s/\$bananoNodeAccount.*/\$bananoNodeAccount = '$address';/g" ./banano-node-monitor/config.php
 
 if [[ $domain ]]; then
-    sed -i -e "s/\/\/ \$nanoNodeName.*;/\$nanoNodeName = '$domain';/g" ./banano-node-monitor/config.php
+    sed -i -e "s/\/\/ \$bananoNodeName.*;/\$bananoNodeName = '$domain';/g" ./banano-node-monitor/config.php
 else 
     ipAddress=$(curl -s v4.ifconfig.co | awk '{ print $NF}' | tr -d '\r')
 
@@ -236,10 +236,10 @@ else
         ipAddress="[$ipAddress]"
     fi
 
-    sed -i -e "s/\/\/ \$nanoNodeName.*;/\$nanoNodeName = 'banano-node-docker-$ipAddress';/g" ./banano-node-monitor/config.php
+    sed -i -e "s/\/\/ \$bananoNodeName.*;/\$bananoNodeName = 'banano-node-docker-$ipAddress';/g" ./banano-node-monitor/config.php
 fi
 
-sed -i -e "s/\/\/ \$welcomeMsg.*;/\$welcomeMsg = 'Welcome! This node was setup using <a href=\"https:\/\/github.com\/amamel\/banano-node-docker\" target=\"_blank\">BANANO Node Docker<\/a>!';/g" ./banano-node-monitor/config.php
+sed -i -e "s/\/\/ \$welcomeMsg.*;/\$welcomeMsg = 'Welcome! This node was setup using <a href=\"https:\/\/github.com\/amamel\/banano-node-docker\" target=\"_blank\">Banano Node Docker<\/a>!';/g" ./banano-node-monitor/config.php
 sed -i -e "s/\/\/ \$blockExplorer.*;/\$blockExplorer = 'meltingice';/g" ./banano-node-monitor/config.php
 
 # remove any carriage returns may have been included by sed replacements
