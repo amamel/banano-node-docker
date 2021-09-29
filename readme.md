@@ -65,7 +65,7 @@ Download or clone the latest release, open a bash terminal and fire up the insta
 
 ```
 $ cd ~ && git clone https://github.com/amamel/banano-node-docker.git && cd ~/banano-node-docker
-$ sudo ./setup.sh -s
+$ sudo ./banano.sh -s
 ```
 
 **That's it!** You can now navigate to your host IP to check your Banano Node Monitor dashboard. **Do not forget to write down** your wallet seed as it appears in the output of the installer.
@@ -93,7 +93,7 @@ The following flags are available when running the stack installer:
     <tr>
         <td><b>-f</b></td>
         <td>-</td>
-        <td>Enables fast-syncing by fetching the latest ledger and placing it into <i>/root/Nano/</i> inside <b>banano-node</b>
+        <td>Enables fast-syncing by fetching the latest ledger and placing it into <i>/root/Banano/</i> inside <b>banano-node</b>
             container.</td>
     </tr>
     <tr>
@@ -137,7 +137,7 @@ Both of the above formats are interchangeable.
 After your DNS records are setup, fire up the installation script with the domain (-d) argument:
 
 ```
-$ sudo ./setup.sh -d mydomain.com -e myemail@example.com
+$ sudo ./banano.sh -d mydomain.com -e myemail@example.com
 ```
 
 The email (-e) argument is optional and would used by Let's Encrypt to warn you of impeding certificate expiration.
@@ -151,7 +151,7 @@ Banano Node Docker stack can also bootstrap any newly created node (or an existi
 Just add the `-f` flag to your installer command:
 
 ```
-$ sudo ./setup.sh -f
+$ sudo ./banano.sh -f
 ```
 **WARNING: You are strongly advised to BACKUP your wallet seed before trying to fast-sync an existing node.**
 
@@ -160,7 +160,7 @@ $ sudo ./setup.sh -f
 Want to install a specific Banano node image for testing? Add a tag -t and you can easily specify a specific Banano node version:
 
 ```
-$ sudo ./setup.sh -t v22-experimental2
+$ sudo ./banano.sh -t v22-experimental2
 ```
 
 ### **Combining installer flags**
@@ -168,7 +168,7 @@ $ sudo ./setup.sh -t v22-experimental2
 All the installer flags can be chained, so you can easily combine them like this:
 
 ```
-$ sudo ./setup.sh -sfd mydomain.com -e myemail@example.com
+$ sudo ./banano.sh -sfd mydomain.com -e myemail@example.com
 ```
 
 (_display seed, apply fast-sync and use Let's Encrypt with your email supplied_)
