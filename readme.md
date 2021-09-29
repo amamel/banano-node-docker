@@ -160,7 +160,7 @@ $ sudo ./setup.sh -f
 Want to install a specific Banano node image for testing? Add a tag -t and you can easily specify a specific Banano node version:
 
 ```
-$ sudo ./setup.sh -t V22.1
+$ sudo ./setup.sh -t v22-experimental2
 ```
 
 ### **Combining installer flags**
