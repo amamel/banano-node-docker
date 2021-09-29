@@ -3,7 +3,8 @@
 # VERSION
 version='v4.4'
 
-
+# FAST-SYNC DOWNLOAD LINK
+ledgerDownloadLink='https://banano.steampoweredtaco.com/download/snapshot.ldb.gz'
 
 # OUTPUT VARS
 red=`tput setaf 1`
@@ -35,7 +36,7 @@ echo $@ > settings
 
 # PRINT INSTALLER DETAILS
 [[ $quiet = 'false' ]] && echo "${green} -----------------------${reset}"
-[[ $quiet = 'false' ]] && echo "${green}${bold} BANANO Node Docker ${version}${reset}"
+[[ $quiet = 'false' ]] && echo "${green}${bold} Banano Node Docker ${version}${reset}"
 [[ $quiet = 'false' ]] && echo "${green} -----------------------${reset}"
 [[ $quiet = 'false' ]] && echo ""
 
@@ -53,8 +54,44 @@ if [ $? -ne 0 ]; then
 fi
 
 if [[ $tag == '' ]]; then
-    echo "${yellow}Banano node image tag is now required. Please set the -t argument explicitly to the version you are willing to install (https://hub.docker.com/r/nanocurrency/nano/tags).${reset}"
+    echo "${yellow}Banano node image tag is now required. Please set the -t argument explicitly to the version you are willing to install (https://hub.docker.com/r/bananocoin/banano/tags).${reset}"
     exit 2
+fi
+
+if [[ $fastSync = 'true' ]]; then
+    wget --version &> /dev/null
+    if [ $? -ne 0 ]; then
+        echo "${red}wget is not installed and is required for fast-syncing.${reset}";
+        exit 2
+    fi
+
+    7z &> /dev/null
+    if [ $? -ne 0 ]; then
+        echo "${red}7-Zip is not installed and is required for fast-syncing.${reset}";
+        exit 2
+    fi
+fi
+
+# FAST-SYNCING
+if [[ $fastSync = 'true' ]]; then
+
+    if [[ $quiet = 'false' ]]; then
+        printf "=> ${yellow}Downloading latest ledger files for fast-syncing...${reset}\n"
+        wget -O snapshot.ldb.gz ${ledgerDownloadLink} -q --show-progress
+
+        printf "=> ${yellow}Unzipping and placing the files (takes a while)...${reset} "
+        7z x snapshot.ldb.gz  -o./banano-node/Banano -y &> /dev/null
+        rm snapshot.ldb.gz
+        printf "${green}done.${reset}\n"
+        echo ""
+
+    else
+        wget -O snapshot.ldb.gz ${ledgerDownloadLink} -q
+        docker-compose stop nano-node &> /dev/null
+        7z x snapshot.ldb.gz  -o./banano-node/Banano -y &> /dev/null
+        rm snapshot.ldb.gz
+    fi
+
 fi
 
 # DETERMINE IF THIS IS AN INITIAL INSTALL
@@ -123,13 +160,13 @@ fi
 
 # CHECK NODE INITIALIZATION
 [[ $quiet = 'false' ]] && echo ""
-[[ $quiet = 'false' ]] && printf "=> ${yellow}Waiting for BANANO node to fully initialize... "
+[[ $quiet = 'false' ]] && printf "=> ${yellow}Waiting for Banano node to fully initialize... "
 
-isRpcLive="$(curl -s -d '{"action": "version"}' [::1]:7076 | grep "rpc_version")"
+isRpcLive="$(curl -s -d '{"action": "version"}' [::1]:7074 | grep "rpc_version")"
 while [ ! -n "$isRpcLive" ];
 do
     sleep 1s
-    isRpcLive="$(curl -s -d '{"action": "version"}' [::1]:7076 | grep "rpc_version")"
+    isRpcLive="$(curl -s -d '{"action": "version"}' [::1]:7074 | grep "rpc_version")"
 done
 
 [[ $quiet = 'false' ]] && printf "${green}done.${reset}\n\n"
@@ -212,7 +249,7 @@ sed -i -e 's/\r//g' ./banano-node-monitor/config.php
 
 if [[ $quiet = 'false' ]]; then
     echo "${yellow} |=========================================================================================| ${reset}"
-    echo "${yellow} | ${green}${bold}Congratulations! BANANO Node Docker has been setup successfully!                          ${yellow}| ${reset}"
+    echo "${yellow} | ${green}${bold}Congratulations! Banano Node Docker has been setup successfully!                          ${yellow}| ${reset}"
     echo "${yellow} |=========================================================================================| ${reset}"
     echo "${yellow} | Node account address: ${green}$address${yellow} | ${reset}"
     if [[ $displaySeed = 'true' ]]; then
