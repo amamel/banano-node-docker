@@ -1,7 +1,7 @@
 # Banano Node Docker
 
 <div align="center">
-    <img src="banano-node-docker.png" alt="Logo" width='600px' height='auto'/>
+    <img src="banano-node-docker.png" alt="Banano Node Docker Logo" width='300px' height='auto'/>
 </div>
 
 ## **Description**
@@ -153,11 +153,11 @@ Just add the `-f` flag to your installer command:
 ```
 $ sudo ./setup.sh -f
 ```
-**WARNING: You are strongly adviced to BACKUP your wallet seed before trying to fast-sync an existing node.**
+**WARNING: You are strongly advised to BACKUP your wallet seed before trying to fast-sync an existing node.**
 
 ### **Install with a different Banano node image**
 
-In some cases (like in the BETA network) you may want to use a different Docker image tag for your node, other than the default "latest":
+Want to install a specific Banano node image for testing? Add a tag -t and you can easily specify a specific Banano node version:
 
 ```
 $ sudo ./setup.sh -t V22.1
@@ -173,7 +173,7 @@ $ sudo ./setup.sh -sfd mydomain.com -e myemail@example.com
 
 (_display seed, apply fast-sync and use Let's Encrypt with your email supplied_)
 <div align="center">
-    <img src="screenshot.png" alt="Screenshot" width='1000px' height='auto'/>
+    <img src="screenshot.png" alt="Banano Node Docker Screenshot" width='1000px' height='auto'/>
 </div>
 
 ## Self-configurable Installation
@@ -192,4 +192,4 @@ Please check the [wiki](https://github.com/amamel/banano-node-docker/wiki)
 
 ## **Support**
 
-If you really liked this tool, **just give this project a star** ⭐️ so more people get to know it. Cheers! :)
+If you like this tool, **please give this project a star** ⭐️ so more people get to know it. Cheers! :)
