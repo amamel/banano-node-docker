@@ -8,6 +8,17 @@
 
 **Install a Banano node on your server with a vast variety of tools in a couple of minutes!** 💫
 
+<table>
+	<tr>
+        <th>Notice</th>
+    </tr>
+    	<tr>
+        <td>
+        Banano Node Docker is an automated installer intented to be used for development purposes. Main network nodes with significant delegated amounts should not be left unattended to upgrade automatically and require special monitoring and security measures.
+        </td>
+    </tr>
+</table>
+
 <!--<table>
 	<tr>
         <th>Note</th>
@@ -20,6 +31,7 @@
 </table>-->
 
 This project will build and deploy the following containers on your Docker host:
+
 
 <table>
 	<tr>
@@ -58,6 +70,22 @@ Optionally, if a domain name is available for your host, Banano Node Docker can 
    		<td>A lightweight companion container for the nginx-proxy. It allows the creation/renewal of Let's Encrypt certificates automatically.</td>
  	</tr>
 </table>
+
+## ** Recommended Hardware **
+- Run the node in a datacenter. Most SSD VPS packages will work. (Contabo, Hetzner, Vultr, OVH, DigitalOcean, etc.)
+- 1 modern CPU core minimum. 2 or more is recommended especially for voting nodes and principal nodes.
+- 100GB SSD free disk space (database is ~50GB in size at the moment) (NVMe recommended) 
+- 2 GB system RAM or more. 4 GB or more is recommended especially for voting nodes and principal nodes
+
+## ** Installing Dependencies Ubuntu 16.04, 18.04, and 20.04, Debian 8, 9, 10, and 11**
+
+```
+sudo apt update;
+sudo apt upgrade -y;
+sudo apt-get install -y git cmake make g++ curl wget python-dev;
+apt install python3-pip;
+pip install cmake-format;
+```
 
 ## **Quick Start**
 
@@ -110,7 +138,7 @@ The following flags are available when running the stack installer:
     <tr>
         <td><b>-t</b></td>
         <td>Docker image tag</td>
-        <td>Indicates the preferred tag for the nanocurrency Docker image. Defaults to "latest". Optional.</td>
+        <td>Indicates the preferred tag for the Banano Docker image. Defaults to "latest". Optional.</td>
     </tr>
 </table>
 
@@ -160,7 +188,7 @@ $ sudo ./banano.sh -f
 Want to install a specific Banano node image for testing? Add a tag -t and you can easily specify a specific Banano node version:
 
 ```
-$ sudo ./banano.sh -t v22dev2
+$ sudo ./banano.sh -t v22
 ```
 
 ### **Combining installer flags**
@@ -181,6 +209,9 @@ $ sudo ./banano.sh -sfd mydomain.com -e myemail@example.com
 Please check the [wiki](https://github.com/amamel/banano-node-docker/wiki)
  for more detailed instructions on how to manually self-configure Banano Node Docker.
 
+ ## **Contributions**
+ Please use the issues tab to report issues.
+
 ## **Credits**
 
 * **[lephleg/nano-node-docker](https://github.com/lephleg/nano-node-docker)**
@@ -192,5 +223,10 @@ Please check the [wiki](https://github.com/amamel/banano-node-docker/wiki)
 * **[Banano Ledger](https://banano.steampoweredtaco.com/)**
 
 ## **Support**
+
+## **Need help? Have a feature suggestion? Discovered a bug?**
+Join the Banano [Discord](https://chat.banano.cc/) server and head over to #frankensteins-lab if you want to comment on features, suggest new container types, or ask the Banano community for help.
+
+If you use some of the other tools in this project, please consider donating or contributing on their projects. Reporting bugs and creating Pull Requests helps.
 
 If you like this tool, **please give this project a star** ⭐️ so more people get to know it. Cheers! :)
