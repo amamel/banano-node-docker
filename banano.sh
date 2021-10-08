@@ -162,11 +162,11 @@ fi
 [[ $quiet = 'false' ]] && echo ""
 [[ $quiet = 'false' ]] && printf "=> ${yellow}Waiting for Banano node to fully initialize... "
 
-isRpcLive="$(curl -s -d '{"action": "version"}' [::1]:7072 | grep "rpc_version")"
+isRpcLive="$(curl -s -d '{"action": "version"}' 127.0.0.1:7072 | grep "rpc_version")"
 while [ ! -n "$isRpcLive" ];
 do
     sleep 1s
-    isRpcLive="$(curl -s -d '{"action": "version"}' [::1]:7072 | grep "rpc_version")"
+    isRpcLive="$(curl -s -d '{"action": "version"}' 127.0.0.1:7072 | grep "rpc_version")"
 done
 
 [[ $quiet = 'false' ]] && printf "${green}done.${reset}\n\n"
