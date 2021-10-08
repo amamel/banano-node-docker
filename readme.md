@@ -98,6 +98,14 @@ $ sudo ./banano.sh -s
 
 **That's it!** You can now navigate to your host IP to check your Banano Node Monitor dashboard. **Do not forget to write down** your wallet seed as it appears in the output of the installer.
 
+
+## **Quick Start with SSL and Fast Sync**
+
+```
+$ cd ~ && git clone https://github.com/amamel/banano-node-docker.git && cd ~/banano-node-docker
+$ sudo ./banano.sh -f -s -t v22 -d domain.com -e email@email.com
+```
+
 ### Available command flags/arguments
 
 The following flags are available when running the stack installer:
