@@ -210,7 +210,7 @@ fi
 
 # UPDATE MONITOR CONFIGS
 if [ ! -f ./banano-node-monitor/config.php ]; then
-    [[ $quiet = 'false' ]] && echo "=> ${yellow}No existing BANANO Node Monitor config file found. Fetching a fresh copy...${reset}"
+    [[ $quiet = 'false' ]] && echo "=> ${yellow}No existing Banano Node Monitor config file found. Fetching a fresh copy...${reset}"
     if [[ $quiet = 'false' ]]; then
         docker-compose restart banano-node-monitor
     else
@@ -218,7 +218,7 @@ if [ ! -f ./banano-node-monitor/config.php ]; then
     fi
 fi
 
-[[ $quiet = 'false' ]] && printf "=> ${yellow}Configuring BANANO Node Monitor... ${reset}"
+[[ $quiet = 'false' ]] && printf "=> ${yellow}Configuring Banano Node Monitor... ${reset}"
 
 sed -i -e "s/\/\/ \$bananoNodeRPCIP.*;/\$bananoNodeRPCIP/g" ./banano-node-monitor/config.php
 sed -i -e "s/\$bananoNodeRPCIP.*/\$bananoNodeRPCIP = 'banano-node';/g" ./banano-node-monitor/config.php
@@ -251,7 +251,7 @@ if [[ $quiet = 'false' ]]; then
     echo "${yellow} |=========================================================================================| ${reset}"
     echo "${yellow} | ${green}${bold}Congratulations! Banano Node Docker has been setup successfully!                          ${yellow}| ${reset}"
     echo "${yellow} |=========================================================================================| ${reset}"
-    echo "${yellow} | Node account address: ${green}$address${yellow} | ${reset}"
+    echo "${yellow} | Banano Node account address: ${green}$address${yellow} | ${reset}"
     if [[ $displaySeed = 'true' ]]; then
         echo "${yellow} | Node wallet seed: ${red}$seed${yellow}      | ${reset}"
     fi
