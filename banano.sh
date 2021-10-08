@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # VERSION
-version='v4.4'
+version='0.1'
 
 # FAST-SYNC DOWNLOAD LINK
 ledgerDownloadLink='https://banano.steampoweredtaco.com/download/snapshot.ldb.gz'
@@ -87,7 +87,7 @@ if [[ $fastSync = 'true' ]]; then
 
     else
         wget -O snapshot.ldb.gz ${ledgerDownloadLink} -q
-        docker-compose stop nano-node &> /dev/null
+        docker-compose stop banano-node &> /dev/null
         7z x snapshot.ldb.gz  -o./banano-node/Banano -y &> /dev/null
         rm snapshot.ldb.gz
     fi
