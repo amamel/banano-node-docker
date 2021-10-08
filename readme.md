@@ -40,7 +40,7 @@ This project will build and deploy the following containers on your Docker host:
  	</tr>
  	<tr>
    <td><b>banano-node</b></td>
-   		<td>The Banano node created out of the official <a href="https://hub.docker.com/r/bananocoin/banano" target="_blank">Banano Docker Image</a>. RPC is enabled but <u>not</u> publicly exposed. (Renamed to "<i>banano-beta-node</i>" for BETA)</td>
+   		<td>The Banano node created out of the official <a href="https://hub.docker.com/r/bananocoin/banano" target="_blank">Banano Docker Image</a>. RPC is enabled but <u>not</u> publicly exposed.</td>
  	</tr>
 	<tr>
   		<td><b>banano-node-monitor</b></td>
@@ -74,7 +74,7 @@ Optionally, if a domain name is available for your host, Banano Node Docker can 
 ## ** Recommended Hardware **
 - Run the node in a datacenter. Most SSD VPS packages will work. (Contabo, Hetzner, Vultr, OVH, DigitalOcean, etc.)
 - 1 modern CPU core minimum. 2 or more is recommended especially for voting nodes and principal nodes.
-- 100GB SSD free disk space (database is ~50GB in size at the moment) (NVMe recommended) 
+- 50GB SSD free disk space (database is ~10GB in size at the moment) (NVMe recommended) 
 - 2 GB system RAM or more. 4 GB or more is recommended especially for voting nodes and principal nodes
 
 ## ** Installing Dependencies Ubuntu 16.04, 18.04, and 20.04, Debian 8, 9, 10, and 11**
@@ -103,7 +103,7 @@ $ sudo ./banano.sh -s
 
 ```
 $ cd ~ && git clone https://github.com/amamel/banano-node-docker.git && cd ~/banano-node-docker
-$ sudo ./banano.sh -f -s -t v22 -d domain.com -e email@email.com
+$ sudo ./banano.sh -f -s -t V22 -d domain.com -e email@email.com
 ```
 
 ### Available command flags/arguments
@@ -196,7 +196,7 @@ $ sudo ./banano.sh -f
 Want to install a specific Banano node image for testing? Add a tag -t and you can easily specify a specific Banano node version:
 
 ```
-$ sudo ./banano.sh -t v22
+$ sudo ./banano.sh -t V22
 ```
 
 ### **Combining installer flags**
