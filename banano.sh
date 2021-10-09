@@ -240,7 +240,7 @@ else
 fi
 
 sed -i -e "s/\/\/ \$welcomeMsg.*;/\$welcomeMsg = 'Welcome! This node was setup using <a href=\"https:\/\/github.com\/amamel\/banano-node-docker\" target=\"_blank\">Banano Node Docker<\/a>!';/g" ./banano-node-monitor/config.php
-sed -i -e "s/\/\/ \$blockExplorer.*;/\$blockExplorer = 'meltingice';/g" ./banano-node-monitor/config.php
+sed -i -e "s/\/\/ \$blockExplorer.*;/\$blockExplorer = 'banano';/g" ./banano-node-monitor/config.php
 
 # remove any carriage returns may have been included by sed replacements
 sed -i -e 's/\r//g' ./banano-node-monitor/config.php
