@@ -21,7 +21,7 @@ services:
     hostname: banano-node-monitor
     restart: unless-stopped
     volumes:
-      - ./banano-node-monitor:/opt/bananoNodeMonitor
+      - ./banano-node-monitor:/opt/nanoNodeMonitor
     ports:
       - "80:80"
 
