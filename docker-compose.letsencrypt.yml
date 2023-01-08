@@ -24,7 +24,7 @@ services:
       - LETSENCRYPT_HOST=mydomain.com
       - LETSENCRYPT_EMAIL=myemailaddress@mail.com
     volumes:
-      - ./banano-node-monitor:/opt/bananoNodeMonitor
+      - ./banano-node-monitor:/opt/nanoNodeMonitor
 
   nginx-proxy:
     image: jwilder/nginx-proxy
