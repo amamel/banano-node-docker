@@ -14,7 +14,7 @@
     </tr>
     	<tr>
         <td>
-        Banano Node Docker is an automated installer intented to be used for development purposes. Main network nodes with significant delegated amounts should not be left unattended to upgrade automatically and require special monitoring and security measures.
+        Banano Node Docker is an automated installer intended to be used for development purposes. Main network nodes with significant delegated amounts should not be left unattended to upgrade automatically and require special monitoring and security measures.
         </td>
     </tr>
 </table>
@@ -71,34 +71,34 @@ Optionally, if a domain name is available for your host, Banano Node Docker can 
  	</tr>
 </table>
 
-## ** Recommended Hardware **
+## **Recommended Hardware**
 - Run the node in a datacenter. Most SSD VPS packages will work. (Contabo, Hetzner, Vultr, OVH, DigitalOcean, etc.)
-- 1 modern CPU core minimum. 2 or more is recommended especially for voting nodes and principal nodes.
+- 2 modern CPU core minimum. 4 or more is recommended especially for voting nodes and principal nodes.
 - 50GB SSD free disk space (database is ~10GB in size at the moment) (NVMe recommended) 
 - 2 GB system RAM or more. 4 GB or more is recommended especially for voting nodes and principal nodes
 
-## ** Installing Dependencies Ubuntu 16.04, 18.04, and 20.04, Debian 8, 9, 10, and 11**
+## **Installing Dependencies Ubuntu 16.04, 18.04, and 20.04, Debian 8, 9, 10, and 11**
 
 ```
 sudo apt update;
 sudo apt upgrade -y;
-sudo apt-get install -y git cmake make g++ curl wget python-dev;
-apt install python3-pip;
+sudo apt-get install -y git cmake make g++ curl wget python-dev-is-python3;
+sudo apt install python3-pip;
 pip install cmake-format;
 ```
 
 ## **Quick Start**
 
-Download or clone the latest release, open a bash terminal and fire up the installation script:
+Download or clone the latest release, open a bash terminal and run the installation script:
 
 ```
-$ cd ~ && git clone https://github.com/amamel/banano-node-docker.git && cd ~/banano-node-docker
-$ sudo ./banano.sh -s
+cd ~ && git clone https://github.com/amamel/banano-node-docker.git && cd ~/banano-node-docker
+sudo ./banano.sh -s
 ```
 
 **That's it!** You can now navigate to your host IP to check your Banano Node Monitor dashboard. **Don't forget to write down your wallet seed as it appears in the output of the installer.**
 
-### Available command flags/arguments
+## Options
 
 The following flags are available when running the stack installer:
 
@@ -147,13 +147,13 @@ The following flags are available when running the stack installer:
 Banano node runs inside the banano-node container. In order to execute commands from its [Command Line Interface](https://docs.nano.org/commands/command-line-interface/) you'll have to enter the container or execute them by using the following Docker command:
 
 ```
-$ docker exec -it banano-node banano_node <command>
+docker exec -it banano-node banano_node <command>
 ```
 
 For convinience the following shorthand alias is set by the installer:
 
 ```
-$ banano-node <command>
+banano-node <command>
 ```
 
 Both of the above formats are interchangeable.
@@ -165,7 +165,7 @@ Both of the above formats are interchangeable.
 After your DNS records are setup, fire up the installation script with the domain (-d) argument:
 
 ```
-$ sudo ./banano.sh -d mydomain.com -e myemail@example.com
+sudo ./banano.sh -d mydomain.com -e myemail@example.com
 ```
 
 The email (-e) argument is optional and would used by Let's Encrypt to warn you of impeding certificate expiration.
@@ -179,7 +179,7 @@ Banano Node Docker stack can also bootstrap any newly created node (or an existi
 Just add the `-f` flag to your installer command:
 
 ```
-$ sudo ./banano.sh -f
+sudo ./banano.sh -f
 ```
 **WARNING: You are strongly advised to BACKUP your wallet seed before trying to fast-sync an existing node.**
 
@@ -188,7 +188,7 @@ $ sudo ./banano.sh -f
 Want to install a specific Banano node image for testing? Add a tag -t and you can easily specify a specific Banano node version:
 
 ```
-$ sudo ./banano.sh -t V22
+sudo ./banano.sh -t V23
 ```
 
 ### **Combining installer flags**
@@ -196,7 +196,7 @@ $ sudo ./banano.sh -t V22
 All the installer flags can be chained, so you can easily combine them like this:
 
 ```
-$ sudo ./banano.sh -sfd mydomain.com -e myemail@example.com
+sudo ./banano.sh -sfd mydomain.com -e myemail@example.com
 ```
 
 (_display seed, apply fast-sync and use Let's Encrypt with your email supplied_)
@@ -206,11 +206,10 @@ $ sudo ./banano.sh -sfd mydomain.com -e myemail@example.com
 
 ## Self-configurable Installation
 
-Please check the [wiki](https://github.com/amamel/banano-node-docker/wiki)
- for more detailed instructions on how to manually self-configure Banano Node Docker.
+Please check the [wiki](https://github.com/amamel/banano-node-docker/wiki) for more detailed instructions on how to manually self-configure Banano Node Docker.
 
  ## **Contributions**
- Please use the issues tab to report issues.
+ Please use the issues tab to report issues or propose changes.
 
 ## **Credits**
 
