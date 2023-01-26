@@ -47,7 +47,7 @@ if [ $? -ne 0 ]; then
     exit 2
 fi
 
-docker-compose --version &> /dev/null
+docker-compose -v &> /dev/null
 if [ $? -ne 0 ]; then
     echo "${red}Docker Compose is not installed. Please follow the install instructions for your system at https://docs.docker.com/compose/install/.${reset}"
     exit 2
@@ -59,7 +59,7 @@ if [[ $tag == '' ]]; then
 fi
 
 if [[ $fastSync = 'true' ]]; then
-    wget --version &> /dev/null
+    wget -v &> /dev/null
     if [ $? -ne 0 ]; then
         echo "${red}wget is not installed and is required for fast-syncing.${reset}";
         exit 2
