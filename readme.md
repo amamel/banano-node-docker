@@ -71,7 +71,7 @@ When the script is executed, it performs a series of functions, which are outlin
 - **Important Reminder**: It is crucial to save your wallet seed exactly as it appears in the installer's output. Ensure you securely store this information to maintain access to your wallet.
 
 
-## Talk to the Node via Banano Node CLI bash alias
+## Interact with the Banano node Command Line Interface (CLI)
 
 To execute commands from the Banano node's Command Line Interface (CLI), you have two options:
 
