@@ -32,8 +32,6 @@ sudo ./banano.sh -d yourdomain.com -e youremail@yourdomain.com -s
 
 ### Options (Available Install Option Flags)
 
-Certainly! Here's the provided information in a markdown table format:
-
 | Option    | Description                                                            |
 |-----------|------------------------------------------------------------------------|
 | `-s`      | Display the seed for the generated wallet.                              |
