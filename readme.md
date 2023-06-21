@@ -143,20 +143,20 @@ These recommendations will help ensure that your Banano node can handle the comp
 Please check the [wiki](https://github.com/amamel/banano-node-docker/wiki) for more detailed instructions on how to manually self-configure Banano Node Docker.
 
 ## Credits
+The developers behind the other tools used in this project deserve sincere appreciation for their valuable contributions. If you find these tools useful, consider donating to or contributing to their projects. Your contributions, such as reporting bugs or creating pull requests, can greatly support the continued development and improvement of these tools.
+- [Banano](https://github.com/BananoCoin/banano)
+- [JrCs/docker-letsencrypt-nginx-proxy-companion](https://github.com/JrCs/docker-letsencrypt-nginx-proxy-companion)
+- [jwilder/nginx-proxy](https://github.com/jwilder/nginx-proxy)
+- [lephleg/nano-node-docker](https://github.com/lephleg/nano-node-docker)
+- [Moonano Fast Sync RocksDB Ledger](https://moonano.net/ledger/)
+- [Nanocurrency](https://github.com/nanocurrency/nano-node)
+- [Nano Node Monitor](https://github.com/NanoTools/nanoNodeMonitor)
+- [v2tec/watchtower](https://github.com/v2tec/watchtower)
+- [Very Cute Cat Fast Sync LMBD Ledger](https://lmdb.cutecat.party/)
 
-* [JrCs/docker-letsencrypt-nginx-proxy-companion](https://github.com/JrCs/docker-letsencrypt-nginx-proxy-companion)
-* [jwilder/nginx-proxy](https://github.com/jwilder/nginx-proxy)
-* [lephleg/nano-node-docker](https://github.com/lephleg/nano-node-docker)
-* [Moonano Fast Sync RocksDB Ledger](https://moonano.net/ledger/)
-* [Nanocurrency](https://github.com/nanocurrency/nano-node)
-* [Nano Node Monitor](https://github.com/NanoTools/nanoNodeMonitor)
-* [v2tec/watchtower](https://github.com/v2tec/watchtower)
-* [Very Cute Cat Fast Sync LMBD Ledger](https://lmdb.cutecat.party/)
 
 ## Support
-If you encounter any issues or have suggestions for improvements, we encourage you to utilize the "Issues" tab on our GitHub repository. Your feedback is valuable in making this project better. We also welcome discussions about new features, container types, or on script improvements and suggestions. For quicker feedback, join the [Banano Discord server](https://chat.banano.cc/) and navigating to the #frankensteins-lab Banano development channel. It's a great place to engage in conversations, offer suggestions, and receive support from other Banano developers.
-
-I'd like to express my gratitude to the developers behind the other tools in this project. If you find those tools useful, please consider donating to or contributing to their projects. Your contributions, whether it's reporting bugs or creating Pull Requests, are incredibly helpful.
+If you encounter any issues or have suggestions for improvements, you are encouraged to utilize the "Issues" tab on the GitHub repository. Your feedback is valuable in making this project better. Additionally, you can join the Banano Discord server and navigate to the #frankensteins-lab Banano development channel. It is a great place to engage in conversations, offer suggestions, and receive support from other Banano developers.
 
 If you find this tool helpful and valuable, I kindly ask you to show your support by giving this project a star ⭐️. Your support will help Banano reach more people and make a positive impact. Thank you, and cheers!
 
