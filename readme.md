@@ -16,7 +16,7 @@ Download or clone the latest release, open a bash terminal and run the script wi
 
 ```
 cd ~ && git clone https://github.com/amamel/banano-node-docker.git && cd ~/banano-node-docker
-sudo ./banano.sh -d acme.com -e acme@acme.com -s -t V25.1 [options]
+sudo ./banano.sh -d acme.com -e acme@acme.com -s
 ```
 
 ### Options (Available Install Option Flags)
