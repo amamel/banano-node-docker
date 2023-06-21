@@ -20,47 +20,47 @@ main() {
   echo "==========================================="
 
   echo "Checking the operating system..."
-  check_os                       # Check the operating system
-  print_ascii_art                # Print ASCII art
+  check_os                                              # Check the operating system
+  print_ascii_art                                       # Print ASCII art
 
   echo "Checking for required system tools..."
-  check_required_tools           # Check for required tools to run script
+  check_required_tools                                  # Check for required tools to run script
 
   echo "Checking Docker installation..."
-  check_docker                   # Check Docker installation
+  check_docker_installation                             # Check Docker installation
 
   echo "Checking Docker Compose installation..."
-  check_docker_compose           # Check Docker Compose installation
+  check_docker_compose_installation                     # Check Docker Compose installation
 
   echo "Applying the latest Docker image tag..."
-  apply_latest_tag               # Apply the latest Docker image tag
+  apply_latest_docker_image_tag                         # Apply the latest Docker image tag
 
   echo "Enabling fast sync..."
-  fast_sync                      # Enable fast sync
+  optional_fast_sync                                    # Enable fast sync
 
   echo "Checking initial setup..."
-  check_initial_setup            # Check initial setup
+  check_initial_node_setup                              # Check initial setup
 
   echo "Spinning up the Docker stack..."
-  spin_up_stack                  # Spin up the Docker stack
+  spin_up_docker_stack                                  # Spin up the Docker stack
 
   echo "Configuring and starting Docker containers..."
-  configure_and_start_containers # Configure and start Docker containers
+  configure_and_start_docker_containers                 # Configure and start Docker containers
 
   echo "Waiting for node initialization..."
-  wait_for_node_initialization   # Wait for node initialization
+  wait_for_node_to_initialize                           # Wait for node initialization
 
   echo "Setting Banano node alias..."
-  set_banano_node_alias          # Set Banano node alias
+  set_banano_node_alias                                 # Set Banano node alias
 
   echo "Checking and generating a wallet..."
-  check_and_generate_wallet      # Check and generate a wallet
+  wallet_check_and_generation                           # Check and generate a wallet
 
   echo "Configuring Banano node monitor..."
-  configure_banano_node_monitor  # Configure Banano node monitor
+  configure_banano_node_monitor                         # Configure Banano node monitor
 
-  output_success_message         # Output success message
-  press_any_key                  # Exit Script
+  output_success_message                                # Output success message
+  press_any_key                                         # Exit Script
 }
 
 # Execute main function
@@ -213,7 +213,7 @@ check_required_tools() {
 
 
 # Check if Docker is installed, attempt to install if needed
-check_docker() {
+check_docker_installation() {
   if ! command -v docker &> /dev/null; then
     echo "${red}Docker is not installed. Installing Docker...${reset}"
     
@@ -255,7 +255,7 @@ check_docker() {
 
 
 # Check if Docker Compose is installed and install it if necessary
-check_docker_compose() {
+check_docker_compose_installation() {
   if ! command -v docker-compose &> /dev/null; then
     echo "${red}Docker Compose is not installed. Installing Docker Compose...${reset}"
     
@@ -295,7 +295,7 @@ check_docker_compose() {
 
 
 # Check if tag is applied, if not apply latest
-apply_latest_tag() {
+apply_latest_docker_image_tag() {
   if [[ -z "$tag" ]]; then
     echo "${yellow}No tag specified. Fetching the latest tag from the Docker Hub...${reset}"
 
@@ -317,7 +317,7 @@ apply_latest_tag() {
 
 
 # Perform fast-sync if enabled
-fast_sync() {
+optional_fast_sync() {
   # Fast-Sync data sources
   ledgerDownloadLink_LMDB='https://lmdb.cutecat.party/snapshot.ldb'
   ledgerDownloadLink_RocksDB='https://ledgerfiles.moonano.net/files/latest.tar.gz'
@@ -383,7 +383,7 @@ fast_sync() {
 
 
 # Function to check the initial node setup
-check_initial_setup() {
+check_initial_node_setup() {
   if [[ $quiet = 'false' ]]; then
     echo "=> ${yellow}Checking initial status...${reset}"
     echo ""
@@ -422,7 +422,7 @@ check_initial_setup() {
 
 
 # Function to spin up the appropriate stack
-spin_up_stack() {
+spin_up_docker_stack() {
   # Check if quiet mode is disabled
   if [[ $quiet = 'false' ]]; then
     echo "=> ${yellow}Pulling images and spinning up containers...${reset}"
@@ -443,7 +443,7 @@ spin_up_stack() {
 
 
 # Function to configure Docker Compose and start containers
-configure_and_start_containers() {
+configure_start_docker_containers() {
   local docker_compose_file
 
   if [[ $domain ]]; then
@@ -497,7 +497,7 @@ configure_and_start_containers() {
 
 
 # Function to wait for Banano node initialization
-wait_for_node_initialization() {
+wait_for_node_to_initialize() {
   if [[ $quiet = 'false' ]]; then
     # Print a message to indicate that the script is waiting for the Banano node to initialize
     echo ""
@@ -616,7 +616,7 @@ set_banano_node_alias() {
 
 
 # Function to check if a wallet exists and generate a new one if necessary
-check_and_generate_wallet() {
+wallet_check_and_generation() {
   walletList="$(${nodeExec} --wallet_list)"
   
   if ! echo "$walletList" | grep -q 'Wallet ID'; then
