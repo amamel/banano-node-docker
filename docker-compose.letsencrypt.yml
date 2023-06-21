@@ -7,12 +7,18 @@ services:
     hostname: banano-node
     environment:
       - TERM=xterm
+      - RPC_SECURE=1
+      - WEBSOCKET_SECURE=1
+      - RPC_SECURE_RPC_CERTIFICATE_PATH=/root/config/cert.pem
+      - RPC_SECURE_RPC_KEY_PATH=/root/config/privkey.pem
+      - RPC_SECURE_RPC_CHAIN_PATH=/root/config/chain.pem
     restart: unless-stopped
     ports:
       - "7071:7071"
       - "127.0.0.1:7072:7072"
     volumes:
       - ./banano-node:/root
+      - ./config:/root/config
 
   banano-node-monitor:
     image: nanotools/nanonodemonitor:latest
