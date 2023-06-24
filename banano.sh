@@ -38,8 +38,10 @@ version='1.0'
 red=$(tput setaf 1)            # Set the variable red to the ANSI escape code for red color
 green=$(tput setaf 2)          # Set the variable green to the ANSI escape code for green color
 yellow=$(tput setaf 3)         # Set the variable yellow to the ANSI escape code for yellow color
+purple=$(tput setaf 5)         # Set the variable purple to the ANSI escape code for purple color
 bold=$(tput bold)              # Set the variable bold to the ANSI escape code for bold text
 reset=$(tput sgr0)             # Set the variable reset to the ANSI escape code to reset text formatting
+
 
 # Flags & Arguments
 quiet='false'                  # Flag: Quiet mode (default: false)
@@ -146,8 +148,8 @@ check_required_tools() {
 
     # Install missing tools if any
     if [[ ${#missingTools[@]} -gt 0 ]]; then
-        echo "${red}The following tools are required but are not installed: ${missingTools[*]}.${reset}"
-        echo "${yellow}Installing missing dependencies...${reset}"
+        echo "=> ${red}The following tools are required but are not installed: ${missingTools[*]}.${reset}"
+        echo "=> ${yellow}Installing missing dependencies...${reset}"
 
         # Update package lists and upgrade existing packages
         sudo apt-get update && sudo apt-get upgrade
@@ -175,7 +177,7 @@ check_required_tools() {
 # Check if Docker is installed, attempt to install if needed
 check_docker_installation() {
   if ! command -v docker &> /dev/null; then
-    echo "${red}Docker is not installed. Installing Docker...${reset}"
+    echo "=> ${red}Docker is not installed. Installing Docker...${reset}"
     
     # Add Docker PGP key
     curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
@@ -195,11 +197,11 @@ check_docker_installation() {
     
     # Check if the installation was successful
     if [ $? -ne 0 ]; then
-      echo "${red}Failed to install Docker. Please install Docker manually and run the script again.${reset}"
+      echo "=> ${red}Failed to install Docker. Please install Docker manually and run the script again.${reset}"
       exit 2
     fi
   else
-    echo "${yellow}Docker is already installed.${reset}"
+    echo "=> ${yellow}Docker is already installed.${reset}"
   fi
 }
 
@@ -228,7 +230,7 @@ check_docker_compose_installation() {
       exit 2
     fi
   else
-    echo "${yellow}Docker Compose is already installed.${reset}"
+    echo "=> ${yellow}Docker Compose is already installed.${reset}"
   fi
 }
 
@@ -244,7 +246,7 @@ check_docker_compose_installation() {
 # Check if tag is applied, if not apply latest
 apply_latest_docker_image_tag() {
   if [[ -z "$tag" ]]; then
-    echo "${yellow}No tag specified. Fetching the latest tag from the Docker Hub...${reset}"
+    echo "$=> {yellow}No tag specified. Fetching the latest tag from the Docker Hub...${reset}"
 
     # Retrieve the latest tag from the Docker Hub using curl, jq, and grep
     tag=$(curl -s "https://hub.docker.com/v2/repositories/bananocoin/banano/tags" | jq -r '.results[].name' | grep -E "^(latest|V[0-9.]+)$" | sort -rV | head -n1)
@@ -254,7 +256,7 @@ apply_latest_docker_image_tag() {
       exit 1
     fi
 
-    echo "${green}Selected tag: $tag${reset}"
+    echo "=> ${yellow}Selected tag:${reset} $tag"
   fi
 }
 
@@ -467,7 +469,7 @@ configure_and_start_docker_containers () {
 wait_for_node_to_initialize() {
   if [[ $quiet = 'false' ]]; then
     # Print a message to indicate that the script is waiting for the Banano node to initialize
-    echo "=> ${yellow} => Awaiting full initialization of the Banano node. Please wait while the process completes.${reset}"
+    echo "=> ${yellow} Awaiting full initialization of the Banano Node. Please wait while the process completes.${reset}"
   fi
 
   # Keep checking the Banano node's version until it responds with the expected JSON
@@ -477,7 +479,7 @@ wait_for_node_to_initialize() {
 
   if [[ $quiet = 'false' ]]; then
     # Print a message to indicate that the Banano node has finished initializing
-    echo "=> Banano node initialization completed."
+    echo "=> ${yellow} Banano Node initialization complete.${reset}"
   fi
 }
 
@@ -636,112 +638,96 @@ wallet_check_and_generation() {
 
 
 
-
-
-
-
-
-
-
 # Function to check if the Banano Node Monitor config file exists, fetch a fresh copy if necessary, and configure it
 configure_banano_node_monitor() {
   if [ ! -f /opt/banano-node-monitor/config.php ]; then
+    # No existing config file found, fetch a fresh copy
     [[ $quiet = 'false' ]] && echo "=> ${yellow}No existing Banano Node Monitor config file found. Fetching a fresh copy...${reset}"
     if [[ $quiet = 'false' ]]; then
-        docker-compose restart banano-node-monitor
+      docker-compose restart banano-node-monitor
     else
-        docker-compose restart banano-node-monitor > /dev/null
+      docker-compose restart banano-node-monitor > /dev/null
     fi
-fi
+  fi
 
-[[ $quiet = 'false' ]] && printf "=> ${yellow}Configuring Banano Node Monitor... ${reset}"
+  [[ $quiet = 'false' ]] && printf "=> ${yellow}Configuring Banano Node Monitor... ${reset}"
 
-sed -i -e "s/\/\/ \$bananoNodeRPCIP.*;/\$bananoNodeRPCIP/g" ./banano-node-monitor/config.php
-sed -i -e "s/\$bananoNodeRPCIP.*/\$bananoNodeRPCIP = 'banano-node';/g" ./banano-node-monitor/config.php
+  # Update the Banano Node RPC IP in the config file
+  sed -i -e "s/\/\/ \$bananoNodeRPCIP.*;/\$bananoNodeRPCIP/g" ./banano-node-monitor/config.php
+  sed -i -e "s/\$bananoNodeRPCIP.*/\$bananoNodeRPCIP = 'banano-node';/g" ./banano-node-monitor/config.php
 
-sed -i -e "s/\/\/ \$bananoNodeAccount.*;/\$bananoNodeAccount/g" ./banano-node-monitor/config.php
-sed -i -e "s/\$bananoNodeAccount.*/\$bananoNodeAccount = '$address';/g" ./banano-node-monitor/config.php
+  # Update the Banano Node account in the config file
+  sed -i -e "s/\/\/ \$bananoNodeAccount.*;/\$bananoNodeAccount/g" ./banano-node-monitor/config.php
+  sed -i -e "s/\$bananoNodeAccount.*/\$bananoNodeAccount = '$address';/g" ./banano-node-monitor/config.php
 
-if [[ $domain ]]; then
+  if [[ $domain ]]; then
+    # Use the specified domain as the Banano Node name in the config file
     sed -i -e "s/\/\/ \$bananoNodeName.*;/\$bananoNodeName = '$domain';/g" ./banano-node-monitor/config.php
-else 
+  else
+    # Use the IP address as the Banano Node name in the config file
     ipAddress=$(curl -s v4.ifconfig.co | awk '{ print $NF}' | tr -d '\r')
 
-    # in case of an ipv6 address, add square brackets
+    # In case of an IPv6 address, add square brackets
     if [[ $ipAddress =~ .*:.* ]]; then
-        ipAddress="[$ipAddress]"
+      ipAddress="[$ipAddress]"
     fi
 
     sed -i -e "s/\/\/ \$bananoNodeName.*;/\$bananoNodeName = 'banano-node-docker-$ipAddress';/g" ./banano-node-monitor/config.php
-fi
+  fi
 
-sed -i -e "s/\/\/ \$welcomeMsg.*;/\$welcomeMsg = 'Welcome! This node was setup using <a href=\"https:\/\/github.com\/lephleg\/banano-node-docker\" target=\"_blank\">Banano Node Docker<\/a>!';/g" ./banano-node-monitor/config.php
-sed -i -e "s/\/\/ \$blockExplorer.*;/\$blockExplorer = 'banano';/g" ./banano-node-monitor/config.php
+  # Set the currency, welcome message, block explorer, theme choice, and Banano Node RPC port in the config file
+  sed -i -e "s/\/\/ \$currency.*;/\$currency = 'banano';/g" ./banano-node-monitor/config.php
+  sed -i -e "s/\/\/ \$welcomeMsg.*;/\$welcomeMsg = 'Welcome! This node was set up using <a href=\"https:\/\/github.com\/amamel\/banano-node-docker\" target=\"_blank\">Banano Node Docker<\/a>!';/g" ./banano-node-monitor/config.php
+  sed -i -e "s/\/\/ \$blockExplorer.*;/\$blockExplorer = 'bananocreeper';/g" ./banano-node-monitor/config.php
+  sed -i -e "s/\/\/ \$themeChoice.*;/\$themeChoice = 'banano';/g" ./banano-node-monitor/config.php
+  sed -i -e "s/\/\/ \$nanoNodeRPCPort.*;/\$nanoNodeRPCPort = '7072';/g" ./banano-node-monitor/config.php
 
-# remove any carriage returns may have been included by sed replacements
-sed -i -e 's/\r//g' ./banano-node-monitor/config.php
+  # Remove any carriage returns that may have been included by sed replacements
+  sed -i -e 's/\r//g' ./banano-node-monitor/config.php
 
-[[ $quiet = 'false' ]] && printf "${green}done.${reset}\n\n"
-}
+  [[ $quiet = 'false' ]] && printf "${green}done.${reset}\n\n"
 
-
-
-
-
-
-
-
-
-
-
-
-
-# Function to output success message and relevant information if quiet mode is disabled
-output_success_message() {
+  # Output success message and relevant information if quiet mode is disabled
   if [[ $quiet = 'false' ]]; then
     echo "${yellow} |=========================================================================================| ${reset}"
-    echo "${yellow} | ${green}${bold}Congratulations! Banano Node Docker has been setup successfully!           ${yellow}| ${reset}"
+    echo "${yellow} | ${green}${bold}Congratulations! Banano Node Docker has been setup successfully!         | ${yellow}| ${reset}"
     echo "${yellow} |=========================================================================================| ${reset}"
-    echo "${yellow} | Node account address: ${green}$address${yellow} | ${reset}"
+    echo "${yellow} | Node public address: ${green}$address${yellow} | ${reset}"
     if [[ $displaySeed = 'true' ]]; then
-        echo "${yellow} | Node wallet seed: ${red}$seed${yellow}      | ${reset}"
+      echo "${yellow} | Node seed (private):${reset} ${red}$seed${yellow}     | ${reset}"
     fi
     echo "${yellow} |=========================================================================================| ${reset}"
 
     echo ""
 
     if [[ $domain ]]; then
-        echo "${yellow} Open a browser and navigate to ${green}https://$domain${yellow} to check your monitor."
+      echo "${yellow} Open a browser and navigate to ${green}https://$domain${yellow} to check your monitor."
     else
-        echo "${yellow} Open a browser and navigate to ${green}http://$ipAddress${yellow} to check your monitor."
+      echo "${yellow} Open a browser and navigate to ${green}http://$ipAddress${yellow} to check your monitor."
     fi
-    echo "${yellow} You can further configure and personalize your monitor by editing the config file located in ${green}banano-node-monitor/config.php${yellow}.${reset}"
+    echo "${yellow} You can further configure and personalize your monitor by editing the config file,"
+    echo "${yellow} located in ${green}banano-node-monitor/config.php${yellow}.${reset}"
 
     echo "${yellow} ================================================================================== ${reset}"
-    echo "${green} || A tremendous amount of care and effort has gone into refactoring             || ${reset}"
-    echo "${green} || Banano Node Docker, to make it easily configurable and accessible for others.|| ${reset}"
-    echo "${green} || Your support is invaluable in sustaining this project.                       || ${reset}"
-    echo "${green} || Thank you for being a part of it!                                            || ${reset}"
-    echo "${green} ================================================================================== ${reset}"
-    echo "${green} Support Project : ban_114i44aggu9a31gymt4pj1ztuk5prn76ejej1baw9ixr9j5z4djngmn4k6tm ${reset}"
+    echo "${purple} || A lot of care and effort has gone into refactoring Banano Node Docker,       || ${reset}"
+    echo "${purple} || to make the script easily configurable and accessible for others.            || ${reset}"
+    echo "${purple} || Your support is invaluable in sustaining this project.                       || ${reset}"
+    echo "${purple} || Thank you for being a part of it!                                            || ${reset}"
     echo "${yellow} ================================================================================== ${reset}"
-
+    echo "${yellow}${bold} Support Project : ${green}ban_114i44aggu9a31gymt4pj1ztuk5prn76ejej1baw9ixr9j5z4djngmn4k6tm ${reset}"
+    echo "${yellow} ================================================================================== ${reset}"
   fi
 }
 
 # Function to display "Press any key to close" message
 press_any_key() {
+    echo ""
+    echo ""
+    echo ""
+    echo ""
     echo "=> ${green}${bold}Banano Node Docker finished successfully. Press any key to close.${reset}"
     read -n 1 -s -r -p ""  # Wait for user input of any key
 }
-
-
-
-
-
-
-
-
 
 
 # Function to run all node functions
@@ -788,8 +774,7 @@ main() {
 
   echo "${green}${bold}Configuring Banano Node Monitor...${reset}"
   configure_banano_node_monitor                         # Configure Banano node monitor
-
-  output_success_message                                # Output success message
+  echo "${green}${bold}Completed${reset}"
   press_any_key                                         # Exit Script
 }
 
