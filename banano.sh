@@ -199,7 +199,7 @@ check_docker_installation() {
       exit 2
     fi
   else
-    echo "Docker is already installed."
+    echo "${yellow}Docker is already installed.${reset}"
   fi
 }
 
@@ -640,45 +640,44 @@ wallet_check_and_generation() {
 
 
 
-# Function to check if the Banano Node Monitor config file exists, fetch a fresh copy if necessary, and configure it
 configure_banano_node_monitor() {
-  if [ ! -f /opt/bananoNodeMonitor/modules/config.php ]; then
+  if [ ! -f /opt/nanoNodeMonitor/modules/config.php ]; then
     [[ $quiet = 'false' ]] && echo "=> ${yellow}No existing Banano Node Monitor config file found. Fetching a fresh copy...${reset}"
     if [[ $quiet = 'false' ]]; then
         docker-compose restart banano-node-monitor
     else
         docker-compose restart banano-node-monitor > /dev/null
     fi
-fi
+  fi
 
-[[ $quiet = 'false' ]] && printf "=> ${yellow}Configuring Banano Node Monitor... ${reset}"
+  [[ $quiet = 'false' ]] && printf "=> ${yellow}Configuring Banano Node Monitor... ${reset}"
 
-sed -i -e "s/\/\/ \$bananoNodeRPCIP.*;/\$bananoNodeRPCIP/g" ./banano-node-monitor/config.php
-sed -i -e "s/\$bananoNodeRPCIP.*/\$bananoNodeRPCIP = 'banano-node';/g" ./banano-node-monitor/config.php
+  sed -i -e "s/\/\/ \$bananoNodeRPCIP.*;/\$bananoNodeRPCIP/g" /opt/nanoNodeMonitor/modules/config.php
+  sed -i -e "s/\$bananoNodeRPCIP.*/\$bananoNodeRPCIP = 'banano-node';/g" /opt/nanoNodeMonitor/modules/config.php
 
-sed -i -e "s/\/\/ \$bananoNodeAccount.*;/\$bananoNodeAccount/g" ./banano-node-monitor/config.php
-sed -i -e "s/\$bananoNodeAccount.*/\$bananoNodeAccount = '$address';/g" ./banano-node-monitor/config.php
+  sed -i -e "s/\/\/ \$bananoNodeAccount.*;/\$bananoNodeAccount/g" /opt/nanoNodeMonitor/modules/config.php
+  sed -i -e "s/\$bananoNodeAccount.*/\$bananoNodeAccount = '$address';/g" /opt/nanoNodeMonitor/modules/config.php
 
-if [[ $domain ]]; then
-    sed -i -e "s/\/\/ \$bananoNodeName.*;/\$bananoNodeName = '$domain';/g" ./banano-node-monitor/config.php
-else 
-    ipAddress=$(curl -s v4.ifconfig.co | awk '{ print $NF}' | tr -d '\r')
+  if [[ $domain ]]; then
+      sed -i -e "s/\/\/ \$bananoNodeName.*;/\$bananoNodeName = '$domain';/g" /opt/nanoNodeMonitor/modules/config.php
+  else 
+      ipAddress=$(curl -s v4.ifconfig.co | awk '{ print $NF}' | tr -d '\r')
 
-    # in case of an ipv6 address, add square brackets
-    if [[ $ipAddress =~ .*:.* ]]; then
-        ipAddress="[$ipAddress]"
-    fi
+      # in case of an ipv6 address, add square brackets
+      if [[ $ipAddress =~ .*:.* ]]; then
+          ipAddress="[$ipAddress]"
+      fi
 
-    sed -i -e "s/\/\/ \$bananoNodeName.*;/\$bananoNodeName = 'banano-node-docker-$ipAddress';/g" ./banano-node-monitor/config.php
-fi
+      sed -i -e "s/\/\/ \$bananoNodeName.*;/\$bananoNodeName = 'banano-node-docker-$ipAddress';/g" /opt/nanoNodeMonitor/modules/config.php
+  fi
 
-sed -i -e "s/\/\/ \$welcomeMsg.*;/\$welcomeMsg = 'Welcome! This node was setup using <a href=\"https:\/\/github.com\/lephleg\/banano-node-docker\" target=\"_blank\">Banano Node Docker<\/a>!';/g" ./banano-node-monitor/config.php
-sed -i -e "s/\/\/ \$blockExplorer.*;/\$blockExplorer = 'banano';/g" ./banano-node-monitor/config.php
+  sed -i -e "s/\/\/ \$welcomeMsg.*;/\$welcomeMsg = 'Welcome! This node was setup using <a href=\"https:\/\/github.com\/lephleg\/banano-node-docker\" target=\"_blank\">Banano Node Docker<\/a>!';/g" /opt/nanoNodeMonitor/config.php
+  sed -i -e "s/\/\/ \$blockExplorer.*;/\$blockExplorer = 'banano';/g" /opt/nanoNodeMonitor/modules/config.php
 
-# remove any carriage returns may have been included by sed replacements
-sed -i -e 's/\r//g' ./banano-node-monitor/config.php
+  # remove any carriage returns that may have been included by sed replacements
+  sed -i -e 's/\r//g' /opt/nanoNodeMonitor/modules/config.php
 
-[[ $quiet = 'false' ]] && printf "${green}done.${reset}\n\n"
+  [[ $quiet = 'false' ]] && printf "${green}done.${reset}\n\n"
 }
 
 
@@ -728,7 +727,7 @@ output_success_message() {
 
 # Function to display "Press any key to close" message
 press_any_key() {
-    echo "Banano Node Docker finished successfully. Press any key to close."
+    echo "${green}${bold}Banano Node Docker finished successfully. Press any key to close.${reset}"
     read -n 1 -s -r -p ""  # Wait for user input of any key
 }
 
@@ -743,47 +742,47 @@ press_any_key() {
 
 # Function to run all node functions
 main() {
-  echo "${yellow}${bold}Starting Banano Node Docker Setup Script...${reset}"
+  echo "${green}${bold}Starting Banano Node Docker Setup Script...${reset}"
   echo "${yellow}===========================================${reset}"
 
-  echo "${yellow}${bold}Checking the operating system...${reset}"
+  echo "${green}${bold}Checking the operating system...${reset}"
   check_os                                              # Check the operating system
   print_ascii_art                                       # Print ASCII art
 
-  echo "${yellow}${bold}Checking for required system tools...${reset}"
+  echo "${green}${bold}Checking for required system tools...${reset}"
   check_required_tools                                  # Check for required tools to run script
 
-  echo "${yellow}${bold}Checking Docker installation...${reset}"
+  echo "${green}${bold}Checking Docker installation...${reset}"
   check_docker_installation                             # Check Docker installation
 
-  echo "${yellow}${bold}Checking Docker Compose installation...${reset}"
+  echo "${green}${bold}Checking Docker Compose installation...${reset}"
   check_docker_compose_installation                     # Check Docker Compose installation
 
-  echo "${yellow}${bold}Applying the latest Docker image tag...${reset}"
+  echo "${green}${bold}Applying the latest Docker image tag...${reset}"
   apply_latest_docker_image_tag                         # Apply the latest Docker image tag
 
-  echo "${yellow}${bold}Checking fast-sync options...${reset}"
+  echo "${green}${bold}Checking fast-sync options...${reset}"
   optional_fast_sync                                    # Enable fast sync
 
-  echo "${yellow}${bold}Checking initial setup...${reset}"
+  echo "${green}${bold}Checking initial setup...${reset}"
   check_initial_node_setup                              # Check initial setup
 
-  echo "${yellow}${bold}Spinning up the Docker stack...${reset}"
+  echo "${green}${bold}Spinning up the Docker stack...${reset}"
   spin_up_docker_stack                                  # Spin up the Docker stack
 
-  echo "${yellow}${bold}Configuring and starting Docker containers...${reset}"
+  echo "${green}${bold}Configuring and starting Docker containers...${reset}"
   configure_and_start_docker_containers                 # Configure and start Docker containers
 
-  echo "${yellow}${bold}Waiting for node initialization...${reset}"
+  echo "${green}${bold}Waiting for node initialization...${reset}"
   wait_for_node_to_initialize                           # Wait for node initialization
 
-  echo "${yellow}${bold}Setting Banano node alias...${reset}"
+  echo "${green}${bold}Setting Banano node alias...${reset}"
   set_banano_node_alias                                 # Set Banano node alias
 
-  echo "${yellow}${bold}Checking and generating a wallet...${reset}"
+  echo "${green}${bold}Checking and generating a wallet...${reset}"
   wallet_check_and_generation                           # Check and generate a wallet
 
-  echo "${yellow}${bold}Configuring Banano node monitor...${reset}"
+  echo "${green}${bold}Configuring Banano node monitor...${reset}"
   configure_banano_node_monitor                         # Configure Banano node monitor
 
   output_success_message                                # Output success message
