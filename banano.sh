@@ -14,58 +14,6 @@ if [ $? -eq 0 ]; then
     press_any_key
 fi
 
-# Function to run all node functions
-main() {
-  echo "Starting Banano Node Docker Setup Script..."
-  echo "==========================================="
-
-  echo "Checking the operating system..."
-  check_os                                              # Check the operating system
-  print_ascii_art                                       # Print ASCII art
-
-  echo "Checking for required system tools..."
-  check_required_tools                                  # Check for required tools to run script
-
-  echo "Checking Docker installation..."
-  check_docker_installation                             # Check Docker installation
-
-  echo "Checking Docker Compose installation..."
-  check_docker_compose_installation                     # Check Docker Compose installation
-
-  echo "Applying the latest Docker image tag..."
-  apply_latest_docker_image_tag                         # Apply the latest Docker image tag
-
-  echo "Enabling fast sync..."
-  optional_fast_sync                                    # Enable fast sync
-
-  echo "Checking initial setup..."
-  check_initial_node_setup                              # Check initial setup
-
-  echo "Spinning up the Docker stack..."
-  spin_up_docker_stack                                  # Spin up the Docker stack
-
-  echo "Configuring and starting Docker containers..."
-  configure_and_start_docker_containers                 # Configure and start Docker containers
-
-  echo "Waiting for node initialization..."
-  wait_for_node_to_initialize                           # Wait for node initialization
-
-  echo "Setting Banano node alias..."
-  set_banano_node_alias                                 # Set Banano node alias
-
-  echo "Checking and generating a wallet..."
-  wallet_check_and_generation                           # Check and generate a wallet
-
-  echo "Configuring Banano node monitor..."
-  configure_banano_node_monitor                         # Configure Banano node monitor
-
-  output_success_message                                # Output success message
-  press_any_key                                         # Exit Script
-}
-
-# Execute main function
-main
-
 # Check if any errors occurred during script execution
 if [[ $? -ne 0 ]]; then
   log_error "An error occurred during script execution. Please refer to the log file '$logFile' for more details."
@@ -783,16 +731,69 @@ output_success_message() {
   fi
 }
 
-
-
-
-
-
-
-
-
 # Function to display "Press any key to close" message
 press_any_key() {
     echo "Banano Node Docker finished successfully. Press any key to close."
     read -n 1 -s -r -p ""  # Wait for user input of any key
 }
+
+
+
+
+
+
+
+
+
+
+# Function to run all node functions
+main() {
+  echo "Starting Banano Node Docker Setup Script..."
+  echo "==========================================="
+
+  echo "Checking the operating system..."
+  check_os                                              # Check the operating system
+  print_ascii_art                                       # Print ASCII art
+
+  echo "Checking for required system tools..."
+  check_required_tools                                  # Check for required tools to run script
+
+  echo "Checking Docker installation..."
+  check_docker_installation                             # Check Docker installation
+
+  echo "Checking Docker Compose installation..."
+  check_docker_compose_installation                     # Check Docker Compose installation
+
+  echo "Applying the latest Docker image tag..."
+  apply_latest_docker_image_tag                         # Apply the latest Docker image tag
+
+  echo "Enabling fast sync..."
+  optional_fast_sync                                    # Enable fast sync
+
+  echo "Checking initial setup..."
+  check_initial_node_setup                              # Check initial setup
+
+  echo "Spinning up the Docker stack..."
+  spin_up_docker_stack                                  # Spin up the Docker stack
+
+  echo "Configuring and starting Docker containers..."
+  configure_and_start_docker_containers                 # Configure and start Docker containers
+
+  echo "Waiting for node initialization..."
+  wait_for_node_to_initialize                           # Wait for node initialization
+
+  echo "Setting Banano node alias..."
+  set_banano_node_alias                                 # Set Banano node alias
+
+  echo "Checking and generating a wallet..."
+  wallet_check_and_generation                           # Check and generate a wallet
+
+  echo "Configuring Banano node monitor..."
+  configure_banano_node_monitor                         # Configure Banano node monitor
+
+  output_success_message                                # Output success message
+  press_any_key                                         # Exit Script
+}
+
+# Execute main function
+main
