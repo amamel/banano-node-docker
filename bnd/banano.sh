@@ -168,7 +168,6 @@ check_required_tools() {
 
 
 
-
 # Check if Docker is installed, attempt to install if needed
 check_docker_installation() {
   if ! command -v docker &> /dev/null; then
@@ -183,19 +182,17 @@ check_docker_installation() {
     # Update package information
     sudo apt-get update
     
-    # Check if quiet mode is disabled
+    # Install Docker
     if [[ $quiet = 'false' ]]; then
-        # Install Docker
-        sudo apt-get install -y docker-ce docker-ce-cli containerd.io
+      sudo apt-get install -y docker-ce docker-ce-cli containerd.io
     else
-        # Install Docker silently
-        sudo apt-get install -y docker-ce docker-ce-cli containerd.io &> /dev/null
+      sudo apt-get install -y docker-ce docker-ce-cli containerd.io &> /dev/null
     fi
     
     # Check if the installation was successful
     if [ $? -ne 0 ]; then
-        echo "${red}Failed to install Docker. Please install Docker manually and run the script again.${reset}"
-        exit 2
+      echo "${red}Failed to install Docker. Please install Docker manually and run the script again.${reset}"
+      exit 2
     fi
   else
     echo "Docker is already installed."
@@ -207,35 +204,24 @@ check_docker_installation() {
 
 
 
-
-
-
-
 # Check if Docker Compose is installed and install it if necessary
 check_docker_compose_installation() {
   if ! command -v docker-compose &> /dev/null; then
     echo "${red}Docker Compose is not installed. Installing Docker Compose...${reset}"
     
-    # Check if quiet mode is disabled
+    # Install Docker Compose
     if [[ $quiet = 'false' ]]; then
-        # Install Docker Compose
-        curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-        chmod +x /usr/local/bin/docker-compose
+      curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+      chmod +x /usr/local/bin/docker-compose
     else
-        # Install Docker Compose silently
-        curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose &> /dev/null
-        
-        # Make it executable
-        chmod +x /usr/local/bin/docker-compose
-
-        # Make it a global
-        ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
+      curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose &> /dev/null
+      chmod +x /usr/local/bin/docker-compose
     fi
     
     # Check if the installation was successful
     if [ $? -ne 0 ]; then
-        echo "${red}Failed to install Docker Compose. Please install Docker Compose manually and run the script again.${reset}"
-        exit 2
+      echo "${red}Failed to install Docker Compose. Please install Docker Compose manually and run the script again.${reset}"
+      exit 2
     fi
   else
     echo "Docker Compose is already installed."
@@ -257,11 +243,17 @@ apply_latest_docker_image_tag() {
     echo "${yellow}No tag specified. Fetching the latest tag from the Docker Hub...${reset}"
 
     # Retrieve the latest tag from the Docker Hub using curl, jq, and grep
-    tag=$(curl -s https://hub.docker.com/r/bananocoin/banano/tags | jq -r '.[].name' | grep -E "^[0-9.]+$" | sort -rV | head -n1)
+    tag=$(curl -s https://hub.docker.com/r/bananocoin/banano/tags | jq -r '.[].name' | grep -E "^(latest|[0-9.]+)$" | sort -rV | head -n1)
+
+    if [[ -z "$tag" ]]; then
+      echo "${red}Failed to fetch the latest tag. Please specify a valid tag.${reset}"
+      exit 1
+    fi
 
     echo "${green}Selected tag: $tag${reset}"
   fi
 }
+
 
 
 
