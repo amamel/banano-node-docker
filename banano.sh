@@ -640,44 +640,45 @@ wallet_check_and_generation() {
 
 
 
+# Function to check if the Banano Node Monitor config file exists, fetch a fresh copy if necessary, and configure it
 configure_banano_node_monitor() {
-  if [ ! -f /opt/nanoNodeMonitor/modules/config.php ]; then
+  if [ ! -f /opt/banano-node-monitor/config.php ]; then
     [[ $quiet = 'false' ]] && echo "=> ${yellow}No existing Banano Node Monitor config file found. Fetching a fresh copy...${reset}"
     if [[ $quiet = 'false' ]]; then
         docker-compose restart banano-node-monitor
     else
         docker-compose restart banano-node-monitor > /dev/null
     fi
-  fi
+fi
 
-  [[ $quiet = 'false' ]] && printf "=> ${yellow}Configuring Banano Node Monitor... ${reset}"
+[[ $quiet = 'false' ]] && printf "=> ${yellow}Configuring Banano Node Monitor... ${reset}"
 
-  sed -i -e "s/\/\/ \$bananoNodeRPCIP.*;/\$bananoNodeRPCIP/g" /opt/nanoNodeMonitor/modules/config.php
-  sed -i -e "s/\$bananoNodeRPCIP.*/\$bananoNodeRPCIP = 'banano-node';/g" /opt/nanoNodeMonitor/modules/config.php
+sed -i -e "s/\/\/ \$bananoNodeRPCIP.*;/\$bananoNodeRPCIP/g" ./banano-node-monitor/config.php
+sed -i -e "s/\$bananoNodeRPCIP.*/\$bananoNodeRPCIP = 'banano-node';/g" ./banano-node-monitor/config.php
 
-  sed -i -e "s/\/\/ \$bananoNodeAccount.*;/\$bananoNodeAccount/g" /opt/nanoNodeMonitor/modules/config.php
-  sed -i -e "s/\$bananoNodeAccount.*/\$bananoNodeAccount = '$address';/g" /opt/nanoNodeMonitor/modules/config.php
+sed -i -e "s/\/\/ \$bananoNodeAccount.*;/\$bananoNodeAccount/g" ./banano-node-monitor/config.php
+sed -i -e "s/\$bananoNodeAccount.*/\$bananoNodeAccount = '$address';/g" ./banano-node-monitor/config.php
 
-  if [[ $domain ]]; then
-      sed -i -e "s/\/\/ \$bananoNodeName.*;/\$bananoNodeName = '$domain';/g" /opt/nanoNodeMonitor/modules/config.php
-  else 
-      ipAddress=$(curl -s v4.ifconfig.co | awk '{ print $NF}' | tr -d '\r')
+if [[ $domain ]]; then
+    sed -i -e "s/\/\/ \$bananoNodeName.*;/\$bananoNodeName = '$domain';/g" ./banano-node-monitor/config.php
+else 
+    ipAddress=$(curl -s v4.ifconfig.co | awk '{ print $NF}' | tr -d '\r')
 
-      # in case of an ipv6 address, add square brackets
-      if [[ $ipAddress =~ .*:.* ]]; then
-          ipAddress="[$ipAddress]"
-      fi
+    # in case of an ipv6 address, add square brackets
+    if [[ $ipAddress =~ .*:.* ]]; then
+        ipAddress="[$ipAddress]"
+    fi
 
-      sed -i -e "s/\/\/ \$bananoNodeName.*;/\$bananoNodeName = 'banano-node-docker-$ipAddress';/g" /opt/nanoNodeMonitor/modules/config.php
-  fi
+    sed -i -e "s/\/\/ \$bananoNodeName.*;/\$bananoNodeName = 'banano-node-docker-$ipAddress';/g" ./banano-node-monitor/config.php
+fi
 
-  sed -i -e "s/\/\/ \$welcomeMsg.*;/\$welcomeMsg = 'Welcome! This node was setup using <a href=\"https:\/\/github.com\/lephleg\/banano-node-docker\" target=\"_blank\">Banano Node Docker<\/a>!';/g" /opt/nanoNodeMonitor/config.php
-  sed -i -e "s/\/\/ \$blockExplorer.*;/\$blockExplorer = 'banano';/g" /opt/nanoNodeMonitor/modules/config.php
+sed -i -e "s/\/\/ \$welcomeMsg.*;/\$welcomeMsg = 'Welcome! This node was setup using <a href=\"https:\/\/github.com\/lephleg\/banano-node-docker\" target=\"_blank\">Banano Node Docker<\/a>!';/g" ./banano-node-monitor/config.php
+sed -i -e "s/\/\/ \$blockExplorer.*;/\$blockExplorer = 'banano';/g" ./banano-node-monitor/config.php
 
-  # remove any carriage returns that may have been included by sed replacements
-  sed -i -e 's/\r//g' /opt/nanoNodeMonitor/modules/config.php
+# remove any carriage returns may have been included by sed replacements
+sed -i -e 's/\r//g' ./banano-node-monitor/config.php
 
-  [[ $quiet = 'false' ]] && printf "${green}done.${reset}\n\n"
+[[ $quiet = 'false' ]] && printf "${green}done.${reset}\n\n"
 }
 
 
