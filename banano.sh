@@ -196,12 +196,21 @@ check_required_tools() {
     if [[ ${#missingTools[@]} -gt 0 ]]; then
         echo "${red}The following tools are required but are not installed: ${missingTools[*]}.${reset}"
         echo "${yellow}Installing missing dependencies...${reset}"
+
+        # Update package lists and upgrade existing packages
         sudo apt-get update && sudo apt-get upgrade
+
+        # Install missing tools
         sudo apt-get install -y "${missingTools[@]}"
+
+        # Install Python 3 pip
         sudo apt install python3-pip
+
+        # Install cmake-format using pip
         sudo pip install cmake-format
     fi
 }
+
 
 
 
@@ -330,16 +339,20 @@ optional_fast_sync() {
     echo "1. LMDB (Banano node LMDB cutecat backup)"
     echo "2. RocksDB (Banano node v23.0 moonano latest RocksDB backup)"
     read -rp "(Default: LMDB) [1]LMDB [2]RocksDB [E]xit: " dbChoice
+
     case $dbChoice in
         1)
+            # User selected LMDB
             ledgerDownloadLink=$ledgerDownloadLink_LMDB
             fileExtension=".gz"
             ;;
         2)
+            # User selected RocksDB
             ledgerDownloadLink=$ledgerDownloadLink_RocksDB
             fileExtension=".tar.gz"
             ;;
         *)
+            # User chose to exit
             echo "${red}Installer stopped by user. Fast-syncing aborted.${reset}"
             exit 1
             ;;
@@ -372,6 +385,7 @@ optional_fast_sync() {
     echo ""
   fi
 }
+
 
 
 
@@ -758,8 +772,8 @@ output_success_message() {
     echo "Thank You for your using Banano Node Docker!"
 
     echo "=================================================================================="
-    echo "|| A tremendous amount of care and effort has gone into developing              ||"
-    echo "|| Banano Node Docker, to make it easily readible and accessible for others.    ||"
+    echo "|| A tremendous amount of care and effort has gone into refactoring             ||"
+    echo "|| Banano Node Docker, to make it easily configurable and accessible for others.||"
     echo "|| Your support is invaluable in sustaining this project.                       ||"
     echo "|| Thank you for being a part of it!                                            ||"
     echo "=================================================================================="
@@ -780,5 +794,5 @@ output_success_message() {
 # Function to display "Press any key to close" message
 press_any_key() {
     echo "Banano Node Docker finished successfully. Press any key to close."
-    read -n 1 -s -r -p ""
+    read -n 1 -s -r -p ""  # Wait for user input of any key
 }
