@@ -607,6 +607,8 @@ set_banano_node_alias() {
 
 # Function to check if a Banano wallet exists and generate a new one if necessary
 wallet_check_and_generation() {
+  local nodeExec="banano-node"  # Replace with the actual Banano Node executable if needed
+
   existingWallet="$(${nodeExec} --wallet_list | grep 'Wallet ID' | awk '{ print $NF}')"
 
   if [[ ! $existingWallet ]]; then
@@ -628,6 +630,7 @@ wallet_check_and_generation() {
     seed=$(${nodeExec} --wallet_decrypt_unsafe --wallet=$walletId | grep 'Seed' | awk '{ print $NF}' | tr -d '\r')
   fi
 }
+
 
 
 
