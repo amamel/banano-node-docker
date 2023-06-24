@@ -600,45 +600,26 @@ set_banano_node_alias() {
 
 # Function to check if a wallet exists and generate a new one if necessary
 wallet_check_and_generation() {
-  walletList="$($nodeExec --wallet_list)"
+  existedWallet="$(${nodeExec} --wallet_list | grep 'Wallet ID' | awk '{ print $NF}')"
 
-  if ! echo "$walletList" | grep -q 'Wallet ID'; then
-    # No wallet found, generate a new one
-    if [[ $quiet = 'false' ]]; then
-      # Print a message to indicate that no wallet was found and a new one will be generated
-      printf "=> ${yellow}No wallet found. Generating a new one... ${reset}"
-    fi
+if [[ ! $existedWallet ]]; then
+    [[ $quiet = 'false' ]] && printf "=> ${yellow}No wallet found. Generating a new one... ${reset}"
 
-    # Generate a new wallet and retrieve the wallet ID and address
-    walletId=$($nodeExec --wallet_create | awk '{ print $NF}' | tr -d '\r')
-    $nodeExec --wallet_add --wallet=$walletId | grep 'Generated new seed:' | awk '{ print $NF }' > temp_seed.txt
-    seed=$(cat temp_seed.txt)
-    rm temp_seed.txt
+    walletId=$(${nodeExec} --ban_wallet_create | tr -d '\r')
+    address="$(${nodeExec} --ban_account_create --wallet=$walletId | awk '{ print $NF}')"
+    
+    [[ $quiet = 'false' ]] && printf "${green}done.${reset}\n\n"
+else
+    [[ $quiet = 'false' ]] && echo "=> ${yellow}Existing wallet found.${reset}"
+    [[ $quiet = 'false' ]] && echo ''
 
-    if [[ $quiet = 'false' ]]; then
-      # Print a message to indicate that the new wallet has been generated
-      printf "${green}done.${reset}\n\n"
-    fi
-  else
-    # Existing wallet found
-    if [[ $quiet = 'false' ]]; then
-      # Print a message to indicate that an existing wallet was found
-      echo "=> ${yellow}Existing wallet found.${reset}"
-      echo ''
-    fi
+    address="$(${nodeExec} --wallet_list | grep 'ban_' | awk '{ print $NF}' | tr -d '\r')"
+    walletId=$(echo $existedWallet | tr -d '\r')
+fi
 
-    # Retrieve the wallet ID and address from the wallet list
-    address=$(echo "$walletList" | grep 'ban_' | awk '{ print $NF}' | tr -d '\r')
-    walletId=$(echo "$walletList" | grep 'Wallet ID' | awk '{ print $NF}' | tr -d '\r')
-
-    # Retrieve the wallet seed if enabled and in non-quiet mode
-    if [[ $quiet = 'false' && $displaySeed = 'true' ]]; then
-      # Get the seed from the wallet using the wallet ID
-      $nodeExec --wallet_seed --wallet=$walletId | grep 'Seed: ' | awk '{ print $NF }' > temp_seed.txt
-      seed=$(cat temp_seed.txt)
-      rm temp_seed.txt
-    fi
-  fi
+if [[ $quiet = 'false' && $displaySeed = 'true' ]]; then
+    seed=$(${nodeExec} --wallet_decrypt_unsafe --wallet=$walletId | grep 'Seed' | awk '{ print $NF}' | tr -d '\r')
+fi
 }
 
 
@@ -653,51 +634,42 @@ wallet_check_and_generation() {
 # Function to check if the Banano Node Monitor config file exists, fetch a fresh copy if necessary, and configure it
 configure_banano_node_monitor() {
   if [ ! -f ./banano-node-monitor/config.php ]; then
-    # No existing config file found
+    [[ $quiet = 'false' ]] && echo "=> ${yellow}No existing Banano Node Monitor config file found. Fetching a fresh copy...${reset}"
     if [[ $quiet = 'false' ]]; then
-      # Print a message to indicate that no existing config file was found and a fresh copy will be fetched
-      echo "=> ${yellow}No existing Banano Node Monitor config file found. Fetching a fresh copy...${reset}"
-      # Restart the Banano Node Monitor container to fetch a fresh copy of the config file
-      $dockerComposeExec restart banano-node-monitor
+        docker-compose restart banano-node-monitor
     else
-      # Print a message to indicate that no existing config file was found and a fresh copy will be fetched (in quiet mode)
-      echo "=> ${yellow}No existing Banano Node Monitor config file found. Fetching a fresh copy...${reset}"
-      # Restart the Banano Node Monitor container to fetch a fresh copy of the config file (in quiet mode)
-      $dockerComposeExec restart banano-node-monitor > /dev/null
+        docker-compose restart banano-node-monitor > /dev/null
     fi
-  fi
+fi
 
-  if [[ $quiet = 'false' ]]; then
-    echo "=> ${yellow}Configuring Banano Node Monitor... ${reset}"
-    printf "${green}done.${reset}\n\n"
-  fi
+[[ $quiet = 'false' ]] && printf "=> ${yellow}Configuring Banano Node Monitor... ${reset}"
 
-  # File path of the Banano Node Monitor config file
-  config_file="./banano-node-monitor/config.php"
+sed -i -e "s/\/\/ \$bananoNodeRPCIP.*;/\$bananoNodeRPCIP/g" ./banano-node-monitor/config.php
+sed -i -e "s/\$bananoNodeRPCIP.*/\$bananoNodeRPCIP = 'banano-node';/g" ./banano-node-monitor/config.php
 
-  # Update Banano Node Monitor configuration values in the config file
-  sed -i -e "s/\/\/ \$bananoNodeRPCIP.*;/\$bananoNodeRPCIP = 'banano-node';/g" "$config_file"
-  sed -i -e "s/\/\/ \$bananoNodeAccount.*;/\$bananoNodeAccount = '$address';/g" "$config_file"
+sed -i -e "s/\/\/ \$bananoNodeAccount.*;/\$bananoNodeAccount/g" ./banano-node-monitor/config.php
+sed -i -e "s/\$bananoNodeAccount.*/\$bananoNodeAccount = '$address';/g" ./banano-node-monitor/config.php
 
-  # Check if domain is provided
-  if [[ $domain ]]; then
-    # Update bananoNodeName with the provided domain
-    sed -i -e "s/\/\/ \$bananoNodeName.*;/\$bananoNodeName = '$domain';/g" "$config_file"
-  else
-    # Get the public IP address of the server
+if [[ $domain ]]; then
+    sed -i -e "s/\/\/ \$bananoNodeName.*;/\$bananoNodeName = '$domain';/g" ./banano-node-monitor/config.php
+else 
     ipAddress=$(curl -s v4.ifconfig.co | awk '{ print $NF}' | tr -d '\r')
-    ipAddress="[${ipAddress}]" # Add square brackets for IPv6 addresses
 
-    # Update bananoNodeName with the server IP address
-    sed -i -e "s/\/\/ \$bananoNodeName.*;/\$bananoNodeName = 'banano-node-docker-$ipAddress';/g" "$config_file"
-  fi
+    # in case of an ipv6 address, add square brackets
+    if [[ $ipAddress =~ .*:.* ]]; then
+        ipAddress="[$ipAddress]"
+    fi
 
-  # Update other configuration values
-  sed -i -e "s/\/\/ \$welcomeMsg.*;/\$welcomeMsg = 'Welcome! This node was setup using <a href=\"https:\/\/github.com\/amamel\/banano-node-docker\" target=\"_blank\">Banano Node Docker<\/a>!';/g" "$config_file"
-  sed -i -e "s/\/\/ \$blockExplorer.*;/\$blockExplorer = 'bananode';/g" "$config_file"
+    sed -i -e "s/\/\/ \$bananoNodeName.*;/\$bananoNodeName = 'banano-node-docker-$ipAddress';/g" ./banano-node-monitor/config.php
+fi
 
-  # Remove any carriage returns that may have been included by sed replacements
-  sed -i -e 's/\r//g' "$config_file"
+sed -i -e "s/\/\/ \$welcomeMsg.*;/\$welcomeMsg = 'Welcome! This node was setup using <a href=\"https:\/\/github.com\/lephleg\/banano-node-docker\" target=\"_blank\">Banano Node Docker<\/a>!';/g" ./banano-node-monitor/config.php
+sed -i -e "s/\/\/ \$blockExplorer.*;/\$blockExplorer = 'banano';/g" ./banano-node-monitor/config.php
+
+# remove any carriage returns may have been included by sed replacements
+sed -i -e 's/\r//g' ./banano-node-monitor/config.php
+
+[[ $quiet = 'false' ]] && printf "${green}done.${reset}\n\n"
 }
 
 
@@ -715,47 +687,32 @@ configure_banano_node_monitor() {
 # Function to output success message and relevant information if quiet mode is disabled
 output_success_message() {
   if [[ $quiet = 'false' ]]; then
-    # Display a horizontal line as a separator
-    echo "${yellow} |================================================================================================| ${reset}"
-    # Display the success message
-    echo "${yellow} | ${green}${bold}Congratulations! The setup of Banano Node Docker has been completed successfully! ${yellow}| ${reset}"
-    # Display another horizontal line as a separator
-    echo "${yellow} |================================================================================================| ${reset}"
-    # Display the Banano Node account address
-    echo "${yellow} | Banano Node account address: ${green}$address${yellow} | ${reset}"
-    
-    # Check if displaying the seed is enabled
-    if [[ $displaySeed = 'true' ]]; then
-      # Display the node wallet seed
-      echo "${yellow} | Node wallet seed: ${red}$seed${yellow}      | ${reset}"
-    fi
-
-    # Display another horizontal line as a separator
     echo "${yellow} |=========================================================================================| ${reset}"
+    echo "${yellow} | ${green}${bold}Congratulations! Banano Node Docker has been setup successfully!           ${yellow}| ${reset}"
+    echo "${yellow} |=========================================================================================| ${reset}"
+    echo "${yellow} | Node account address: ${green}$address${yellow} | ${reset}"
+    if [[ $displaySeed = 'true' ]]; then
+        echo "${yellow} | Node wallet seed: ${red}$seed${yellow}      | ${reset}"
+    fi
+    echo "${yellow} |=========================================================================================| ${reset}"
+
     echo ""
 
-    # Check if a domain is provided
     if [[ $domain ]]; then
-      # Display instructions for accessing the monitor using the provided domain
-      echo "${yellow} Open a browser and navigate to ${green}https://$domain${yellow} to check your monitor."
+        echo "${yellow} Open a browser and navigate to ${green}https://$domain${yellow} to check your monitor."
     else
-      # Display instructions for accessing the monitor using the IP address
-      echo "${yellow} Open a browser and navigate to ${green}http://$ipAddress${yellow} to check your monitor."
+        echo "${yellow} Open a browser and navigate to ${green}http://$ipAddress${yellow} to check your monitor."
     fi
-
-    # Provide information on further customization of the monitor
     echo "${yellow} You can further configure and personalize your monitor by editing the config file located in ${green}banano-node-monitor/config.php${yellow}.${reset}"
-    
-    echo "Thank You for your using Banano Node Docker!"
 
-    echo "=================================================================================="
-    echo "|| A tremendous amount of care and effort has gone into refactoring             ||"
-    echo "|| Banano Node Docker, to make it easily configurable and accessible for others.||"
-    echo "|| Your support is invaluable in sustaining this project.                       ||"
-    echo "|| Thank you for being a part of it!                                            ||"
-    echo "=================================================================================="
-    echo "Feed MonKey Dev : ban_114i44aggu9a31gymt4pj1ztuk5prn76ejej1baw9ixr9j5z4djngmn4k6tm"
-    echo "=================================================================================="
+    echo "${yellow} ================================================================================== ${reset}"
+    echo "${yellow} || A tremendous amount of care and effort has gone into refactoring             || ${reset}"
+    echo "${yellow} || Banano Node Docker, to make it easily configurable and accessible for others.|| ${reset}"
+    echo "${yellow} || Your support is invaluable in sustaining this project.                       || ${reset}"
+    echo "${yellow} || Thank you for being a part of it!                                            || ${reset}"
+    echo "${yellow} ================================================================================== ${reset}"
+    echo "${yellow} Feed MonKey Dev : ban_114i44aggu9a31gymt4pj1ztuk5prn76ejej1baw9ixr9j5z4djngmn4k6tm ${reset}"
+    echo "${yellow} ================================================================================== ${reset}"
 
   fi
 }
