@@ -228,7 +228,7 @@ check_docker_compose_installation() {
       exit 2
     fi
   else
-    echo "Docker Compose is already installed."
+    echo "${yellow}Docker Compose is already installed.${reset}"
   fi
 }
 
@@ -279,12 +279,12 @@ optional_fast_sync() {
   ledgerDownloadLink_RocksDB='https://ledgerfiles.moonano.net/files/latest.tar.gz'
 
   if [[ $fastSync == 'true' ]]; then
-    echo "Fast-syncing enabled. Downloading the latest ledger file..."
+    echo "=> ${green}Fast-syncing enabled. Downloading the latest ledger file...${reset}"
 
     # Prompt user to select the database for fast-syncing
-    echo "Please select the database you would like to use for fast-syncing:"
-    echo "1. LMDB (Banano node LMDB cutecat backup)"
-    echo "2. RocksDB (Banano node v23.0 moonano latest RocksDB backup)"
+    echo "=> ${green} Please select the database you would like to use for fast-syncing:"
+    echo "=> ${yellow} 1. LMDB (Banano node LMDB cutecat backup)"
+    echo "=> ${yellow} 2. RocksDB (Banano node v23.0 moonano latest RocksDB backup)"
     read -rp "(Default: LMDB) [1]LMDB [2]RocksDB [E]xit: " dbChoice
 
     case $dbChoice in
@@ -331,7 +331,7 @@ optional_fast_sync() {
     printf "${green}done.${reset}\n"
     echo ""
   else
-    echo "Skipping fast-sync. Fast-syncing is not enabled."
+    echo "=> ${yellow}Skipping fast-sync. Fast-syncing is not enabled.${reset}"
   fi
 }
 
@@ -363,7 +363,7 @@ check_initial_node_setup() {
 
     # Check if quiet mode is disabled
     if [[ $quiet = 'false' ]]; then
-      printf "${reset}Detected an unsupported directory structure, updating file organization ... "
+      printf "=> ${reset}Detected an unsupported directory structure, updating file organization ... "
     fi
 
     # Create the "./banano-node/Banano" directory
@@ -449,7 +449,7 @@ configure_and_start_docker_containers () {
 
   if [ $? -ne 0 ]; then
     # Check if any errors occurred during container startup
-    echo "${red}Encountered errors during container initialization. Please refer to the preceding log for detailed instructions on resolving the issues.${reset}"
+    echo "$=> {red}Encountered errors during container initialization. Please refer to the preceding log for detailed instructions on resolving the issues.${reset}"
     exit 2
   fi
 }
@@ -467,8 +467,7 @@ configure_and_start_docker_containers () {
 wait_for_node_to_initialize() {
   if [[ $quiet = 'false' ]]; then
     # Print a message to indicate that the script is waiting for the Banano node to initialize
-    echo ""
-    printf "=> Awaiting full initialization of the Banano node. Please wait while the process completes. "
+    echo "=> ${yellow} => Awaiting full initialization of the Banano node. Please wait while the process completes.${reset}"
   fi
 
   # Keep checking the Banano node's version until it responds with the expected JSON
@@ -478,9 +477,10 @@ wait_for_node_to_initialize() {
 
   if [[ $quiet = 'false' ]]; then
     # Print a message to indicate that the Banano node has finished initializing
-    printf "done.\n\n"
+    echo "=> Banano node initialization completed."
   fi
 }
+
 
 # Ignore the warning message about the deprecated network setting
 echo "WARN[0000] network default: network.external.name is deprecated. Please set network.name with external: true" >/dev/null
@@ -497,7 +497,7 @@ set_banano_node_alias() {
   elif [ -n "$BASH_VERSION" ]; then
     shell_aliases_file="$HOME/.bash_aliases"
   else
-    echo "Unsupported shell. Unable to set aliases."
+    echo "${yellow}Unsupported shell. Unable to set aliases.${reset}"
     return 1
   fi
 
@@ -609,6 +609,7 @@ set_banano_node_alias() {
 wallet_check_and_generation() {
   local nodeExec="banano-node"  # Replace with the actual Banano Node executable if needed
 
+  # Check if wallet already exists
   existingWallet="$(${nodeExec} --wallet_list | grep 'Wallet ID' | awk '{ print $NF}')"
 
   if [[ ! $existingWallet ]]; then
@@ -622,7 +623,7 @@ wallet_check_and_generation() {
     [[ $quiet = 'false' ]] && echo "=> ${yellow}Existing wallet found.${reset}"
     [[ $quiet = 'false' ]] && echo ''
 
-    address="$(${nodeExec} --wallet_list | grep 'ban_' | awk '{ print $NF}' | tr -d '\r')"
+    address="$(${nodeExec} --wallet_list | grep 'nano_' | awk '{ print $NF}' | tr -d '\r')"
     walletId=$(echo $existingWallet | tr -d '\r')
   fi
 
@@ -630,7 +631,6 @@ wallet_check_and_generation() {
     seed=$(${nodeExec} --wallet_decrypt_unsafe --wallet=$walletId | grep 'Seed' | awk '{ print $NF}' | tr -d '\r')
   fi
 }
-
 
 
 
@@ -731,7 +731,7 @@ output_success_message() {
 
 # Function to display "Press any key to close" message
 press_any_key() {
-    echo "${green}${bold}Banano Node Docker finished successfully. Press any key to close.${reset}"
+    echo "=> ${green}${bold}Banano Node Docker finished successfully. Press any key to close.${reset}"
     read -n 1 -s -r -p ""  # Wait for user input of any key
 }
 
@@ -786,7 +786,7 @@ main() {
   echo "${green}${bold}Checking and generating a wallet...${reset}"
   wallet_check_and_generation                           # Check and generate a wallet
 
-  echo "${green}${bold}Configuring Banano node monitor...${reset}"
+  echo "${green}${bold}Configuring Banano Node Monitor...${reset}"
   configure_banano_node_monitor                         # Configure Banano node monitor
 
   output_success_message                                # Output success message
