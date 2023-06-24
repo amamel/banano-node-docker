@@ -27,7 +27,7 @@ select opt in "${options[@]}"; do
             sudo bash /opt/banano-node-docker/banano.sh -f
             break
             ;;
-        "SSL with Fast Sync")
+        "SSL with Fast Sync (Experimental!)")
             read -p "Enter your domain: " domain
             read -p "Enter your email: " email
             echo "== Starting installation"
