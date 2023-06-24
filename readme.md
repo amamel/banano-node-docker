@@ -14,17 +14,9 @@ To ensure that the script runs smoothly, please make sure you have Docker and Do
 
 To download or clone the latest release and run the script, follow the instructions below:
 
-For non-SSL setup:
+Run Script:
 ```
 bash <(curl -s https://raw.githubusercontent.com/amamel/banano-node-docker/master/install.sh)
-```
-
-For SSL setup with Let's Encrypt:
-```
-cd ~
-git clone https://github.com/amamel/banano-node-docker.git
-cd ~/banano-node-docker
-sudo ./banano.sh -d yourdomain.com -e youremail@yourdomain.com -s
 ```
 
 ### Options (Available Install Option Flags)
