@@ -405,7 +405,7 @@ spin_up_docker_stack() {
 
 
 # Function to configure Docker Compose and start containers
-configure_start_docker_containers() {
+configure_and_start_docker_containers () {
   local docker_compose_file
 
   if [[ $domain ]]; then
