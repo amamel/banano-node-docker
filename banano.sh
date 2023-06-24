@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# goto script dir
+cd "$(dirname "$0")"
+
 # Log file path
 logFile="script.log"
 
@@ -465,7 +468,7 @@ wait_for_node_to_initialize() {
   if [[ $quiet = 'false' ]]; then
     # Print a message to indicate that the script is waiting for the Banano node to initialize
     echo ""
-    printf "=> ${yellow}Awaiting full initialization of the Banano node. Please wait while the process completes. "
+    printf "=> Awaiting full initialization of the Banano node. Please wait while the process completes. "
   fi
 
   # Keep checking the Banano node's version until it responds with the expected JSON
@@ -475,10 +478,12 @@ wait_for_node_to_initialize() {
 
   if [[ $quiet = 'false' ]]; then
     # Print a message to indicate that the Banano node has finished initializing
-    printf "${green}done.${reset}\n\n"
+    printf "done.\n\n"
   fi
 }
 
+# Ignore the warning message about the deprecated network setting
+echo "WARN[0000] network default: network.external.name is deprecated. Please set network.name with external: true" >/dev/null
 
 
 
@@ -543,7 +548,7 @@ set_banano_node_alias() {
       "banano-work-generate='banano-wallet work_generate'"      # Alias for banano-work-generate
 
       # Additional aliases for Banano Node Monitor
-      "banano-monitor='php ./banano-node-monitor/config.php'"   # Alias for banano-monitor
+      "banano-monitor='php /opt/bananoNodeMonitor/modules/config.php'"   # Alias for banano-monitor
 
       # Additional aliases for Banano commands
       "banano-process='banano-wallet process'"                  # Alias for banano-process
@@ -600,7 +605,7 @@ set_banano_node_alias() {
 
 
 
-# Function to check if a wallet exists and generate a new one if necessary
+# Function to check if a Banano wallet exists and generate a new one if necessary
 wallet_check_and_generation() {
   existingWallet="$(${nodeExec} --wallet_list | grep 'Wallet ID' | awk '{ print $NF}')"
 
@@ -637,7 +642,7 @@ wallet_check_and_generation() {
 
 # Function to check if the Banano Node Monitor config file exists, fetch a fresh copy if necessary, and configure it
 configure_banano_node_monitor() {
-  if [ ! -f ./banano-node-monitor/config.php ]; then
+  if [ ! -f /opt/bananoNodeMonitor/modules/config.php ]; then
     [[ $quiet = 'false' ]] && echo "=> ${yellow}No existing Banano Node Monitor config file found. Fetching a fresh copy...${reset}"
     if [[ $quiet = 'false' ]]; then
         docker-compose restart banano-node-monitor
@@ -738,47 +743,47 @@ press_any_key() {
 
 # Function to run all node functions
 main() {
-  echo "Starting Banano Node Docker Setup Script..."
-  echo "==========================================="
+  echo "${yellow}${bold}Starting Banano Node Docker Setup Script...${reset}"
+  echo "${yellow}===========================================${reset}"
 
-  echo "Checking the operating system..."
+  echo "${yellow}${bold}Checking the operating system...${reset}"
   check_os                                              # Check the operating system
   print_ascii_art                                       # Print ASCII art
 
-  echo "Checking for required system tools..."
+  echo "${yellow}${bold}Checking for required system tools...${reset}"
   check_required_tools                                  # Check for required tools to run script
 
-  echo "Checking Docker installation..."
+  echo "${yellow}${bold}Checking Docker installation...${reset}"
   check_docker_installation                             # Check Docker installation
 
-  echo "Checking Docker Compose installation..."
+  echo "${yellow}${bold}Checking Docker Compose installation...${reset}"
   check_docker_compose_installation                     # Check Docker Compose installation
 
-  echo "Applying the latest Docker image tag..."
+  echo "${yellow}${bold}Applying the latest Docker image tag...${reset}"
   apply_latest_docker_image_tag                         # Apply the latest Docker image tag
 
-  echo "Checking fast-sync options..."
+  echo "${yellow}${bold}Checking fast-sync options...${reset}"
   optional_fast_sync                                    # Enable fast sync
 
-  echo "Checking initial setup..."
+  echo "${yellow}${bold}Checking initial setup...${reset}"
   check_initial_node_setup                              # Check initial setup
 
-  echo "Spinning up the Docker stack..."
+  echo "${yellow}${bold}Spinning up the Docker stack...${reset}"
   spin_up_docker_stack                                  # Spin up the Docker stack
 
-  echo "Configuring and starting Docker containers..."
+  echo "${yellow}${bold}Configuring and starting Docker containers...${reset}"
   configure_and_start_docker_containers                 # Configure and start Docker containers
 
-  echo "Waiting for node initialization..."
+  echo "${yellow}${bold}Waiting for node initialization...${reset}"
   wait_for_node_to_initialize                           # Wait for node initialization
 
-  echo "Setting Banano node alias..."
+  echo "${yellow}${bold}Setting Banano node alias...${reset}"
   set_banano_node_alias                                 # Set Banano node alias
 
-  echo "Checking and generating a wallet..."
+  echo "${yellow}${bold}Checking and generating a wallet...${reset}"
   wallet_check_and_generation                           # Check and generate a wallet
 
-  echo "Configuring Banano node monitor..."
+  echo "${yellow}${bold}Configuring Banano node monitor...${reset}"
   configure_banano_node_monitor                         # Configure Banano node monitor
 
   output_success_message                                # Output success message
