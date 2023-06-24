@@ -244,7 +244,11 @@ apply_latest_docker_image_tag() {
     echo "${yellow}No tag specified. Fetching the latest tag from the Docker Hub...${reset}"
 
     # Retrieve the latest tag from the Docker Hub using curl, jq, and grep
-    tag=$(curl -s https://hub.docker.com/r/bananocoin/banano/tags | jq -r '.[].name' | grep -E "^(latest|V[0-9.]+)$" | sort -rV | head -n1)
+    tags=$(curl -s https://hub.docker.com/r/bananocoin/banano/tags)
+    echo "Tags response: $tags"
+
+    tag=$(echo "$tags" | jq -r '.[].name' | grep -E "^(latest|V[0-9.]+)$" | sort -rV | head -n1)
+    echo "Selected tag: $tag"
 
     if [[ -z "$tag" ]]; then
       echo "${red}Failed to fetch the latest tag. Please specify a valid tag.${reset}"
@@ -254,6 +258,7 @@ apply_latest_docker_image_tag() {
     echo "${green}Selected tag: $tag${reset}"
   fi
 }
+
 
 
 
