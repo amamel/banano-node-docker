@@ -579,7 +579,7 @@ set_banano_node_alias() {
 
 # Function to check if a wallet exists and generate a new one if necessary
 wallet_check_and_generation() {
-  walletList="$(${nodeExec} --wallet_list)"
+  walletList="$($nodeExec --wallet_list)"
   
   if ! echo "$walletList" | grep -q 'Wallet ID'; then
     # No wallet found, generate a new one
@@ -589,8 +589,8 @@ wallet_check_and_generation() {
     fi
     
     # Generate a new wallet and retrieve the wallet ID and address
-    walletId=$(${nodeExec} --wallet_create | tr -d '\r')
-    address="$(${nodeExec} --account_create --wallet=$walletId | awk '{ print $NF}')"
+    walletId=$($nodeExec --wallet_create | tr -d '\r')
+    address="$($nodeExec --account_create --wallet=$walletId | awk '{ print $NF}')"
     
     if [[ $quiet = 'false' ]]; then
       # Print a message to indicate that the new wallet has been generated
@@ -612,7 +612,7 @@ wallet_check_and_generation() {
   # Display the wallet seed if enabled and in non-quiet mode
   if [[ $quiet = 'false' && $displaySeed = 'true' ]]; then
     # Retrieve the wallet seed and assign it to the "seed" variable
-    seed=$(${nodeExec} --wallet_decrypt_unsafe --wallet=$walletId | grep 'Seed' | awk '{ print $NF}' | tr -d '\r')
+    seed=$($nodeExec --wallet_decrypt_unsafe --wallet=$walletId | grep 'Seed' | awk '{ print $NF}' | tr -d '\r')
   fi
 }
 
@@ -632,12 +632,12 @@ configure_banano_node_monitor() {
       # Print a message to indicate that no existing config file was found and a fresh copy will be fetched
       echo "=> ${yellow}No existing Banano Node Monitor config file found. Fetching a fresh copy...${reset}"
       # Restart the Banano Node Monitor container to fetch a fresh copy of the config file
-      docker-compose restart banano-node-monitor
+      $dockerComposeExec restart banano-node-monitor
     else
       # Print a message to indicate that no existing config file was found and a fresh copy will be fetched (in quiet mode)
       echo "=> ${yellow}No existing Banano Node Monitor config file found. Fetching a fresh copy...${reset}"
       # Restart the Banano Node Monitor container to fetch a fresh copy of the config file (in quiet mode)
-      docker-compose restart banano-node-monitor > /dev/null
+      $dockerComposeExec restart banano-node-monitor > /dev/null
     fi
   fi
 
@@ -673,6 +673,8 @@ configure_banano_node_monitor() {
   # Remove any carriage returns that may have been included by sed replacements
   sed -i -e 's/\r//g' "$config_file"
 }
+
+
 
 
 
