@@ -1,5 +1,9 @@
 #!/bin/bash
 
+echo "==============================================="
+echo "Banano Node Docker installation"
+echo "==============================================="
+
 # Clone or update the Banano Node Docker repository
 echo "== Cloning installation"
 git -C /opt/banano-node-docker pull || git clone https://github.com/amamel/banano-node-docker.git /opt/banano-node-docker
@@ -8,6 +12,7 @@ git -C /opt/banano-node-docker pull || git clone https://github.com/amamel/banan
 echo "== Select an installation option:"
 PS3="Enter your choice: "
 options=("Basic Install (Most Common)" "Install with SSL (More Secure)" "Fast Sync Enabled (Experimental!)" "SSL with Fast Sync" "Quit")
+
 select opt in "${options[@]}"; do
     case $opt in
         "Basic Install (Most Common)")
@@ -16,18 +21,20 @@ select opt in "${options[@]}"; do
             break
             ;;
         "Install with SSL (More Secure)")
+            echo "== Starting installation"
             read -p "Enter your domain: " domain
             read -p "Enter your email: " email
             echo "== Starting installation"
             sudo bash /opt/banano-node-docker/banano.sh -d "$domain" -e "$email" -s
             break
             ;;
-        "Fast Sync (Experimental!)")
+        "Fast Sync Enabled (Experimental!)")
             echo "== Starting installation"
             sudo bash /opt/banano-node-docker/banano.sh -f
             break
             ;;
         "SSL with Fast Sync (Experimental!)")
+            echo "== Starting installation"
             read -p "Enter your domain: " domain
             read -p "Enter your email: " email
             echo "== Starting installation"
@@ -43,3 +50,4 @@ select opt in "${options[@]}"; do
             ;;
     esac
 done
+
