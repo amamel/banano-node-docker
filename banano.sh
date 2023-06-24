@@ -496,6 +496,8 @@ set_banano_node_alias() {
 
   # Check if banano-node alias is already present in the shell aliases file
   if ! grep -q 'banano-node' "$shell_aliases_file"; then
+    local nodeExec="banano-node"  # Replace with the actual Banano Node executable if needed
+
     local aliases=(
       "banano-node='${nodeExec}'"                               # Alias for banano-node
       "banano-rpc='banano-node --rpc'"                          # Alias for banano-rpc
@@ -504,6 +506,24 @@ set_banano_node_alias() {
       "banano-restart='banano-node --stop && banano-node --daemon'"   # Alias for banano-restart
       "banano-update='banano-node --update'"                    # Alias for banano-update
       "banano-logs='tail -f /var/log/banano/banano_node.log'"   # Alias for banano-logs
+
+      # Additional aliases for Banano Wallet RPCs
+      "banano-account-create='banano-wallet --rpc --command account_create'"
+      "banano-account-list='banano-wallet --rpc --command account_list'"
+      "banano-account-remove='banano-wallet --rpc --command account_remove'"
+      "banano-account-rename='banano-wallet --rpc --command account_rename'"
+      "banano-account-history='banano-wallet --rpc --command account_history'"
+      "banano-account-info='banano-wallet --rpc --command account_info'"
+      "banano-account-move='banano-wallet --rpc --command account_move'"
+      "banano-account-key='banano-wallet --rpc --command account_key'"
+      "banano-account-get='banano-wallet --rpc --command account_get'"
+      "banano-account-forks='banano-wallet --rpc --command account_forks'"
+      "banano-account-balance-total='banano-wallet --rpc --command account_balance_total'"
+      "banano-account-representative='banano-wallet --rpc --command account_representative'"
+      "banano-account-weight='banano-wallet --rpc --command account_weight'"
+      "banano-account-weights='banano-wallet --rpc --command account_weights'"
+      "banano-account-confirmations='banano-wallet --rpc --command account_confirmations'"
+      "banano-account-create-work='banano-wallet --rpc --command account_create_work'"
 
       # Additional aliases for Banano Wallet
       "banano-balance='banano-wallet info --balance'"           # Alias for banano-balance
@@ -577,21 +597,24 @@ set_banano_node_alias() {
 
 
 
+
 # Function to check if a wallet exists and generate a new one if necessary
 wallet_check_and_generation() {
   walletList="$($nodeExec --wallet_list)"
-  
+
   if ! echo "$walletList" | grep -q 'Wallet ID'; then
     # No wallet found, generate a new one
     if [[ $quiet = 'false' ]]; then
       # Print a message to indicate that no wallet was found and a new one will be generated
       printf "=> ${yellow}No wallet found. Generating a new one... ${reset}"
     fi
-    
+
     # Generate a new wallet and retrieve the wallet ID and address
-    walletId=$($nodeExec --wallet_create | tr -d '\r')
-    address="$($nodeExec --account_create --wallet=$walletId | awk '{ print $NF}')"
-    
+    walletId=$($nodeExec --wallet_create | awk '{ print $NF}' | tr -d '\r')
+    $nodeExec --wallet_add --wallet=$walletId | grep 'Generated new seed:' | awk '{ print $NF }' > temp_seed.txt
+    seed=$(cat temp_seed.txt)
+    rm temp_seed.txt
+
     if [[ $quiet = 'false' ]]; then
       # Print a message to indicate that the new wallet has been generated
       printf "${green}done.${reset}\n\n"
@@ -603,18 +626,21 @@ wallet_check_and_generation() {
       echo "=> ${yellow}Existing wallet found.${reset}"
       echo ''
     fi
-    
+
     # Retrieve the wallet ID and address from the wallet list
     address=$(echo "$walletList" | grep 'ban_' | awk '{ print $NF}' | tr -d '\r')
     walletId=$(echo "$walletList" | grep 'Wallet ID' | awk '{ print $NF}' | tr -d '\r')
-  fi
-  
-  # Display the wallet seed if enabled and in non-quiet mode
-  if [[ $quiet = 'false' && $displaySeed = 'true' ]]; then
-    # Retrieve the wallet seed and assign it to the "seed" variable
-    seed=$($nodeExec --wallet_decrypt_unsafe --wallet=$walletId | grep 'Seed' | awk '{ print $NF}' | tr -d '\r')
+
+    # Retrieve the wallet seed if enabled and in non-quiet mode
+    if [[ $quiet = 'false' && $displaySeed = 'true' ]]; then
+      # Get the seed from the wallet using the wallet ID
+      $nodeExec --wallet_seed --wallet=$walletId | grep 'Seed: ' | awk '{ print $NF }' > temp_seed.txt
+      seed=$(cat temp_seed.txt)
+      rm temp_seed.txt
+    fi
   fi
 }
+
 
 
 
@@ -668,11 +694,12 @@ configure_banano_node_monitor() {
 
   # Update other configuration values
   sed -i -e "s/\/\/ \$welcomeMsg.*;/\$welcomeMsg = 'Welcome! This node was setup using <a href=\"https:\/\/github.com\/amamel\/banano-node-docker\" target=\"_blank\">Banano Node Docker<\/a>!';/g" "$config_file"
-  sed -i -e "s/\/\/ \$blockExplorer.*;/\$blockExplorer = 'banano';/g" "$config_file"
+  sed -i -e "s/\/\/ \$blockExplorer.*;/\$blockExplorer = 'bananode';/g" "$config_file"
 
   # Remove any carriage returns that may have been included by sed replacements
   sed -i -e 's/\r//g' "$config_file"
 }
+
 
 
 
