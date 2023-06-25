@@ -191,7 +191,7 @@ check_docker_installation() {
     
     # Check if the installation was successful
     if [ $? -ne 0 ]; then
-      echo "=> ${red}Failed to install Docker. Please install Docker manually and run the script again.${reset}"
+      echo "${red}=> Failed to install Docker. Please install Docker manually and run the script again.${reset}"
       exit 2
     fi
   else
@@ -234,7 +234,7 @@ check_docker_compose_installation() {
 # ===================================================================
 apply_latest_docker_image_tag() {
   if [[ -z "$tag" ]]; then
-    echo "=> ${yellow}No tag specified. Fetching the latest tag from the Docker Hub...${reset}"
+    echo "${green}=>${reset} ${yellow}No tag specified. Fetching the latest tag from the Docker Hub...${reset}"
 
     # Retrieve the latest tag from the Docker Hub using curl, jq, and grep
     tag=$(curl -s "https://hub.docker.com/v2/repositories/bananocoin/banano/tags" | jq -r '.results[].name' | grep -E "^(latest|V[0-9.]+)$" | sort -rV | head -n1)
@@ -354,12 +354,14 @@ check_initial_node_setup() {
     fi
 
     # Create the "./banano-node-docker/banano-node/Banano" directory
+    echo "${yellow}Create the directory${reset}"
     if mkdir -p ./banano-node-docker/banano-node/Banano; then
       if [[ $quiet = 'false' ]]; then
         echo "Directory created successfully."
       fi
 
       # Move everything into the subdirectory and suppress the error about itself
+      echo "${yellow}Move everything into the subdirectory${reset}"
       if mv ./banano-node-docker/banano-node/* ./banano-node-docker/banano-node/Banano/ &> /dev/null; then
         if [[ $quiet = 'false' ]]; then
           echo "File migration done."
@@ -386,11 +388,10 @@ if ! check_initial_node_setup; then
 fi
 
 
-
 # ===================================================================
-# Function to spin up the appropriate stack
+# Function to spin up Docker Containers
 # ===================================================================
-spin_up_docker_stack() {
+spin_up_and_configure_docker_stack() {
   # Check if quiet mode is disabled
   if [[ $quiet = 'false' ]]; then
     echo "=> ${yellow}Pulling images and spinning up containers...${reset}"
@@ -399,14 +400,7 @@ spin_up_docker_stack() {
 
   # Create the Docker network for Banano node
   docker network create banano-node-network &> /dev/null
-}
 
-
-
-# ===================================================================
-# Function to configure Docker Compose and start containers
-# ===================================================================
-configure_and_start_docker_containers () {
   local docker_compose_file
 
   if [[ $domain ]]; then
@@ -445,11 +439,12 @@ configure_and_start_docker_containers () {
 
   if [ $? -ne 0 ]; then
     # Check if any errors occurred during container startup
-    echo "$=> {red}Encountered errors during container initialization. Please refer to the preceding log for detailed instructions on resolving the issues.${reset}"
+    echo "=> ${red}Encountered errors during container initialization. Please refer to the preceding log for detailed instructions on resolving the issues.${reset}"
     echo ""
     exit 2
   fi
 }
+
 
 
 
@@ -458,25 +453,18 @@ configure_and_start_docker_containers () {
 # ===================================================================
 wait_for_node_to_initialize() {
   if [[ $quiet = 'false' ]]; then
-    # Print a message to indicate that the script is waiting for the Banano node to initialize
-    echo "=> ${yellow} Awaiting full initialization of the Banano Node. Please wait while the process completes.${reset}"
+    echo "=> ${yellow}Awaiting full initialization of the Banano Node. Please wait while the process completes.${reset}"
   fi
 
-  # Keep checking the Banano node's version until it responds with the expected JSON
   while ! curl -s -d '{"action": "version"}' 127.0.0.1:7072 | grep -q "rpc_version"; do
     sleep 1s
   done
 
   if [[ $quiet = 'false' ]]; then
-    # Print a message to indicate that the Banano node has finished initializing
-    echo "=> ${yellow} Banano Node initialization complete.${reset}"
+    echo "=> ${yellow}Banano Node initialization complete.${reset}"
     echo ""
   fi
 }
-
-
-# Ignore the warning message about the deprecated network setting
-echo "WARN[0000] network default: network.external.name is deprecated. Please set network.name with external: true" >/dev/null 2>&1
 
 
 
@@ -753,15 +741,9 @@ main() {
     exit 1
   fi
 
-  spin_up_docker_stack
+  spin_up_and_configure_docker_stack
   if [ $? -ne 0 ]; then
-    echo "Error: Failed to spin up the Docker stack."
-    exit 1
-  fi
-
-  configure_and_start_docker_containers
-  if [ $? -ne 0 ]; then
-    echo "Error: Failed to configure and start Docker containers."
+    echo "Error: Failed to spin up and configure and Docker containers."
     exit 1
   fi
 
