@@ -1,5 +1,10 @@
 #!/bin/bash
 
+
+# ==================================================
+# Script Utilities
+# ==================================================
+
 # Add the banano-node directory to the PATH variable
 export PATH="./banano-node-docker/banano-node/Banano:$PATH"
 
@@ -96,7 +101,7 @@ if [[ $quiet = 'false' ]]; then
   P^^^^!GGGGGGGGGGGGGGGGGGGP?^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^75BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB!^^^^P
   ?^^^:JGGGGGGGGGGGGGGGGGBY~^^^^^^^^^^^^^^~~~^^^^^^^^^^^^^^^^7PBBBBBBBBBBPY?7!!!75BBBBBBBBBBBBB#J^^^^?
   ~^^^^5GGGGGGGGGGGGGGGGBJ^^^^^^^^^^^^^~?69.420.19~^^^^^^^^^^^^^^YBBBBBBB5!^^^^^^^:JBBBBBBBBBBBBBBP^^^
-  ^^^^^PGGGGGGGGGGGGGGGBJ^^^^^^^^^^^^75GGPPPPGGBBPJ7~^^^^^^^^^^^JBBBBP7^^^^^^^^^~GBBBBBBBBBBBBBBG~^^^^
+  ^^^^^PGGGGGGGGGGGGGGGBJ^^^^^^^^^^^^BENISPPPGGBBPJ7~^^^^^^^^^^^JBBBBP7^^^^^^^^^~GBBBBBBBBBBBBBBG~^^^^
   ^^^^~PGGGGGGGGGGGGGGB5^^^^^^^^^^^7PBB?^^^^^^~!7J5GGPY?!~^^^^^~7BBP?^^^^^^^^^^^Y#BBBBBBBBBBBBBBG~^^^^
   ^^^^^PGGGGGGGGGGGGGGG!^^^^^^^^^75BBBBY^^^^^^^^^^^^!JPBBBGPPPPGBP?^^^^^^^^^^^^?BBBBBBBBBBBBBBBBG~^^^^
   ~^^^^5BGGGGGGGGGGGGBY^^^^^^^^!YBBBBBBB5~^^^^^^^^^^^^^~7YPBBGPJ!^^^^^^^^^^^^^?BBBBBBBBBBBBBBBBBP^^^^!
@@ -126,15 +131,9 @@ fi
 }
 
 
-
-
-
-
-
-
-
-
+# ===================================================================
 # Check and install required tools
+# ===================================================================
 check_required_tools() {
     # Define required tools
     local requiredTools=("awk" "cmake" "cmake-format" "curl" "git" "g++" "jq" "make" "p7zip-full" "python-dev-is-python3" "ufw" "wget")
@@ -167,15 +166,9 @@ check_required_tools() {
 }
 
 
-
-
-
-
-
-
-
-
+# ===================================================================
 # Check if Docker is installed, attempt to install if needed
+# ===================================================================
 check_docker_installation() {
   if ! command -v docker &> /dev/null; then
     echo "=> ${red}Docker is not installed. Installing Docker...${reset}"
@@ -208,11 +201,9 @@ check_docker_installation() {
 }
 
 
-
-
-
-
+# ===================================================================
 # Check if Docker Compose is installed and install it if necessary
+# ===================================================================
 check_docker_compose_installation() {
   if ! command -v docker-compose &> /dev/null; then
     echo "${red}Docker Compose is not installed. Installing Docker Compose...${reset}"
@@ -238,15 +229,9 @@ check_docker_compose_installation() {
 }
 
 
-
-
-
-
-
-
-
-
+# ===================================================================
 # Check if tag is applied, if not apply latest
+# ===================================================================
 apply_latest_docker_image_tag() {
   if [[ -z "$tag" ]]; then
     echo "=> ${yellow}No tag specified. Fetching the latest tag from the Docker Hub...${reset}"
@@ -265,20 +250,9 @@ apply_latest_docker_image_tag() {
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+# ===================================================================
 # Function for fast-syncing the LMDB database
+# ===================================================================
 quick_sync_lmdb() {
   if [[ $quiet = 'false' ]]; then
     printf "=> ${yellow}Downloading the LMDB database for quick-syncing...${reset}\n"
@@ -295,7 +269,10 @@ quick_sync_lmdb() {
   fi
 }
 
+
+# ===================================================================
 # Function for fast-syncing the RocksDB database
+# ===================================================================
 quick_sync_rocksdb() {
   if [[ $quiet = 'false' ]]; then
     printf "=> ${yellow}Downloading the RocksDB database for fast-syncing...${reset}\n"
@@ -314,7 +291,10 @@ quick_sync_rocksdb() {
   fi
 }
 
+
+# ===================================================================
 # Function to handle fast-syncing based on user selection
+# ===================================================================
 quick_sync() {
   PS3="=> ${green}Please select the database you would like to use for fast-syncing: ${reset}"
   options=("LMDB (Banano node LMDB cutecat backup)" "RocksDB (Banano node v23.0 moonano latest RocksDB backup)" "Exit")
@@ -343,8 +323,9 @@ quick_sync() {
 }
 
 
-
+# ===================================================================
 # Check if quick-sync is enabled
+# ===================================================================
 optional_quick_sync() {
   if [[ $quick_sync = 'true' ]]; then
     quick_sync
@@ -355,19 +336,9 @@ optional_quick_sync() {
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
+# ===================================================================
 # Function to check the initial node installation
+# ===================================================================
 check_initial_node_setup() {
   if [[ $quiet = 'false' ]]; then
     echo "=> ${yellow}Checking initial status...${reset}"
@@ -416,16 +387,9 @@ fi
 
 
 
-
-
-
-
-
-
-
-
-
+# ===================================================================
 # Function to spin up the appropriate stack
+# ===================================================================
 spin_up_docker_stack() {
   # Check if quiet mode is disabled
   if [[ $quiet = 'false' ]]; then
@@ -439,14 +403,9 @@ spin_up_docker_stack() {
 
 
 
-
-
-
-
-
-
-
+# ===================================================================
 # Function to configure Docker Compose and start containers
+# ===================================================================
 configure_and_start_docker_containers () {
   local docker_compose_file
 
@@ -494,14 +453,9 @@ configure_and_start_docker_containers () {
 
 
 
-
-
-
-
-
-
-
+# ===================================================================
 # Function to wait for Banano node initialization
+# ===================================================================
 wait_for_node_to_initialize() {
   if [[ $quiet = 'false' ]]; then
     # Print a message to indicate that the script is waiting for the Banano node to initialize
@@ -526,7 +480,9 @@ echo "WARN[0000] network default: network.external.name is deprecated. Please se
 
 
 
+# ===================================================================
 # Function to set Banano Node aliases and related aliases based on the current shell (Zsh or Bash)
+# ===================================================================
 set_banano_node_alias() {
   local shell_aliases_file
 
@@ -626,8 +582,9 @@ set_banano_node_alias() {
 
 
 
-
+# ================================================================================
 # Function to check if a Banano wallet exists and generate a new one if necessary
+# ================================================================================
 wallet_check_and_generation() {
   local nodeExec="./banano-node/Banano"  # Replace with the actual Banano Node executable if needed
 
@@ -657,8 +614,11 @@ wallet_check_and_generation() {
 
 
 
+# ================================================================================
+# Function to check if the Banano Node Monitor config file exists, 
+# fetch a fresh copy if necessary, and configure it
+# ================================================================================
 
-# Function to check if the Banano Node Monitor config file exists, fetch a fresh copy if necessary, and configure it
 configure_banano_node_monitor() {
   if [ ! -f /opt/banano-node-monitor/nanoNodeMonitor/config.php ]; then
     # No existing config file found, fetch a fresh copy
@@ -742,9 +702,9 @@ configure_banano_node_monitor() {
 }
 
 
-
-
+# ================================================================================
 # Function to run all node functions
+# ================================================================================
 main() {
   # ...
 
@@ -836,14 +796,18 @@ main() {
 main
 
 
+# ================================================================================
 # Check if the script finished successfully and call the function
+# ================================================================================
 if [ $? -eq 0 ]; then
   echo "${green}${bold}Completed${reset}"
   press_any_key  # Exit Script
 fi
 
 
+# ================================================================================
 # Function to display "Press any key to close" message
+# ================================================================================
 press_any_key() {
     echo ""
     echo ""
