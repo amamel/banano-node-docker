@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Add the banano-node directory to the PATH variable
-export PATH="./banano-node/Banano:$PATH"
+export PATH="./banano-node-docker/banano-node/Banano:$PATH"
 
 # goto script dir
 cd "$(dirname "$0")"
@@ -259,7 +259,7 @@ apply_latest_docker_image_tag() {
       exit 1
     fi
 
-    echo "=> ${yellow}Selected tag:${reset} $tag"
+    echo "=> ${yellow}Selected tag:${reset} ${green}$tag${reset}"
     echo ""
   fi
 }
@@ -367,51 +367,54 @@ optional_quick_sync() {
 
 
 
-# Function to check the initial node setup
+# Function to check the initial node installation
 check_initial_node_setup() {
-  success=false
-
   if [[ $quiet = 'false' ]]; then
     echo "=> ${yellow}Checking initial status...${reset}"
     echo ""
   fi
 
-  # Check if the "./banano-node" directory exists and "./banano-node/Banano" directory does not exist
-  if [ -d "./banano-node-docker/banano-node" ] && [ ! -d "./banano-node-docker/banano-node/Banano" ]; then
-    
-    # If the "./banano-node" directory exists but "./banano-node/Banano" does not exist,
-    # perform the following steps:
+  # Check if the node mounted directory exists
+  if [ -d "./banano-node-docker/banano-node" ] && \
+    [ ! -d "./banano-node-docker/banano-node/Banano" ]; then
 
-    # Check if quiet mode is disabled
     if [[ $quiet = 'false' ]]; then
-      printf "=> ${reset}Detected an unsupported directory structure, updating file organization ... "
+      echo "Unsupported directory structure detected. Migrating files..."
     fi
 
     # Create the "./banano-node-docker/banano-node/Banano" directory
-    mkdir -p ./banano-node-docker/banano-node/Banano
+    if mkdir -p ./banano-node-docker/banano-node/Banano; then
+      if [[ $quiet = 'false' ]]; then
+        echo "Directory created successfully."
+      fi
 
-    # Move everything into the subdirectory and suppress the error about itself
-    mv ./banano-node-docker/banano-node/* ./banano-node-docker/banano-node/Banano/ &> /dev/null
-
-    # Check if the move operation was successful
-    if [ $? -eq 0 ]; then
-      success=true
+      # Move everything into the subdirectory and suppress the error about itself
+      if mv ./banano-node-docker/banano-node/* ./banano-node-docker/banano-node/Banano/ &> /dev/null; then
+        if [[ $quiet = 'false' ]]; then
+          echo "File migration done."
+        fi
+      else
+        echo "File migration failed."
+        return 1
+      fi
+    else
+      echo "Directory creation failed."
+      return 1
     fi
 
-    # Check if quiet mode is disabled
     if [[ $quiet = 'false' ]]; then
-      if [ "$success" = true ]; then
-        printf "${green}done.\n${reset}"
-      else
-        printf "${red}failed.\n${reset}"
-      fi
       echo ""
     fi
   fi
-
-  # Return the success flag
-  return $success
 }
+
+# Call the function to check initial node installation and handle errors
+if ! check_initial_node_setup; then
+  echo "Initial node setup check failed."
+  exit 1
+fi
+
+
 
 
 
@@ -741,6 +744,105 @@ configure_banano_node_monitor() {
 
 
 
+# Function to run all node functions
+main() {
+  # ...
+
+  # Run each function and check the return value
+  check_os
+  if [ $? -ne 0 ]; then
+    echo "Error: Failed to check the operating system."
+    exit 1
+  fi
+
+  print_ascii_art
+
+  check_required_tools
+  if [ $? -ne 0 ]; then
+    echo "Error: Failed to check for required system tools."
+    exit 1
+  fi
+
+  check_docker_installation
+  if [ $? -ne 0 ]; then
+    echo "Error: Docker installation check failed."
+    exit 1
+  fi
+
+  check_docker_compose_installation
+  if [ $? -ne 0 ]; then
+    echo "Error: Docker Compose installation check failed."
+    exit 1
+  fi
+
+  apply_latest_docker_image_tag
+  if [ $? -ne 0 ]; then
+    echo "Error: Failed to apply the latest Docker image tag."
+    exit 1
+  fi
+
+  optional_quick_sync
+  if [ $? -ne 0 ]; then
+    echo "Error: Failed to select Node Database Type."
+    exit 1
+  fi
+
+  check_initial_node_setup
+  if [ $? -ne 0 ]; then
+    echo "Error: Initial node setup check failed."
+    exit 1
+  fi
+
+  spin_up_docker_stack
+  if [ $? -ne 0 ]; then
+    echo "Error: Failed to spin up the Docker stack."
+    exit 1
+  fi
+
+  configure_and_start_docker_containers
+  if [ $? -ne 0 ]; then
+    echo "Error: Failed to configure and start Docker containers."
+    exit 1
+  fi
+
+  wait_for_node_to_initialize
+  if [ $? -ne 0 ]; then
+    echo "Error: Failed to wait for node initialization."
+    exit 1
+  fi
+
+  set_banano_node_alias
+  if [ $? -ne 0 ]; then
+    echo "Error: Failed to set Banano node alias."
+    exit 1
+  fi
+
+  wallet_check_and_generation
+  if [ $? -ne 0 ]; then
+    echo "Error: Failed to check and generate a wallet."
+    exit 1
+  fi
+
+  configure_banano_node_monitor
+  if [ $? -ne 0 ]; then
+    echo "Error: Failed to configure Banano Node Monitor."
+    exit 1
+  fi
+
+  # ...
+}
+
+# Execute main function
+main
+
+
+# Check if the script finished successfully and call the function
+if [ $? -eq 0 ]; then
+  echo "${green}${bold}Completed${reset}"
+  press_any_key  # Exit Script
+fi
+
+
 # Function to display "Press any key to close" message
 press_any_key() {
     echo ""
@@ -750,66 +852,3 @@ press_any_key() {
     echo "=> ${green}${bold}Banano Node Docker finished successfully. Press any key to close.${reset}"
     read -n 1 -s -r -p ""  # Wait for user input of any key
 }
-
-# Function to run all node functions
-main() {
-  echo "${green}${bold}Starting Banano Node Docker Setup Script...${reset}"
-  echo "${yellow}===========================================${reset}"
-
-  echo "${green}${bold}Checking the operating system...${reset}"
-  check_os                                              # Check the operating system
-  print_ascii_art                                       # Print ASCII art
-
-  echo "${green}${bold}Checking for required system tools...${reset}"
-  check_required_tools                                  # Check for required tools to run script
-
-  echo "${green}${bold}Checking Docker installation...${reset}"
-  check_docker_installation                             # Check Docker installation
-
-  echo "${green}${bold}Checking Docker Compose installation...${reset}"
-  check_docker_compose_installation                     # Check Docker Compose installation
-
-  echo "${green}${bold}Applying the latest Docker image tag...${reset}"
-  apply_latest_docker_image_tag                         # Apply the latest Docker image tag
-
-  echo "${green}${bold}Select Node Database Type...${reset}"
-  optional_quick_sync                                   # Enable fast sync
-
-  echo "${green}${bold}Checking initial setup...${reset}"
-  check_initial_node_setup                              # Check initial setup
-  # Check the success flag
-  if [ $? -eq 0 ]; then
-    echo "Initial node setup check successful."
-  else
-    echo "Initial node setup check failed."
-  fi
-
-  echo "${green}${bold}Spinning up the Docker stack...${reset}"
-  spin_up_docker_stack                                  # Spin up the Docker stack
-
-  echo "${green}${bold}Configuring and starting Docker containers...${reset}"
-  configure_and_start_docker_containers                 # Configure and start Docker containers
-
-  echo ""
-  echo "${green}${bold}Waiting for node initialization...${reset}"
-  wait_for_node_to_initialize                           # Wait for node initialization
-
-  echo "${green}${bold}Setting Banano node alias...${reset}"
-  set_banano_node_alias                                 # Set Banano node alias
-
-  echo ""
-  echo "${green}${bold}Checking and generating a wallet...${reset}"
-  wallet_check_and_generation                           # Check and generate a wallet
-
-  echo "${green}${bold}Configuring Banano Node Monitor...${reset}"
-  configure_banano_node_monitor                         # Configure Banano node monitor
-}
-
-# Execute main function
-main
-
-# Check if the script finished successfully and call the function
-if [ $? -eq 0 ]; then
-  echo "${green}${bold}Completed${reset}"
-  press_any_key  # Exit Script
-fi
