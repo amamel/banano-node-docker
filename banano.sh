@@ -15,11 +15,6 @@ log_error() {
   echo "[ERROR] $error_message" | tee -a "$logFile"
 }
 
-# Check if the script finished successfully and call the function
-if [ $? -eq 0 ]; then
-    press_any_key
-fi
-
 # Check if any errors occurred during script execution
 if [[ $? -ne 0 ]]; then
   log_error "An error occurred during script execution. Please refer to the log file '$logFile' for more details."
@@ -251,7 +246,7 @@ check_docker_compose_installation() {
 # Check if tag is applied, if not apply latest
 apply_latest_docker_image_tag() {
   if [[ -z "$tag" ]]; then
-    echo "$=> {yellow}No tag specified. Fetching the latest tag from the Docker Hub...${reset}"
+    echo "=> ${yellow}No tag specified. Fetching the latest tag from the Docker Hub...${reset}"
 
     # Retrieve the latest tag from the Docker Hub using curl, jq, and grep
     tag=$(curl -s "https://hub.docker.com/v2/repositories/bananocoin/banano/tags" | jq -r '.results[].name' | grep -E "^(latest|V[0-9.]+)$" | sort -rV | head -n1)
@@ -280,71 +275,72 @@ apply_latest_docker_image_tag() {
 
 
 
-# Perform fast-sync if enabled
-optional_fast_sync() {
-  # Fast-Sync data sources
-  ledgerDownloadLink_LMDB='https://lmdb.cutecat.party/snapshot.ldb'
-  ledgerDownloadLink_RocksDB='https://ledgerfiles.moonano.net/files/latest.tar.gz'
+# Function for fast-syncing the LMDB database
+quick_sync_lmdb() {
+  if [[ $quiet = 'false' ]]; then
+    printf "=> ${yellow}Downloading the LMDB database for quick-syncing...${reset}\n"
+    wget -O snapshot.ldb ${ledgerDownloadLink_LMDB} -q --show-progress
 
-  if [[ $fastSync == 'true' ]]; then
-    echo "=> ${green}Fast-syncing enabled. Downloading the latest ledger file...${reset}"
-    echo ""
-
-    # Prompt user to select the database for fast-syncing
-    echo "=> ${green} Please select the database you would like to use for fast-syncing:"
-    echo "=> ${yellow} 1. LMDB (Banano node LMDB cutecat backup)"
-    echo "=> ${yellow} 2. RocksDB (Banano node v23.0 moonano latest RocksDB backup)"
-    read -rp "(Default: LMDB) [1]LMDB [2]RocksDB [E]xit: " dbChoice
-
-    case $dbChoice in
-        1)
-            # User selected LMDB
-            ledgerDownloadLink=$ledgerDownloadLink_LMDB
-            fileExtension=".gz"
-            ;;
-        2)
-            # User selected RocksDB
-            ledgerDownloadLink=$ledgerDownloadLink_RocksDB
-            fileExtension=".tar.gz"
-            ;;
-        *)
-            # User chose to exit
-            echo "${red}Installer stopped by user. Fast-syncing aborted.${reset}"
-            echo ""
-            exit 1
-            ;;
-    esac
-
-    # Download the latest ledger file for fast-syncing
-    if [[ $quiet = 'false' ]]; then
-        # Display download progress if not in quiet mode
-        printf "=> ${yellow}Downloading the latest ledger file for fast-syncing...${reset}\n"
-        wget -O snapshot.ldb$fileExtension "$ledgerDownloadLink" -q --show-progress
-        printf "=> ${yellow}Placing the file...${reset} "
-    else
-        # Download ledger file silently in quiet mode
-        wget -O snapshot.ldb$fileExtension "$ledgerDownloadLink" -q
-        docker-compose stop banano-node &> /dev/null
-    fi
-
-    # Extract the files if needed
-    if [[ $fileExtension == ".gz" ]]; then
-        # Extract .gz file
-        gunzip -c snapshot.ldb.gz > snapshot.ldb
-        rm snapshot.ldb.gz
-    elif [[ $fileExtension == ".tar.gz" ]]; then
-        # Extract .tar.gz file
-        tar -xf snapshot.ldb.tar.gz -C ./banano-node/Banano --strip-components=1
-        rm snapshot.ldb.tar.gz
-    fi
-
+    printf "=> ${yellow}Placing the database file...${reset} "
+    mv snapshot.ldb ./banano-node/Banano/
     printf "${green}done.${reset}\n"
     echo ""
   else
-    echo "=> ${yellow}Skipping fast-sync. Fast-syncing is not enabled.${reset}"
-    echo ""
+    wget -O snapshot.ldb ${ledgerDownloadLink_LMDB} -q
+    docker-compose stop banano-node &> /dev/null
+    mv snapshot.ldb ./banano-node/Banano/
   fi
 }
+
+# Function for fast-syncing the RocksDB database
+quick_sync_rocksdb() {
+  if [[ $quiet = 'false' ]]; then
+    printf "=> ${yellow}Downloading the RocksDB database for fast-syncing...${reset}\n"
+    wget -O snapshot.tar.gz ${ledgerDownloadLink_RocksDB} -q --show-progress
+
+    printf "=> ${yellow}Extracting and placing the database files...${reset} "
+    tar -xf snapshot.tar.gz -C ./banano-node/Banano --strip-components=1
+    rm snapshot.tar.gz
+    printf "${green}done.${reset}\n"
+    echo ""
+  else
+    wget -O snapshot.tar.gz ${ledgerDownloadLink_RocksDB} -q
+    docker-compose stop banano-node &> /dev/null
+    tar -xf snapshot.tar.gz -C ./banano-node/Banano --strip-components=1
+    rm snapshot.tar.gz
+  fi
+}
+
+# Function to handle fast-syncing based on user selection
+quick_sync() {
+  PS3="=> ${green}Please select the database you would like to use for fast-syncing: ${reset}"
+  options=("LMDB (Banano node LMDB cutecat backup)" "RocksDB (Banano node v23.0 moonano latest RocksDB backup)" "Exit")
+
+  # Prompt the user to choose the database option
+  select opt in "${options[@]}"; do
+    case $opt in
+      "LMDB (Banano node LMDB cutecat backup)")
+        ledgerDownloadLink_LMDB='https://lmdb.cutecat.party/snapshot.ldb'
+        quick_sync_lmdb
+        break
+        ;;
+      "RocksDB (Banano node v23.0 moonano latest RocksDB backup)")
+        ledgerDownloadLink_RocksDB='https://ledgerfiles.moonano.net/files/latest.tar.gz'
+        quick_sync_rocksdb
+        break
+        ;;
+      "Exit")
+        echo "${red}Installer stopped by user. Fast-syncing aborted.${reset}"
+        echo ""
+        exit 1
+        ;;
+      *) echo "${red}Invalid option. Please select a valid number.${reset}" ;;
+    esac
+  done
+}
+
+
+
 
 
 
@@ -603,7 +599,7 @@ set_banano_node_alias() {
 
 # Function to check if a Banano wallet exists and generate a new one if necessary
 wallet_check_and_generation() {
-  local nodeExec="banano-node"  # Replace with the actual Banano Node executable if needed
+  local nodeExec="./banano-node/Banano"  # Replace with the actual Banano Node executable if needed
 
   # Check if wallet already exists
   existingWallet="$(${nodeExec} --wallet_list | grep 'Wallet ID' | awk '{ print $NF}')"
@@ -619,7 +615,7 @@ wallet_check_and_generation() {
     [[ $quiet = 'false' ]] && echo "=> ${yellow}Existing wallet found.${reset}"
     [[ $quiet = 'false' ]] && echo ''
 
-    address="$(${nodeExec} --wallet_list | grep 'nano_' | awk '{ print $NF}' | tr -d '\r')"
+    address="$(${nodeExec} --wallet_list | grep 'ban_' | awk '{ print $NF}' | tr -d '\r')"
     walletId=$(echo $existingWallet | tr -d '\r')
   fi
 
@@ -716,6 +712,8 @@ configure_banano_node_monitor() {
 }
 
 
+
+
 # Function to display "Press any key to close" message
 press_any_key() {
     echo ""
@@ -725,7 +723,6 @@ press_any_key() {
     echo "=> ${green}${bold}Banano Node Docker finished successfully. Press any key to close.${reset}"
     read -n 1 -s -r -p ""  # Wait for user input of any key
 }
-
 
 # Function to run all node functions
 main() {
@@ -748,8 +745,8 @@ main() {
   echo "${green}${bold}Applying the latest Docker image tag...${reset}"
   apply_latest_docker_image_tag                         # Apply the latest Docker image tag
 
-  echo "${green}${bold}Checking fast-sync options...${reset}"
-  optional_fast_sync                                    # Enable fast sync
+  echo "${green}${bold}Select Node Database Type...${reset}"
+  quick_sync                                            # Enable fast sync
 
   echo "${green}${bold}Checking initial setup...${reset}"
   check_initial_node_setup                              # Check initial setup
@@ -773,9 +770,13 @@ main() {
 
   echo "${green}${bold}Configuring Banano Node Monitor...${reset}"
   configure_banano_node_monitor                         # Configure Banano node monitor
-  echo "${green}${bold}Completed${reset}"
-  press_any_key                                         # Exit Script
 }
 
 # Execute main function
 main
+
+# Check if the script finished successfully and call the function
+if [ $? -eq 0 ]; then
+  echo "${green}${bold}Completed${reset}"
+  press_any_key  # Exit Script
+fi
