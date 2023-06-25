@@ -234,7 +234,7 @@ check_docker_compose_installation() {
 # ===================================================================
 apply_latest_docker_image_tag() {
   if [[ -z "$tag" ]]; then
-    echo "${green}=>${reset} ${yellow}No tag specified. Fetching the latest tag from the Docker Hub...${reset}"
+    echo "=> ${yellow}No tag specified. Fetching the latest tag from the Docker Hub...${reset}"
 
     # Retrieve the latest tag from the Docker Hub using curl, jq, and grep
     tag=$(curl -s "https://hub.docker.com/v2/repositories/bananocoin/banano/tags" | jq -r '.results[].name' | grep -E "^(latest|V[0-9.]+)$" | sort -rV | head -n1)
