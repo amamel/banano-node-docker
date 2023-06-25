@@ -202,6 +202,7 @@ check_docker_installation() {
     fi
   else
     echo "=> ${yellow}Docker is already installed.${reset}"
+    echo ""
   fi
 }
 
@@ -231,6 +232,7 @@ check_docker_compose_installation() {
     fi
   else
     echo "=> ${yellow}Docker Compose is already installed.${reset}"
+    echo ""
   fi
 }
 
@@ -257,6 +259,7 @@ apply_latest_docker_image_tag() {
     fi
 
     echo "=> ${yellow}Selected tag:${reset} $tag"
+    echo ""
   fi
 }
 
@@ -282,6 +285,7 @@ optional_fast_sync() {
 
   if [[ $fastSync == 'true' ]]; then
     echo "=> ${green}Fast-syncing enabled. Downloading the latest ledger file...${reset}"
+    echo ""
 
     # Prompt user to select the database for fast-syncing
     echo "=> ${green} Please select the database you would like to use for fast-syncing:"
@@ -303,6 +307,7 @@ optional_fast_sync() {
         *)
             # User chose to exit
             echo "${red}Installer stopped by user. Fast-syncing aborted.${reset}"
+            echo ""
             exit 1
             ;;
     esac
@@ -334,6 +339,7 @@ optional_fast_sync() {
     echo ""
   else
     echo "=> ${yellow}Skipping fast-sync. Fast-syncing is not enabled.${reset}"
+    echo ""
   fi
 }
 
@@ -452,6 +458,7 @@ configure_and_start_docker_containers () {
   if [ $? -ne 0 ]; then
     # Check if any errors occurred during container startup
     echo "$=> {red}Encountered errors during container initialization. Please refer to the preceding log for detailed instructions on resolving the issues.${reset}"
+    echo ""
     exit 2
   fi
 }
@@ -480,12 +487,13 @@ wait_for_node_to_initialize() {
   if [[ $quiet = 'false' ]]; then
     # Print a message to indicate that the Banano node has finished initializing
     echo "=> ${yellow} Banano Node initialization complete.${reset}"
+    echo ""
   fi
 }
 
 
 # Ignore the warning message about the deprecated network setting
-echo "WARN[0000] network default: network.external.name is deprecated. Please set network.name with external: true" >/dev/null
+echo "WARN[0000] network default: network.external.name is deprecated. Please set network.name with external: true" >/dev/null 2>&1
 
 
 
@@ -653,16 +661,16 @@ configure_banano_node_monitor() {
   [[ $quiet = 'false' ]] && printf "=> ${yellow}Configuring Banano Node Monitor... ${reset}"
 
   # Update the Banano Node RPC IP in the config file
-  sed -i -e "s/\/\/ \$bananoNodeRPCIP.*;/\$bananoNodeRPCIP/g" ./banano-node-monitor/config.php
-  sed -i -e "s/\$bananoNodeRPCIP.*/\$bananoNodeRPCIP = 'banano-node';/g" ./banano-node-monitor/config.php
+  sed -i -e "s/\/\/ \$bananoNodeRPCIP.*;/\$bananoNodeRPCIP/g" ./banano-node-monitor/nanoNodeMonitor/config.php
+  sed -i -e "s/\$bananoNodeRPCIP.*/\$bananoNodeRPCIP = 'banano-node';/g" ./banano-node-monitor/nanoNodeMonitor/config.php
 
   # Update the Banano Node account in the config file
-  sed -i -e "s/\/\/ \$bananoNodeAccount.*;/\$bananoNodeAccount/g" ./banano-node-monitor/config.php
-  sed -i -e "s/\$bananoNodeAccount.*/\$bananoNodeAccount = '$address';/g" ./banano-node-monitor/config.php
+  sed -i -e "s/\/\/ \$bananoNodeAccount.*;/\$bananoNodeAccount/g" ./banano-node-monitor/nanoNodeMonitor/config.php
+  sed -i -e "s/\$bananoNodeAccount.*/\$bananoNodeAccount = '$address';/g" ./banano-node-monitor/nanoNodeMonitor/config.php
 
   if [[ $domain ]]; then
     # Use the specified domain as the Banano Node name in the config file
-    sed -i -e "s/\/\/ \$bananoNodeName.*;/\$bananoNodeName = '$domain';/g" ./banano-node-monitor/config.php
+    sed -i -e "s/\/\/ \$bananoNodeName.*;/\$bananoNodeName = '$domain';/g" ./banano-node-monitor/nanoNodeMonitor/config.php
   else
     # Use the IP address as the Banano Node name in the config file
     ipAddress=$(curl -s v4.ifconfig.co | awk '{ print $NF}' | tr -d '\r')
@@ -672,29 +680,31 @@ configure_banano_node_monitor() {
       ipAddress="[$ipAddress]"
     fi
 
-    sed -i -e "s/\/\/ \$bananoNodeName.*;/\$bananoNodeName = 'banano-node-docker-$ipAddress';/g" ./banano-node-monitor/config.php
+    sed -i -e "s/\/\/ \$bananoNodeName.*;/\$bananoNodeName = 'banano-node-docker-$ipAddress';/g" ./banano-node-monitor/nanoNodeMonitor/config.php
   fi
 
-  # Set the currency, welcome message, block explorer, theme choice, and Banano Node RPC port in the config file
+  # Set the currency, welcome message, block explorer, theme choice, Banano Node RPC port, and widget type in the config file
   sed -i -e "s/\/\/ \$currency.*;/\$currency = 'banano';/g" ./banano-node-monitor/config.php
   sed -i -e "s/\/\/ \$welcomeMsg.*;/\$welcomeMsg = 'Welcome! This node was set up using <a href=\"https:\/\/github.com\/amamel\/banano-node-docker\" target=\"_blank\">Banano Node Docker<\/a>!';/g" ./banano-node-monitor/config.php
   sed -i -e "s/\/\/ \$blockExplorer.*;/\$blockExplorer = 'bananocreeper';/g" ./banano-node-monitor/config.php
   sed -i -e "s/\/\/ \$themeChoice.*;/\$themeChoice = 'banano';/g" ./banano-node-monitor/config.php
   sed -i -e "s/\/\/ \$nanoNodeRPCPort.*;/\$nanoNodeRPCPort = '7072';/g" ./banano-node-monitor/config.php
+  sed -i -e "s/\/\/ \$widgetType.*;/\$widgetType = 'monkey';/g" ./banano-node-monitor/config.php
+
 
   # Remove any carriage returns that may have been included by sed replacements
-  sed -i -e 's/\r//g' ./banano-node-monitor/config.php
+  sed -i -e 's/\r//g' ./banano-node-monitor/nanoNodeMonitor/config.php
 
   [[ $quiet = 'false' ]] && printf "${green}done.${reset}\n\n"
 
   # Output success message and relevant information if quiet mode is disabled
   if [[ $quiet = 'false' ]]; then
     echo "${yellow} |=========================================================================================| ${reset}"
-    echo "${yellow} | ${green}${bold}Congratulations! Banano Node Docker has been setup successfully!         | ${yellow}| ${reset}"
+    echo "${yellow} | ${green}${bold}Congratulations! Banano Node Docker has been set up successfully!        | ${yellow}| ${reset}"
     echo "${yellow} |=========================================================================================| ${reset}"
     echo "${yellow} | Node public address: ${green}$address${yellow} | ${reset}"
     if [[ $displaySeed = 'true' ]]; then
-      echo "${yellow} | Node seed (private):${reset} ${red}$seed${yellow}     | ${reset}"
+     echo "${yellow}| Node seed (private):${reset} ${red}$seed${yellow}     | ${reset}"
     fi
     echo "${yellow} |=========================================================================================| ${reset}"
 
@@ -718,6 +728,7 @@ configure_banano_node_monitor() {
     echo "${yellow} ================================================================================== ${reset}"
   fi
 }
+
 
 # Function to display "Press any key to close" message
 press_any_key() {
@@ -763,12 +774,14 @@ main() {
   echo "${green}${bold}Configuring and starting Docker containers...${reset}"
   configure_and_start_docker_containers                 # Configure and start Docker containers
 
+  echo ""
   echo "${green}${bold}Waiting for node initialization...${reset}"
   wait_for_node_to_initialize                           # Wait for node initialization
 
   echo "${green}${bold}Setting Banano node alias...${reset}"
   set_banano_node_alias                                 # Set Banano node alias
 
+  echo ""
   echo "${green}${bold}Checking and generating a wallet...${reset}"
   wallet_check_and_generation                           # Check and generate a wallet
 
