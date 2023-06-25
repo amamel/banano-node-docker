@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Add the banano-node directory to the PATH variable
+export PATH="./banano-node/Banano:$PATH"
+
 # goto script dir
 cd "$(dirname "$0")"
 
@@ -558,7 +561,7 @@ set_banano_node_alias() {
       "banano-work-generate='banano-wallet work_generate'"      # Alias for banano-work-generate
 
       # Additional aliases for Banano Node Monitor
-      "banano-monitor='php /opt/bananoNodeMonitor/modules/config.php'"   # Alias for banano-monitor
+      "banano-monitor='php banano-node-monitor/nanoNodeMonitor/config.php'"   # Alias for banano-monitor
 
       # Additional aliases for Banano commands
       "banano-process='banano-wallet process'"                  # Alias for banano-process
@@ -598,23 +601,6 @@ set_banano_node_alias() {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 # Function to check if a Banano wallet exists and generate a new one if necessary
 wallet_check_and_generation() {
   local nodeExec="banano-node"  # Replace with the actual Banano Node executable if needed
@@ -648,7 +634,7 @@ wallet_check_and_generation() {
 
 # Function to check if the Banano Node Monitor config file exists, fetch a fresh copy if necessary, and configure it
 configure_banano_node_monitor() {
-  if [ ! -f /opt/banano-node-monitor/config.php ]; then
+  if [ ! -f /opt/banano-node-monitor/nanoNodeMonitor/config.php ]; then
     # No existing config file found, fetch a fresh copy
     [[ $quiet = 'false' ]] && echo "=> ${yellow}No existing Banano Node Monitor config file found. Fetching a fresh copy...${reset}"
     if [[ $quiet = 'false' ]]; then
@@ -684,12 +670,12 @@ configure_banano_node_monitor() {
   fi
 
   # Set the currency, welcome message, block explorer, theme choice, Banano Node RPC port, and widget type in the config file
-  sed -i -e "s/\/\/ \$currency.*;/\$currency = 'banano';/g" ./banano-node-monitor/config.php
-  sed -i -e "s/\/\/ \$welcomeMsg.*;/\$welcomeMsg = 'Welcome! This node was set up using <a href=\"https:\/\/github.com\/amamel\/banano-node-docker\" target=\"_blank\">Banano Node Docker<\/a>!';/g" ./banano-node-monitor/config.php
-  sed -i -e "s/\/\/ \$blockExplorer.*;/\$blockExplorer = 'bananocreeper';/g" ./banano-node-monitor/config.php
-  sed -i -e "s/\/\/ \$themeChoice.*;/\$themeChoice = 'banano';/g" ./banano-node-monitor/config.php
-  sed -i -e "s/\/\/ \$nanoNodeRPCPort.*;/\$nanoNodeRPCPort = '7072';/g" ./banano-node-monitor/config.php
-  sed -i -e "s/\/\/ \$widgetType.*;/\$widgetType = 'monkey';/g" ./banano-node-monitor/config.php
+  sed -i -e "s/\/\/ \$currency.*;/\$currency = 'banano';/g" ./banano-node-monitor/nanoNodeMonitor/config.php
+  sed -i -e "s/\/\/ \$welcomeMsg.*;/\$welcomeMsg = 'Welcome! This node was set up using <a href=\"https:\/\/github.com\/amamel\/banano-node-docker\" target=\"_blank\">Banano Node Docker<\/a>!';/g" ./banano-node-monitor/nanoNodeMonitor/config.php
+  sed -i -e "s/\/\/ \$blockExplorer.*;/\$blockExplorer = 'bananocreeper';/g" ./banano-node-monitor/nanoNodeMonitor/config.php
+  sed -i -e "s/\/\/ \$themeChoice.*;/\$themeChoice = 'banano';/g" ./banano-node-monitor/nanoNodeMonitor/config.php
+  sed -i -e "s/\/\/ \$nanoNodeRPCPort.*;/\$nanoNodeRPCPort = '7072';/g" ./banano-node-monitor/nanoNodeMonitor/config.php
+  sed -i -e "s/\/\/ \$widgetType.*;/\$widgetType = 'monkey';/g" ./banano-node-monitor/nanoNodeMonitor/config.php
 
 
   # Remove any carriage returns that may have been included by sed replacements
@@ -716,7 +702,7 @@ configure_banano_node_monitor() {
       echo "${yellow} Open a browser and navigate to ${green}http://$ipAddress${yellow} to check your monitor."
     fi
     echo "${yellow} You can further configure and personalize your monitor by editing the config file,"
-    echo "${yellow} located in ${green}banano-node-monitor/config.php${yellow}.${reset}"
+    echo "${yellow} located in ${green}banano-node-monitor/nanoNodeMonitor/config.php${yellow}.${reset}"
 
     echo "${yellow} ================================================================================== ${reset}"
     echo "${purple} || A lot of care and effort has gone into refactoring Banano Node Docker,       || ${reset}"
