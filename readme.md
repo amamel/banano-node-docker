@@ -62,7 +62,7 @@ When the script is executed, it performs a series of functions, which are outlin
 - **Important Reminder**: It is crucial to save your wallet seed exactly as it appears in the installer's output. Ensure you securely store this information to maintain access to your wallet.
 
 
-## Interact with the Banano node Command Line Interface (CLI)
+## Talk to the Banano node Command Line Interface (CLI)
 
 To execute commands from the Banano node's Command Line Interface (CLI), you have two options:
 
@@ -80,7 +80,8 @@ These options provide convenient ways to execute Banano node and wallet commands
 
 | Alias                        | Description                                                                  |
 |------------------------------|------------------------------------------------------------------------------|
-| `banano-node`                | Executes Banano node commands.                                               |
+| `benis`                      | Inf: Executes Banano node commands.                                          |
+| `banano-node`                | Formal: Executes Banano node commands.                                       |
 | `banano-rpc`                 | Executes Banano node commands with RPC mode enabled.                          |
 | `banano-wallet`              | Executes Banano node commands with wallet mode enabled.                       |
 | `banano-status`              | Displays the status of the Banano node.                                       |

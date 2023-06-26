@@ -1,6 +1,7 @@
 version: "3"
 
 services:
+  # Banano Node service
   banano-node:
     image: bananocoin/banano:latest
     container_name: banano-node
@@ -9,31 +10,33 @@ services:
       - TERM=xterm
     restart: unless-stopped
     ports:
-      - "7071:7071"
-      - "127.0.0.1:7072:7072"
-      - "127.0.0.1:7074:7074"
+      - "7071:7071"                   # Map container port 7071 to host port 7071
+      - "127.0.0.1:7072:7072"         # Map container port 7072 to host port 7072 (localhost only)
+      - "127.0.0.1:7074:7074"         # Map container port 7074 to host port 7074 (localhost only)
     volumes:
-      - ./banano-node:/root
+      - ./banano-node:/root           # Mount ./banano-node directory from host to /root directory in container
 
+  # Banano Node Monitor service
   banano-node-monitor:
     image: nanotools/nanonodemonitor:latest
     container_name: banano-node-monitor
     hostname: banano-node-monitor
     restart: unless-stopped
     volumes:
-      - ./banano-node-monitor:/opt/nanoNodeMonitor
+      - ./banano-node-monitor/config.php:/opt/nanoNodeMonitor/config.php  # Mount ./banano-node-monitor/config.php file from host to /opt/nanoNodeMonitor/config.php in container
     ports:
-      - "80:80"
+      - "80:80"                      # Map container port 80 to host port 80
 
+  # Watchtower service
   watchtower:
     image: v2tec/watchtower
     container_name: watchtower
     restart: unless-stopped
     command: watchtower banano-node banano-node-monitor
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
+      - /var/run/docker.sock:/var/run/docker.sock  # Mount Docker socket to enable Watchtower to monitor and update running containers
 
 networks:
-  default:
-    external:
-      name: banano-node-network
+  banano-node-network:
+    name: banano-node-network
+    external: true
