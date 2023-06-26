@@ -110,6 +110,7 @@ if [ -d "./banano-node" ]; then
             [[ $quiet = 'false' ]] && printf "${green}done.\n${reset}"
             [[ $quiet = 'false' ]] && echo ""
         fi
+
     fi
 fi
 
@@ -172,7 +173,7 @@ done
 [[ $quiet = 'false' ]] && printf "${green}done.${reset}\n\n"
 
 # DETERMINE NODE VERSION
-nodeExec="docker exec -it banano-node /usr/bin/banano-node"
+nodeExec="docker exec -it banano-node /usr/bin/bananode" #bananode, because Benis
 
 # SET BASH ALIASES FOR NODE CLI
 if [ -f ~/.bash_aliases ]; then
@@ -211,7 +212,7 @@ fi
 
 
 # UPDATE MONITOR CONFIGS
-if [ ! -f /opt/banano-node-monitor/nanoNodeMonitor/config.php ]; then
+if [ ! -f ./banano-node-monitor/nanoNodeMonitor/config.php ]; then
     [[ $quiet = 'false' ]] && echo "=> ${yellow}No existing Banano Node Monitor config file found. Fetching a fresh copy...${reset}"
     if [[ $quiet = 'false' ]]; then
         docker-compose restart banano-node-monitor
@@ -222,31 +223,34 @@ fi
 
 [[ $quiet = 'false' ]] && printf "=> ${yellow}Configuring Banano Node Monitor... ${reset}"
 
-sed -i -e "s/\/\/ \$bananoNodeRPCIP.*;/\$bananoNodeRPCIP/g" ./banano-node-monitor/nanoNodeMonitor/config.php
-sed -i -e "s/\$bananoNodeRPCIP.*/\$bananoNodeRPCIP = 'banano-node';/g" ./banano-node-monitor/nanoNodeMonitor/config.php
-sed -i -e "s/\/\/ \$bananoNodeAccount.*;/\$bananoNodeAccount/g" ./banano-node-monitor/nanoNodeMonitor/config.php
-sed -i -e "s/\$bananoNodeAccount.*/\$bananoNodeAccount = '$address';/g" ./banano-node-monitor/nanoNodeMonitor/config.php
+sed -i -e "s/\/\/ \$nanoNodeRPCIP.*;/\$nanoNodeRPCIP/g" ./banano-node-monitor/nanoNodeMonitor/config.php
+sed -i -e "s/\$nanoNodeRPCIP.*/\$nanoNodeRPCIP = 'banano-node';/g" ./banano-node-monitor/nanoNodeMonitor/config.php
+
+
+sed -i -e "s/\/\/ \$nanoNodeAccount.*;/\$nanoNodeAccount/g" ./banano-node-monitor/nanoNodeMonitor/config.php
+sed -i -e "s/\$nanoNodeAccount.*/\$nanoNodeAccount = '$address';/g" ./banano-node-monitor/nanoNodeMonitor/config.php
 
 if [[ $domain ]]; then
-    sed -i -e "s/\/\/ \$bananoNodeName.*;/\$bananoNodeName = '$domain';/g" ./banano-node-monitor/nanoNodeMonitor/config.php
+    sed -i -e "s/\/\/ \$nanoNodeName.*;/\$nanoNodeName = '$domain';/g" ./banano-node-monitor/nanoNodeMonitor/config.php
 else 
-    ipAddress=$(curl -s v4.ifconfig.co | awk '{ print $NF}' | tr -d '\r')
 
-    # in case of an ipv6 address, add square brackets
-    if [[ $ipAddress =~ .*:.* ]]; then
-        ipAddress="[$ipAddress]"
+    ipAddress=$(hostname -I | awk '{print $1}')
+    if [[ -z $ipAddress ]]; then
+      ipAddress=$(ip addr show | awk '/inet6/{print $2}' | awk -F'/' '{print $1}')
     fi
 
-    sed -i -e "s/\/\/ \$bananoNodeName.*;/\$bananoNodeName = 'banano-node-docker-$ipAddress';/g" ./banano-node-monitor/nanoNodeMonitor/config.php
+    sed -i -e "s/\/\/ \$nanoNodeName.*;/\$nanoNodeName = 'banano-node-docker-$ipAddress';/g" ./banano-node-monitor/nanoNodeMonitor/config.php
 fi
 
 # Set the currency, welcome message, block explorer, theme choice, Banano Node RPC port, and widget type in the config file
 sed -i -e "s/\/\/ \$currency.*;/\$currency = 'banano';/g" ./banano-node-monitor/nanoNodeMonitor/config.php
 sed -i -e "s/\/\/ \$welcomeMsg.*;/\$welcomeMsg = 'Welcome! This node was set up using <a href=\"https:\/\/github.com\/amamel\/banano-node-docker\" target=\"_blank\">Banano Node Docker<\/a>!';/g" ./banano-node-monitor/nanoNodeMonitor/config.php
 sed -i -e "s/\/\/ \$blockExplorer.*;/\$blockExplorer = 'bananocreeper';/g" ./banano-node-monitor/nanoNodeMonitor/config.php
-sed -i -e "s/\/\/ \$themeChoice.*;/\$themeChoice = 'banano';/g" ./banano-node-monitor/nanoNodeMonitor/config.php
+sed -i -e "s/\/\/ \$themeChoice.*;/\$themeChoice = 'banano-dark';/g" ./banano-node-monitor/nanoNodeMonitor/config.php
 sed -i -e "s/\/\/ \$nanoNodeRPCPort.*;/\$nanoNodeRPCPort = '7072';/g" ./banano-node-monitor/nanoNodeMonitor/config.php
 sed -i -e "s/\/\/ \$widgetType.*;/\$widgetType = 'monkey';/g" ./banano-node-monitor/nanoNodeMonitor/config.php
+#sed -i -e "s/\/\/ \$nanoNodeRPCIP.*;/\$nanoNodeRPCIP = '127.0.0.1';/g" ./banano-node-monitor/nanoNodeMonitor/config.php
+
 
 # remove any carriage returns that may have been included by sed replacements
 sed -i -e 's/\r//g' ./banano-node-monitor/nanoNodeMonitor/config.php
@@ -254,25 +258,32 @@ sed -i -e 's/\r//g' ./banano-node-monitor/nanoNodeMonitor/config.php
 [[ $quiet = 'false' ]] && printf "${green}done.${reset}\n\n"
 
 if [[ $quiet = 'false' ]]; then
+
     echo "${yellow} |=========================================================================================| ${reset}"
-    echo "${yellow} | ${green}${bold}Congratulations! Banano Node Docker has been set up successfully!                          ${yellow}| ${reset}"
+    echo "${yellow} | ${green}${bold}Congratulations! Banano Node Docker has been setup successfully!           ${reset}"
     echo "${yellow} |=========================================================================================| ${reset}"
-    echo "${yellow} | Banano Node account address: ${green}$address${yellow} | ${reset}"
-    # Assign the seed variable here if it's needed
+    echo "${yellow} | ${bold}Node address:${reset} ${green}$address                                             ${reset}"
+    echo "${yellow} | ${bold}Wallet ID:${reset} ${green}${walletId}                                             ${reset}"
+    echo "${yellow} | ${bold}Please ensure you save the wallet ID and seed.                                     ${reset}"
+    echo "${yellow} | ${bold}To start managing the wallet, use the following command:                           ${reset}"
+    echo "${yellow} | ${green}docker exec -it banano-node /usr/bin/bananode --daemon                            ${reset}"
+    echo "${yellow} |=========================================================================================| ${reset}"    
     if [[ $displaySeed = 'true' ]]; then
-        seed=$(${nodeExec} --wallet_decrypt_unsafe --wallet=$walletId | grep 'Seed' | awk '{ print $NF}' | tr -d '\r')
-        echo "${yellow} | Node wallet seed: ${red}$seed${yellow}      | ${reset}"
-    fi
-    echo "${yellow} |=========================================================================================| ${reset}"
+        echo "${yellow} | ${bold}WALLET SEED:${reset} ${red}${seed}                                             ${reset}"
+        echo "${yellow} | Never share the seed. Keep it safe.                                                 | ${reset}"
+        echo "${yellow} |=====================================================================================| ${reset}"
 
     echo ""
+    fi
+    
 
     if [[ $domain ]]; then
         echo "${yellow} Open a browser and navigate to ${green}https://$domain${yellow} to check your monitor."
     else
         echo "${yellow} Open a browser and navigate to ${green}http://$ipAddress${yellow} to check your monitor."
     fi
-    echo "${yellow} You can further configure and personalize your monitor by editing the config file located in ${green}banano-node-monitor/config.php${yellow}.${reset}"
+    echo "${yellow}Configure the node monitor by editing the config file: ${reset}"
+    echo "${green}./banano-node-monitor/nanoNodeMonitor/config.php${reset}"
 
     echo ""
 fi

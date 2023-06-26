@@ -4,6 +4,8 @@
     <img src="banano-node-docker.png" alt="Banano Node Docker Logo" width='300px' height='auto'/>
 </div>
 
+Note: This is super beta now and often changing and breaking.
+
 The Banano Node Docker Bash script automates the setup process for running a Banano node using Docker. It pulls the necessary Docker images, sets up the required configuration, and initializes the Banano node. This makes the process of setting up and configuring a Banano node more efficient and secure.
 
 ## Prerequisites
@@ -36,19 +38,19 @@ When the script is executed, it performs a series of functions, which are outlin
 
 | Command                               | Step                                 | Description                                                         |
 |---------------------------------------|--------------------------------------|---------------------------------------------------------------------|
-| `check_os()`                          | Checks the operating system          | Verifies if the script is running on a supported operating system. If not supported, it displays an error message and exits. |
-| `check_required_tools()`              | Checks for required tools            | Ensures that all necessary tools are installed to run the script.   |
-| `check_docker_installation()`         | Checks Docker installation           | Verifies if Docker is installed on the system.                      |
-| `check_docker_compose_installation()` | Checks Docker Compose installation   | Verifies if Docker Compose is installed on the system.              |
-| `apply_latest_docker_image_tag()`     | Apply the latest Docker image tag    | Retrieves and applies the latest Docker image tag for the Banano Node. |
-| `optional_fast_sync()`                | Optional fast sync                   | Enables the fast synchronization mode for the Banano Node.          |
-| `check_initial_node_setup()`          | Checks initial setup                 | Verifies if the initial setup for the Banano Node has been completed. |
-| `spin_up_docker_stack()`              | Spins up the Docker stack            | Starts the Docker stack for running the Banano Node.                |
-| `configure_start_docker_containers()` | Configure and start Docker containers| Configures and starts the necessary Docker containers for the Banano Node. |
-| `wait_for_node_to_initialize()`       | Waits for node to initialize         | Waits for the Banano Node to initialize and become ready.           |
+| `verify_os()`                          | Checks the operating system          | Verifies if the script is running on a supported operating system. If not supported, it displays an error message and exits. |
+| `verify_dependencies()`              | Checks for required tools            | Ensures that all necessary tools are installed to run the script.   |
+| `verify_docker()`         | Checks Docker installation           | Verifies if Docker is installed on the system.                      |
+| `verify_docker-compose()` | Checks Docker Compose installation   | Verifies if Docker Compose is installed on the system.              |
+| `verify_dockerhub_image_tag()`     | Apply the latest Docker image tag    | Retrieves and applies the latest Docker image tag for the Banano Node. |
+| `verify_fast_sync_select()`                | Optional fast sync                   | Enables the fast synchronization mode for the Banano Node.          |
+| `verify_node_setup()`          | Checks initial setup                 | Verifies if the initial setup for the Banano Node has been completed. |
+| `run_docker_stack()`              | Spins up the Docker stack            | Starts the Docker stack for running the Banano Node.                |
+| `run_docker_containers()` | Configure and start Docker containers| Configures and starts the necessary Docker containers for the Banano Node. |
+| `init_banano_node()`       | Waits for node to initialize         | Waits for the Banano Node to initialize and become ready.           |
 | `set_banano_node_alias()`             | Sets Banano node alias               | Sets the alias for the Banano Node.                                 |
-| `wallet_check_and_generation()`       | Wallet check and wallet generation   | Checks if a wallet is already generated and generates a new wallet if needed. |
-| `configure_banano_node_monitor()`     | Configures Banano node monitor       | Configures the Banano node monitor for monitoring the node's status. |
+| `verify_wallet_generation()`       | Wallet check and wallet generation   | Checks if a wallet is already generated and generates a new wallet if needed. |
+| `run_banano_node_monitor()`     | Configures Banano node monitor       | Configures the Banano node monitor for monitoring the node's status. |
 
 
 
@@ -66,7 +68,7 @@ To execute commands from the Banano node's Command Line Interface (CLI), you hav
 
 **Option 1: Enter the Banano node container and execute commands directly:**
 ```
-docker exec -it banano-node banano_node <command>
+docker exec -it banano-node /usr/bin/bananode <command>
 ```
 
 **Option 2: Use the shorthand alias provided by the installer for executing Banano node and wallet commands:**
