@@ -561,8 +561,8 @@ if [[ $quiet = 'false' ]]; then
     echo "${yellow} | ${green}docker exec -it banano-node /usr/bin/bananode --daemon                 ${reset}"
     echo "${yellow} |================================================================================${reset}"    
     if [[ $displaySeed = 'true' ]]; then
-        echo "${yellow} | ${bold}SEED:${reset} ${red}${seed}                                  ${reset}"
-        echo "${yellow} | Never share your seed. Keep it safe.                                       ${reset}"
+        echo "${yellow} | ${bold}SEED:${reset} ${red}${seed}                                         ${reset}"
+        echo "${yellow} | ${bold}IMPORTANT:${reset} ${red}Never share your seed. Keep it safe.       ${reset}"
         echo "${yellow} |============================================================================${reset}"
     fi
     
@@ -578,10 +578,10 @@ if [[ $quiet = 'false' ]]; then
     echo "${green} ./banano-node-monitor/config.php${reset}"
 
     echo "${yellow} =================================================================================${reset}"
-    echo "${green} || A lot of care and effort has gone into refactoring Banano Node Docker,       ||${reset}"
-    echo "${green} || to make the script easily configurable and accessible for all.               ||${reset}"
-    echo "${green} || Your support is invaluable in sustaining this project.                       ||${reset}"
-    echo "${green} || Thank you for being a part of it!                                            ||${reset}"
+    echo "${green} || A lot of care and effort has gone into refactoring Banano Node Docker,      ||${reset}"
+    echo "${green} || to make the script easily configurable and accessible for all.              ||${reset}"
+    echo "${green} || Your support is invaluable in sustaining this project.                      ||${reset}"
+    echo "${green} || Thank you for being a part of it!                                           ||${reset}"
     echo "${yellow} =================================================================================${reset}"
     echo -e " \U0001F34C"
     echo "${yellow}${bold} Support This Project: ${reset}"
@@ -592,5 +592,21 @@ fi
 
 # Run as PR flag
 #sed -i '/^\[node\]$/!b;a\node\enable_voting = true' ./banano-node/BananoData/config-node.toml
+
+
+end() {
+    echo -e "\n${green}${bold}Banano Node Docker finished successfully. Press any key to close.${reset}"
+    read -n 1 -s -r -p ""  # Wait for user input of any key
+}
+
+# ================================================================================
+# Check if the script finished successfully and call the function
+# ================================================================================
+if [ $? -eq 0 ]; then
+    echo -e "\n\n\n\n"
+    end  # Call the function to display message and wait for keypress
+fi
+
+
 
 
