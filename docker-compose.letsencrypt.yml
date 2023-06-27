@@ -8,18 +8,13 @@ services:
     hostname: banano-node
     environment:
       - TERM=xterm
-      - RPC_SECURE=1
-      - WEBSOCKET_SECURE=1
-      - RPC_SECURE_RPC_CERTIFICATE_PATH=/root/config/cert.pem
-      - RPC_SECURE_RPC_KEY_PATH=/root/config/privkey.pem
-      - RPC_SECURE_RPC_CHAIN_PATH=/root/config/chain.pem
     restart: unless-stopped
     ports:
-      - "7071:7071"
-      - "127.0.0.1:7072:7072"
+      - "7071:7071"                   # Map container port 7071 to host port 7071
+      - "127.0.0.1:7072:7072"         # Map container port 7072 to host port 7072 (localhost only)
+      - "127.0.0.1:7074:7074"         # Map container port 7074 to host port 7074 (localhost only)
     volumes:
-      - ./banano-node:/root
-      - ./config:/root/config
+      - ./banano-node:/root           # Mount ./banano-node directory from host to /root directory in container
 
   # Banano Node Monitor service
   banano-node-monitor:
@@ -28,13 +23,13 @@ services:
     hostname: banano-node-monitor
     restart: unless-stopped
     environment:
-      - VIRTUAL_HOST=mydomain.com # Virtual host for Banano Node Monitor
-      - LETSENCRYPT_HOST=mydomain.com # Domain for Let's Encrypt certificate
-      - LETSENCRYPT_EMAIL=myemailaddress@mail.com # Email address for Let's Encrypt notifications
+      - VIRTUAL_HOST=banano.sh
+      - LETSENCRYPT_HOST=banano.sh
+      - LETSENCRYPT_EMAIL=hi@banano.sh
     volumes:
-      - ./banano-node-monitor/config.php:/opt/nanoNodeMonitor/config.php # Mount custom config file
+      - ./banano-node-monitor/config.php:/opt/nanoNodeMonitor/config.php # Mount ./banano-node-monitor/config.php file from host to /opt/nanoNodeMonitor/config.php in container
 
-  # Nginx Reverse Proxy service
+  # Nginx Proxy service
   nginx-proxy:
     image: jwilder/nginx-proxy
     container_name: nginx-proxy
@@ -43,24 +38,28 @@ services:
       - "80:80"
       - "443:443"
     environment:
-      - DEFAULT_HOST=mydomain.com # Default host for Nginx Reverse Proxy
+      - DEFAULT_HOST=banano.sh
     volumes:
-      - nginx-proxy-v1:/etc/nginx/vhost.d # Volume for Nginx Reverse Proxy configuration
-      - nginx-proxy-v2:/usr/share/nginx/html # Volume for Nginx Reverse Proxy default HTML files
-      - /var/run/docker.sock:/tmp/docker.sock:ro # Mount Docker socket for dynamic configuration
-      - nginx-proxy-v3:/etc/nginx/certs # Volume for Nginx Reverse Proxy SSL certificates
-    restart: always
+      - nginx-proxy-v1:/etc/nginx/vhost.d         # Volume for Nginx vhost configuration
+      - nginx-proxy-v2:/usr/share/nginx/html      # Volume for Nginx HTML content
+      - /var/run/docker.sock:/tmp/docker.sock:ro  # Volume for Docker socket communication
+      - nginx-proxy-v3:/etc/nginx/certs           # Volume for Nginx SSL certificates
 
-  # LetsEncrypt Nginx Proxy Companion service
+volumes:
+  nginx-proxy-v1:
+  nginx-proxy-v2:
+  nginx-proxy-v3:
+
+  # Let's Encrypt Nginx Proxy Companion service
   letsencrypt-nginx-proxy-companion:
     image: jrcs/letsencrypt-nginx-proxy-companion
     container_name: nginx-proxy-letsencrypt
     restart: unless-stopped
     volumes:
-      - nginx-proxy-v1:/etc/nginx/vhost.d # Volume for Nginx Reverse Proxy configuration
-      - nginx-proxy-v2:/usr/share/nginx/html # Volume for Nginx Reverse Proxy default HTML files
-      - /var/run/docker.sock:/var/run/docker.sock:ro # Mount Docker socket for dynamic configuration
-      - nginx-proxy-v3:/etc/nginx/certs # Volume for Nginx Reverse Proxy SSL certificates
+      - nginx-proxy-v1:/etc/nginx/vhost.d
+      - nginx-proxy-v2:/usr/share/nginx/html
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - nginx-proxy-v3:/etc/nginx/certs
     environment:
       - NGINX_PROXY_CONTAINER=nginx-proxy
 
@@ -69,16 +68,11 @@ services:
     image: v2tec/watchtower
     container_name: watchtower
     restart: unless-stopped
-    command: watchtower banano-node banano-node-monitor nginx-proxy letsencrypt-nginx-proxy-companion # Watchtower command to monitor and update containers
+    command: watchtower banano-node banano-node-monitor nginx-proxy letsencrypt-nginx-proxy-companion
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock # Mount Docker socket for Watchtower to access containers
+      - /var/run/docker.sock:/var/run/docker.sock
 
 networks:
   banano-node-network:
     name: banano-node-network
     external: true
-
-volumes:
-  nginx-proxy-v1:
-  nginx-proxy-v2:
-  nginx-proxy-v3:

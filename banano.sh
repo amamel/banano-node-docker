@@ -17,7 +17,7 @@ check_os() {
 
 
 # Banano Node Docker Script Version
-version='0.5'
+version='.5'
 
 # Output Variables
 red=$(tput setaf 1)            # Set the variable red to the ANSI escape code for red color
@@ -29,22 +29,22 @@ reset=$(tput sgr0)             # Set the variable reset to the ANSI escape code 
 
 
 # Flags & Arguments
-quiet='false'                  # Flag: Quiet mode (default: false)
-displaySeed='false'            # Flag: Display wallet seed (default: false)
-fastSync='false'               # Flag: Enable fast sync (default: false)
-domain=''                      # Argument: Domain name for SSL setup (default: empty)
-email=''                       # Argument: Email for Let's Encrypt SSL setup (default: empty)
-tag=''                         # Argument: Docker image tag (default: empty)
+quiet=false            # Flag: Quiet mode (default: false)
+displaySeed=false      # Flag: Display wallet seed (default: false)
+fastSync=false         # Flag: Enable fast sync (default: false)
+domain=''              # Argument: Domain name for SSL setup (default: empty)
+email=''               # Argument: Email for Let's Encrypt SSL setup (default: empty)
+tag=''                 # Argument: Docker image tag (default: empty)
 
 while getopts 'sqfd:e:t:' flag; do
   case "$flag" in
-    s) displaySeed='true' ;;   # Set displaySeed flag to true if -s option is provided
-    d) domain="$OPTARG" ;;     # Set domain to the value provided after -d option
-    e) email="$OPTARG" ;;      # Set email to the value provided after -e option
-    q) quiet='true' ;;         # Set quiet flag to true if -q option is provided
-    f) quick_sync='true' ;;    # Set quick_sync flag to true if -f option is provided
-    t) tag="$OPTARG" ;;        # Set tag to the value provided after -t option
-    *) exit 1 ;;               # Invalid option, exit with error
+    s) displaySeed=true ;;   # Set displaySeed flag to true if -s option is provided
+    d) domain="$OPTARG" ;;   # Set domain to the value provided after -d option
+    e) email="$OPTARG" ;;    # Set email to the value provided after -e option
+    q) quiet=true ;;         # Set quiet flag to true if -q option is provided
+    f) fastSync=true ;;      # Set fastSync flag to true if -f option is provided
+    t) tag="$OPTARG" ;;      # Set tag to the value provided after -t option
+    *) exit 1 ;;             # Invalid option, exit with error
   esac
 done
 
@@ -53,22 +53,22 @@ echo $@ > settings
 
 ascii_art() {
 if [[ $quiet = 'false' ]]; then
-  echo -e "${green} ------------------------------------${reset}"
+  echo -e "${green} ================================================================================${reset}"
   echo -e "${green}${bold} Banano Node Docker ${version}${reset}"
   echo -e "${yellow} https://github.com/amamel/banano-node-docker${reset}"
-  echo -e "${green} ------------------------------------${reset}\n"
-  echo "
-  @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@&BG5J?7!~^^^::::::^^^~!7?J5GB&@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+  echo -e "${green} ================================================================================${reset}\n"
+  echo "${yellow}
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@&BG5J?7!~^^^::::::^^^~!7?J5GB&@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@&BPJ7!^^::::::::::^^^^^^^:::::::::^^!7YPB&@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 @@@@@@@@@@@@@@@@@@@@@@@@@&GY7~:::::::^^~!!7??JJJYYYYYJJ??7!!~^^^:::::^~7YG&@@@@@@@@@@@@@@@@@@@@@@@@@
 @@@@@@@@@@@@@@@@@@@@@@B57^:::::^^!7?Y5PPGGGGGGGGGGGGGBBBBBGGGP5YJ7!~^^::::^75B@@@@@@@@@@@@@@@@@@@@@@
-@@@@@@@@@@@@@@@@@@@BY!:::::^~7J5PGGGGGGGGGGGGGGGGGGGGGGGGGGGBBBBGG5J7~^^^::^!YB@@@@@@@@@@@@@@@@@@@
-@@@@@@@@@@@@@@@@&P!:::::^!?5PGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGBBBBGPJ!^^^^:^7P&@@@@@@@@@@@@@@@@
-@@@@@@@@@@@@@@#J~::::^!J5GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGBBBBBPY!^^^^:~Y#@@@@@@@@@@@@@@
+@@@@@@@@@@@@@@@@@@@BY!:::::^~7J5PGGGGGGGGGGGGGGGGGGGGGGGGGGGBBBBGG5J7~^^^::^!YB@@@@@@@@@@@@@@@@@@@@@
+@@@@@@@@@@@@@@@@&P!:::::^!?5PGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGBBBBGPJ!^^^^:^7P&@@@@@@@@@@@@@@@@@@
+@@@@@@@@@@@@@@#J~::::^!J5GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGBBBBBPY!^^^^:~Y#@@@@@@@@@@@@@@@@
 @@@@@@@@@@@@#J^::::~?5GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGBBBBBBBBPJ~^^^:^J#@@@@@@@@@@@@
 @@@@@@@@@@&Y^:^::~JPGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGBBBBBBBBBBGY!^^^:^Y&@@@@@@@@@@
 @@@@@@@@@P~::^:~JPGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGBBBBBBBBBBBBBBBGJ^^^^:?&@@@@@@@
-@@@@@@@&?::^:^?PGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGBBBBBBBBBBBBBBBBBB?^^^^:?&@@@@@@@
+@@@@@@@&?::^:^?PGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGBBBBBBBBBBBBBBBBBB?^^^^:?&@@@@@@
 @@@@@@B~:^^^?GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGBBBBBBBBBBBBBBBBBBBB?^^^^^G@@@@@
 @@@@@G^:^^^JGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGBBBBBBBBBBBBBBBBBBBB?^^^^^G@@@@@
 @@@@P^:^^^JGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGBBBBBBBBBBBBBBBBBBBBBP!^^^:!B@@@@
@@ -79,7 +79,7 @@ if [[ $quiet = 'false' ]]; then
 &!^^^^YGGGGGGGGGGGGGGGGGGGGP?~^^^^^^^^^^^^^^^^^^^^^^^^!JPBBGGGGBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB5^^^^!&
 P^^^^!GGGGGGGGGGGGGGGGGGGP?^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^75BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB!^^^^P
 ?^^^:JGGGGGGGGGGGGGGGGGBY~^^^^^^^^^^^^^^~~~^^^^^^^^^^^^^^^^7PBBBBBBBBBBPY?7!!!75BBBBBBBBBBBBB#J^^^^?
-~^^^^5GGGGGGGGGGGGGGGGBJ^^^^^^^^^^^^^~?69420B7~^^^^^^^^^^^^^^YBBBBBBB5!^^^^^^^:JBBBBBBBBBBBBBBP^^^^~
+~^^^^5GGGGGGGGGGGGGGGGBJ^^^^^^^^^^^^^~?420BENIS^^^^^^^^^^^^^^YBBBBBBB5!^^^^^^^:JBBBBBBBBBBBBBBP^^^^~
 ^^^^^PGGGGGGGGGGGGGGGBJ^^^^^^^^^^^^75GGPPPPGGBBPJ7~^^^^^^^^^^^JBBBBP7^^^^^^^^^~GBBBBBBBBBBBBBBG~^^^^
 ^^^^~PGGGGGGGGGGGGGGB5^^^^^^^^^^^7PBB?^^^^^^~!7J5GGPY?!~^^^^^~7BBP?^^^^^^^^^^^Y#BBBBBBBBBBBBBBG~^^^^
 ^^^^^PGGGGGGGGGGGGGGG!^^^^^^^^^75BBBBY^^^^^^^^^^^^!JPBBBGPPPPGBP?^^^^^^^^^^^^?BBBBBBBBBBBBBBBBG~^^^^
@@ -91,7 +91,7 @@ G^^^^!GGGGGGGGGGGGGGBBBBBBBBBBBGGGGGGBBBBP?~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^7P#BBBB
 @@?:^^^?BBGGGGGGGGGGGGBBBBBBBBBBBBBBBBBBBBBBBBBBBBGP5J??77!!!77?JYPB##BBBBBBBBBBBBBBBBBBBBB#J^^^^?@@
 @@#~^^^^YBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB###BBBBBBB###BBBBBBBBBBBBBBBBBBBBBBBB#5^^^^~#@@
 @@@B^^^^^YBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB#5^^^^~B@@@
-@@@@G^^^^^YBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBRBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB#Y^^^^~G@@@@
+@@@@G^^^^^YBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBRBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB#Y^^^^~G@@@
 @@@@@G~^^^^?GBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB#BJ^^^^~B@@@@@
 @@@@@@#7^^^^!PBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB#P!^^^^7#@@@@@@
 @@@@@@@&J^^^^^JGBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB#BJ^^^^^Y&@@@@@@@
@@ -100,11 +100,11 @@ G^^^^!GGGGGGGGGGGGGGBBBBBBBBBBBGGGGGGBBBBP?~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^7P#BBBB
 @@@@@@@@@@@@&Y~^^^^~JPBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB##BGJ~^^^^~Y&@@@@@@@@@@@@
 @@@@@@@@@@@@@@&5!^^^^^7YGBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB##BGY7^^^^^!5&@@@@@@@@@@@@@@
 @@@@@@@@@@@@@@@@&G?~^^^^^~7YPGBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB###BGPY?~^^^^~?G&@@@@@@@@@@@@@@@@
-@@@@@@@@@@@@@@@@@@@#57~^^^^^~!?J5PGBBB################BBBGP5J?!~^^^^^^!?P#@@@@@@@@@@@@@@@@@@@@@@@
-@@@@@@@@@@@@@@@@@@@@@@#P?~^^^^^^~7YPGBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB#5^^^^~B@@@@@
+@@@@@@@@@@@@@@@@@@@#57~^^^^^~!?J5PGBBB################BBBGP5J?!~^^^^^^!?P#@@@@@@@@@@@@@@@@@@@@@@@@@@
+@@@@@@@@@@@@@@@@@@@@@@#P?~^^^^^^~7YPGBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB#5^^^^~B@@@@@@
 @@@@@@@@@@@@@@@@@@@@@@@@@&B5?!^^^^^^^^~~!7??JYYYY55YYYYJ??7!~~^^^^^^^~!?5B&@@@@@@@@@@@@@@@@@@@@@@@@@
 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@&#G5J7!~^^^^^^^^^^^^^^^^^^^^^^^^^^~!7J5G#&@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@&#GP5J?7!!~~~~~~~~~~!!7?J5PG#&@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@&#GP5J?7!!~~~~~~~~~~!!7?J5PG#&@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@${reset}"
 fi
 }
 ascii_art
@@ -205,30 +205,114 @@ verify_docker_compose
 
 
 # FAST-SYNCING
-if [[ $fastSync = 'true' ]]; then
+# Define the fast-sync database download links
+# Note - This links are community supported but are not guaranteed to work.
+# As such, more mirrors are always welcome.
+ledgerDownloadLink_LMDB='https://lmdb.cutecat.party/snapshot.ldb'
+ledgerDownloadLink_RocksDB='https://ledgerfiles.moonano.net/files/latest.tar.gz'
 
-    if [[ $quiet = 'false' ]]; then
-        printf "=> ${yellow}Downloading latest ledger files for fast-syncing...${reset}\n"
-        wget -O snapshot.ldb.gz ${ledgerDownloadLink} -q --show-progress
 
-        printf "=> ${yellow}Unzipping and placing the files (takes a while)...${reset} "
-        7z x snapshot.ldb.gz  -o./banano-node/BananoData -y &> /dev/null
-        rm snapshot.ldb.gz
-        printf "${green}done.${reset}\n"
+
+fast_sync_lmdb() {
+  if [[ $quiet = 'false' ]]; then
+    printf "=> ${yellow}Downloading the LMDB database for fast-syncing...${reset}\n"
+    wget -O snapshot.ldb ${ledgerDownloadLink_LMDB} -q --show-progress
+  else
+    wget -O snapshot.ldb ${ledgerDownloadLink_LMDB} -q
+    docker-compose stop banano-node &> /dev/null
+  fi
+
+  printf "=> ${yellow}Replacing the database file...${reset} "
+  mv -f snapshot.ldb ./banano-node/BananoData/data.ldb
+  printf "${green}done.${reset}\n"
+  echo ""
+}
+
+
+
+fast_sync_rocksdb() {
+  if [[ $quiet = 'false' ]]; then
+    printf "=> ${yellow}Downloading the RocksDB database for fast-syncing...${reset}\n"
+    wget -O latest.tar.gz ${ledgerDownloadLink_RocksDB} -q --show-progress
+
+    printf "=> ${yellow}Extracting and placing the database files...${reset} "
+    
+    # Create the /rocksdb folder if it doesn't exist
+    mkdir -p ./banano-node/BananoData/rocksdb
+
+    tar -xf latest.tar.gz -C ./banano-node/BananoData/rocksdb --strip-components=1
+    rm latest.tar.gz
+    printf "${green}done.${reset}\n"
+    echo ""
+  else
+    wget -O latest.tar.gz ${ledgerDownloadLink_RocksDB} -q
+    docker-compose stop banano-node &> /dev/null
+
+    # Create the /rocksdb folder if it doesn't exist
+    mkdir -p ./banano-node/BananoData/rocksdb
+
+    tar -xf latest.tar.gz -C ./banano-node/BananoData/rocksdb --strip-components=1
+    rm latest.tar.gz
+  fi
+}
+
+
+fast_sync() {
+  # Define the menu options using variables
+  option1="LMDB"
+  option2="RocksDB"
+  option3="Exit"
+
+  PS3="=> ${green}Please select the database you would like to use for fast-syncing: ${reset}"
+  options=("$option1" "$option2" "$option3")
+
+  # Prompt the user to choose the database option
+  select opt in "${options[@]}"; do
+    case $opt in
+      "$option1")
+        fast_sync_lmdb
+        break
+        ;;
+      "$option2")
+        fast_sync_rocksdb
+        break
+        ;;
+      "$option3")
+        echo "=> ${red}Installer stopped by user. Fast-syncing aborted.${reset}"
         echo ""
-
-    else
-        wget -O snapshot.ldb.gz ${ledgerDownloadLink} -q
-        docker-compose stop banano-node &> /dev/null
-        7z x snapshot.ldb.gz  -o./banano-node/BananoData -y &> /dev/null
-        rm snapshot.ldb.gz
-    fi
-
-fi
+        exit 1
+        ;;
+      *) echo "=> ${red}Invalid option. Please select a valid number.${reset}" ;;
+    esac
+  done
+}
 
 
-#conditionally add this config if fast-sync rocks is chosen
-#sed -i '/^\[node\]$/a [node.rocksdb]\nenable = true' ./banano-node/BananoData/config-node.toml
+
+
+optional_fastSync() {
+  if [[ $fastSync = 'true' ]]; then
+    fast_sync
+  else
+    echo "=> ${yellow}Skipping fast-sync. Quick-syncing is not enabled.${reset}"
+    echo ""
+  fi
+}
+optional_fastSync
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -278,46 +362,44 @@ docker network create banano-node-network &> /dev/null
 
 if [[ $domain ]]; then
 
-    if [[ $tag ]]; then
-        echo "=> ${yellow}Selected tag:${reset} ${green}$tag${reset}"
-        echo ""
-        sed -i -e "s/    image: bananocoin\/banano:.*/    image: bananocoin\/banano:$tag/g" docker-compose.letsencrypt.yml
-    fi
+  if [[ $tag ]]; then
+    echo "=> ${yellow}Selected tag:${reset} ${green}$tag${reset}"
+    echo ""
+    sed -i -e "s/    image: bananocoin\/banano:.*/    image: bananocoin\/banano:$tag/g" docker-compose.letsencrypt.yml
+  fi
 
-    sed -i -e "s/      - VIRTUAL_HOST=.*/      - VIRTUAL_HOST=$domain/g" docker-compose.letsencrypt.yml
-    sed -i -e "s/      - LETSENCRYPT_HOST=.*/  - LETSENCRYPT_HOST=$domain/g" docker-compose.letsencrypt.yml
-    sed -i -e "s/      - DEFAULT_HOST=.*/      - DEFAULT_HOST=$domain/g" docker-compose.letsencrypt.yml
+    sed -i -e "s/   - VIRTUAL_HOST=.*/      - VIRTUAL_HOST=$domain/g" docker-compose.letsencrypt.yml
+    sed -i -e "s/   - LETSENCRYPT_HOST=.*/      - LETSENCRYPT_HOST=$domain/g" docker-compose.letsencrypt.yml
+    sed -i -e "s/   - DEFAULT_HOST=.*/      - DEFAULT_HOST=$domain/g" docker-compose.letsencrypt.yml
 
-    if [[ $email ]]; then
-        sed -i -e "s/      - LETSENCRYPT_EMAIL=.*/      - LETSENCRYPT_EMAIL=$email/g" docker-compose.letsencrypt.yml
-    fi
+  if [[ $email ]]; then
+    sed -i -e "s/   - LETSENCRYPT_EMAIL=.*/     - LETSENCRYPT_EMAIL=$email/g" docker-compose.letsencrypt.yml
+  fi
 
-    if [[ $quiet = 'false' ]]; then
-        docker-compose -f docker-compose.letsencrypt.yml up -d
-    else
-        docker-compose -f docker-compose.letsencrypt.yml up -d &> /dev/null
-    fi
-
+  if [[ $quiet = 'false' ]]; then
+    docker-compose -f docker-compose.letsencrypt.yml up -d
+  else
+    docker-compose -f docker-compose.letsencrypt.yml up -d &> /dev/null
+  fi
 else
+  if [[ $tag ]]; then
+    echo "=> ${yellow}Selected Dockerhub tag:${reset} ${green}$tag${reset}"
+    echo ""
+    sed -i -e "s/    image: bananocoin\/banano:.*/    image: bananocoin\/banano:$tag/g" docker-compose.yml
+  fi
 
-    if [[ $tag ]]; then
-        echo "=> ${yellow}Selected tag:${reset} ${green}$tag${reset}"
-        echo ""
-        sed -i -e "s/    image: bananocoin\/banano:.*/    image: bananocoin\/banano:$tag/g" docker-compose.yml
-    fi
-
-    if [[ $quiet = 'false' ]]; then
-        docker-compose up -d
-    else
-        docker-compose up -d &> /dev/null
-    fi
-
+  if [[ $quiet = 'false' ]]; then
+    docker-compose up -d
+  else
+    docker-compose up -d &> /dev/null
+  fi
 fi
 
 if [ $? -ne 0 ]; then
-    echo "${red}Errors were encountered while spinning up the containers. Scroll up for more info on how to fix them.${reset}"
-    exit 2
+  echo "${red}Errors were encountered while spinning up the containers. Scroll up for more info on how to fix them.${reset}"
+  exit 2
 fi
+
 
 # CHECK NODE INITIALIZATION
 [[ $quiet = 'false' ]] && echo ""
@@ -590,8 +672,15 @@ if [[ $quiet = 'false' ]]; then
     echo ""
 fi
 
+# ============================
+# Post Node Setup Config
+# ============================
+
 # Run as PR flag
 #sed -i '/^\[node\]$/!b;a\node\enable_voting = true' ./banano-node/BananoData/config-node.toml
+
+#conditionally add this config if fast-sync rocks is chosen
+#sed -i '/^\[node\]$/a [node.rocksdb]\nenable = true' ./banano-node/BananoData/config-node.toml
 
 
 end() {
