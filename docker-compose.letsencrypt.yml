@@ -1,7 +1,6 @@
 version: '3'
 
 services:
-  # Banano Node service
   banano-node:
     image: bananocoin/banano:latest
     container_name: banano-node
@@ -10,15 +9,14 @@ services:
       - TERM=xterm
     restart: unless-stopped
     ports:
-      - "7071:7071"                   # Map container port 7071 to host port 7071
-      - "127.0.0.1:7072:7072"         # Map container port 7072 to host port 7072 (localhost only)
-      - "127.0.0.1:7074:7074"         # Map container port 7074 to host port 7074 (localhost only)
+      - 7071:7071
+      - 127.0.0.1:7072:7072
+      - 127.0.0.1:7074:7074
     volumes:
-      - ./banano-node:/root           # Mount ./banano-node directory from host to /root directory in container
+      - ./banano-node:/root
 
-  # Banano Node Monitor service
   banano-node-monitor:
-    image: nanotools/nanonodemonitor:latest
+    image: nanotools/nanonodemonitor
     container_name: banano-node-monitor
     hostname: banano-node-monitor
     restart: unless-stopped
@@ -27,30 +25,23 @@ services:
       - LETSENCRYPT_HOST=banano.sh
       - LETSENCRYPT_EMAIL=hi@banano.sh
     volumes:
-      - ./banano-node-monitor/config.php:/opt/nanoNodeMonitor/config.php # Mount ./banano-node-monitor/config.php file from host to /opt/nanoNodeMonitor/config.php in container
+      - ./banano-node-monitor/config.php:/opt/nanoNodeMonitor/config.php
 
-  # Nginx Proxy service
   nginx-proxy:
     image: jwilder/nginx-proxy
     container_name: nginx-proxy
     restart: unless-stopped
     ports:
-      - "80:80"
-      - "443:443"
+      - 80:80
+      - 443:443
     environment:
       - DEFAULT_HOST=banano.sh
     volumes:
-      - nginx-proxy-v1:/etc/nginx/vhost.d         # Volume for Nginx vhost configuration
-      - nginx-proxy-v2:/usr/share/nginx/html      # Volume for Nginx HTML content
-      - /var/run/docker.sock:/tmp/docker.sock:ro  # Volume for Docker socket communication
-      - nginx-proxy-v3:/etc/nginx/certs           # Volume for Nginx SSL certificates
+      - nginx-proxy-v1:/etc/nginx/vhost.d
+      - nginx-proxy-v2:/usr/share/nginx/html
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+      - nginx-proxy-v3:/etc/nginx/certs
 
-volumes:
-  nginx-proxy-v1:
-  nginx-proxy-v2:
-  nginx-proxy-v3:
-
-  # Let's Encrypt Nginx Proxy Companion service
   letsencrypt-nginx-proxy-companion:
     image: jrcs/letsencrypt-nginx-proxy-companion
     container_name: nginx-proxy-letsencrypt
@@ -63,7 +54,6 @@ volumes:
     environment:
       - NGINX_PROXY_CONTAINER=nginx-proxy
 
-  # Watchtower service
   watchtower:
     image: v2tec/watchtower
     container_name: watchtower
@@ -76,3 +66,8 @@ networks:
   banano-node-network:
     name: banano-node-network
     external: true
+
+volumes:
+  nginx-proxy-v1:
+  nginx-proxy-v2:
+  nginx-proxy-v3:

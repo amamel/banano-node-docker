@@ -355,40 +355,41 @@ fi
 
 
 # SPIN UP THE APPROPRIATE STACK
-[[ $quiet = 'false' ]] && echo "=> ${yellow}Pulling images and spinning up containers...${reset}"
-[[ $quiet = 'false' ]] && echo ""
+if [ "$quiet" = 'false' ]; then
+  echo "=> ${yellow}Pulling images and spinning up containers...${reset}"
+  echo ""
+fi
 
 docker network create banano-node-network &> /dev/null
 
-if [[ $domain ]]; then
-
-  if [[ $tag ]]; then
+if [ -n "$domain" ]; then
+  if [ -n "$tag" ]; then
     echo "=> ${yellow}Selected tag:${reset} ${green}$tag${reset}"
     echo ""
-    sed -i -e "s/    image: bananocoin\/banano:.*/    image: bananocoin\/banano:$tag/g" docker-compose.letsencrypt.yml
+    sed -i "s/image: bananocoin\/banano:.*/image: bananocoin\/banano:$tag/g" docker-compose.letsencrypt.yml
   fi
 
-    sed -i -e "s/   - VIRTUAL_HOST=.*/      - VIRTUAL_HOST=$domain/g" docker-compose.letsencrypt.yml
-    sed -i -e "s/   - LETSENCRYPT_HOST=.*/      - LETSENCRYPT_HOST=$domain/g" docker-compose.letsencrypt.yml
-    sed -i -e "s/   - DEFAULT_HOST=.*/      - DEFAULT_HOST=$domain/g" docker-compose.letsencrypt.yml
+  sed -i "s/  - VIRTUAL_HOST=.*/  - VIRTUAL_HOST=$domain/g" docker-compose.letsencrypt.yml
+  sed -i "s/  - LETSENCRYPT_HOST=.*/  - LETSENCRYPT_HOST=$domain/g" docker-compose.letsencrypt.yml
+  sed -i "s/  - DEFAULT_HOST=.*/  - DEFAULT_HOST=$domain/g" docker-compose.letsencrypt.yml
 
-  if [[ $email ]]; then
-    sed -i -e "s/   - LETSENCRYPT_EMAIL=.*/     - LETSENCRYPT_EMAIL=$email/g" docker-compose.letsencrypt.yml
+  if [ -n "$email" ]; then
+    sed -i "s/  - LETSENCRYPT_EMAIL=.*/  - LETSENCRYPT_EMAIL=$email/g" docker-compose.letsencrypt.yml
   fi
 
-  if [[ $quiet = 'false' ]]; then
+  if [ "$quiet" = 'false' ]; then
     docker-compose -f docker-compose.letsencrypt.yml up -d
   else
     docker-compose -f docker-compose.letsencrypt.yml up -d &> /dev/null
   fi
 else
-  if [[ $tag ]]; then
+  if [ -n "$tag" ]; then
     echo "=> ${yellow}Selected Dockerhub tag:${reset} ${green}$tag${reset}"
     echo ""
-    sed -i -e "s/    image: bananocoin\/banano:.*/    image: bananocoin\/banano:$tag/g" docker-compose.yml
+    sed -i "s/image: bananocoin\/banano:.*/image: bananocoin\/banano:$tag/g" docker-compose.yml
   fi
 
-  if [[ $quiet = 'false' ]]; then
+  if [ "$quiet" = 'false' ]; then
     docker-compose up -d
   else
     docker-compose up -d &> /dev/null
@@ -399,6 +400,7 @@ if [ $? -ne 0 ]; then
   echo "${red}Errors were encountered while spinning up the containers. Scroll up for more info on how to fix them.${reset}"
   exit 2
 fi
+
 
 
 # CHECK NODE INITIALIZATION
