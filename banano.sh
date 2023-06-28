@@ -1,5 +1,9 @@
 #!/bin/bash
 
+#################################################
+#  Banano Node Docker                           #
+#  https://github.com/amamel/banano-node-docker #
+#################################################
 
 # Function to check the operating system
 check_os() {
@@ -10,14 +14,9 @@ check_os() {
   fi
 }
 
-#################################################
-#  Banano Node Docker                           #
-#  https://github.com/amamel/banano-node-docker #
-#################################################
-
 
 # Banano Node Docker Script Version
-version='.5'
+version='1.0'
 
 # Output Variables
 red=$(tput setaf 1)            # Set the variable red to the ANSI escape code for red color
@@ -26,7 +25,6 @@ yellow=$(tput setaf 3)         # Set the variable yellow to the ANSI escape code
 purple=$(tput setaf 5)         # Set the variable purple to the ANSI escape code for purple color
 bold=$(tput bold)              # Set the variable bold to the ANSI escape code for bold text
 reset=$(tput sgr0)             # Set the variable reset to the ANSI escape code to reset text formatting
-
 
 # Flags & Arguments
 quiet=false            # Flag: Quiet mode (default: false)
@@ -79,7 +77,7 @@ if [[ $quiet = 'false' ]]; then
 &!^^^^YGGGGGGGGGGGGGGGGGGGGP?~^^^^^^^^^^^^^^^^^^^^^^^^!JPBBGGGGBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB5^^^^!&
 P^^^^!GGGGGGGGGGGGGGGGGGGP?^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^75BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB!^^^^P
 ?^^^:JGGGGGGGGGGGGGGGGGBY~^^^^^^^^^^^^^^~~~^^^^^^^^^^^^^^^^7PBBBBBBBBBBPY?7!!!75BBBBBBBBBBBBB#J^^^^?
-~^^^^5GGGGGGGGGGGGGGGGBJ^^^^^^^^^^^^^~?420BENIS^^^^^^^^^^^^^^YBBBBBBB5!^^^^^^^:JBBBBBBBBBBBBBBP^^^^~
+~^^^^5GGGGGGGGGGGGGGGGBJ^^^^^^^^^^^^^~?BENIS420^^^^^^^^^^^^^^YBBBBBBB5!^^^^^^^:JBBBBBBBBBBBBBBP^^^^~
 ^^^^^PGGGGGGGGGGGGGGGBJ^^^^^^^^^^^^75GGPPPPGGBBPJ7~^^^^^^^^^^^JBBBBP7^^^^^^^^^~GBBBBBBBBBBBBBBG~^^^^
 ^^^^~PGGGGGGGGGGGGGGB5^^^^^^^^^^^7PBB?^^^^^^~!7J5GGPY?!~^^^^^~7BBP?^^^^^^^^^^^Y#BBBBBBBBBBBBBBG~^^^^
 ^^^^^PGGGGGGGGGGGGGGG!^^^^^^^^^75BBBBY^^^^^^^^^^^^!JPBBBGPPPPGBP?^^^^^^^^^^^^?BBBBBBBBBBBBBBBBG~^^^^
@@ -204,14 +202,13 @@ verify_docker_compose() {
 verify_docker_compose
 
 
-# FAST-SYNCING
+# Fast Syncing
+################################################################################
+# Note - These links are community supported but are not guaranteed to work.
+################################################################################
 # Define the fast-sync database download links
-# Note - This links are community supported but are not guaranteed to work.
-# As such, more mirrors are always welcome.
 ledgerDownloadLink_LMDB='https://lmdb.cutecat.party/snapshot.ldb'
 ledgerDownloadLink_RocksDB='https://ledgerfiles.moonano.net/files/latest.tar.gz'
-
-
 
 fast_sync_lmdb() {
   if [[ $quiet = 'false' ]]; then
@@ -227,8 +224,6 @@ fast_sync_lmdb() {
   printf "${green}done.${reset}\n"
   echo ""
 }
-
-
 
 fast_sync_rocksdb() {
   if [[ $quiet = 'false' ]]; then
@@ -255,7 +250,6 @@ fast_sync_rocksdb() {
     rm latest.tar.gz
   fi
 }
-
 
 fast_sync() {
   # Define the menu options using variables
@@ -287,9 +281,6 @@ fast_sync() {
   done
 }
 
-
-
-
 optional_fastSync() {
   if [[ $fastSync = 'true' ]]; then
     fast_sync
@@ -302,27 +293,12 @@ optional_fastSync
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# DETERMINE IF THIS IS AN INITIAL INSTALL
+# Determine if this is an initial install
 if [[ $quiet = 'false' ]]; then
     echo "=> ${yellow}Checking initial status...${reset}"
     echo ""
 fi
+
 
 
 # Check if node mounted directory exists
@@ -354,7 +330,9 @@ if [ -d "./banano-node" ]; then
 fi
 
 
-# SPIN UP THE APPROPRIATE STACK
+
+
+# Spin up the appropriate stack
 if [ "$quiet" = 'false' ]; then
   echo "=> ${yellow}Pulling images and spinning up containers...${reset}"
   echo ""
@@ -403,7 +381,7 @@ fi
 
 
 
-# CHECK NODE INITIALIZATION
+# Check Node Initialization
 [[ $quiet = 'false' ]] && echo ""
 [[ $quiet = 'false' ]] && printf "=> ${yellow}Waiting for Banano node to fully initialize... "
 
@@ -416,14 +394,12 @@ done
 
 [[ $quiet = 'false' ]] && printf "${green}done.${reset}\n\n"
 
-# DETERMINE NODE VERSION
+# Determine Node Version
 nodeExec="docker exec -it banano-node /usr/bin/bananode"
 
 
 
-
-
-# Set the desired aliases
+# Set Aliases for Banano Node CLI
 aliases=(
     # Aliases for Banano Node CLI
     "benis='${nodeExec}'" # Benis, but CLI b, ok.
@@ -532,24 +508,11 @@ source "$HOME/.zshrc"
 
 
 
+# Node Wallet Setup and Configuration
 
+existingWallet=$(${nodeExec} --wallet_list | awk '/Wallet ID/{print $NF; exit}')
 
-
-
-# WALLET SETUP
-
-# Enable RPC (Default 'true' for node setup to enable control)
-sed -i 's/enable_control = false/enable_control = true/g' ./banano-node/BananoData/config-rpc.toml
-sed -i '/^\[rpc\]/{n;s/enable = false/enable = true/}' ./banano-node/BananoData/config-node.toml
-
-
-# To Do: Enable experimental pruning (Default 'false')
-# To Do: Enable Voting (If running PR)
-
-
-existedWallet=$(${nodeExec} --wallet_list | awk '/Wallet ID/{print $NF; exit}')
-
-if [[ ! $existedWallet ]]; then
+if [[ ! $existingWallet ]]; then
     [[ $quiet = 'false' ]] && printf "=> ${yellow}No wallet found. Generating a new one... ${reset}"
 
     walletId=$(${nodeExec} --wallet_create | awk '{ print $NF}' | tr -d '\r')
@@ -561,7 +524,7 @@ else
     [[ $quiet = 'false' ]] && echo ''
 
     address=$(echo "${nodeExec}" --wallet_list | awk '/ban_/ { print $NF; exit }' | tr -d '\r')
-    walletId=$(echo "${existedWallet}" | tr -d '\r')
+    walletId=$(echo "${existingWallet}" | tr -d '\r')
 fi
 
 
@@ -570,7 +533,7 @@ if [[ $quiet = 'false' && $displaySeed = 'true' ]]; then
 fi
 
 
-# UPDATE MONITOR CONFIGS
+# Update Node Monitor configuration
 if [ ! -f ./banano-node-monitor/config.php ]; then
     [[ $quiet = 'false' ]] && echo "=> ${yellow}No existing Banano Node Monitor config file found. Fetching a fresh copy...${reset}"
     if [[ $quiet = 'false' ]]; then
@@ -674,17 +637,6 @@ if [[ $quiet = 'false' ]]; then
     echo ""
 fi
 
-# ============================
-# Post Node Setup Config
-# ============================
-
-# Run as PR flag
-#sed -i '/^\[node\]$/!b;a\node\enable_voting = true' ./banano-node/BananoData/config-node.toml
-
-#conditionally add this config if fast-sync rocks is chosen
-#sed -i '/^\[node\]$/a [node.rocksdb]\nenable = true' ./banano-node/BananoData/config-node.toml
-
-
 end() {
     echo -e "\n${green}${bold}Banano Node Docker finished successfully. Press any key to close.${reset}"
     read -n 1 -s -r -p ""  # Wait for user input of any key
@@ -697,7 +649,3 @@ if [ $? -eq 0 ]; then
     echo -e "\n\n\n\n"
     end  # Call the function to display message and wait for keypress
 fi
-
-
-
-
