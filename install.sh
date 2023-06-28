@@ -33,7 +33,7 @@ options_list=()
 
 # Prepare list of options for selection
 for opt in "${!options[@]}"; do
-  options_list+=("${yellow}$opt${reset}")
+  options_list+=("$opt")
 done
 
 IFS=$'\n'  # Set the internal field separator to newline
