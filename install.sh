@@ -71,6 +71,10 @@ case $selected_option in
     ;;
   *)
     echo "=> Starting installation..."
-    sudo bash /opt/banano-node-docker/banano.sh ${selected_option[@]} "$domain" "$email"
+    if [[ $selected_option == *"SSL"* ]]; then
+      sudo bash /opt/banano-node-docker/banano.sh ${selected_option[@]} -d "$domain" -e "$email"
+    else
+      sudo bash /opt/banano-node-docker/banano.sh ${selected_option[@]}
+    fi
     ;;
 esac
