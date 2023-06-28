@@ -1,11 +1,11 @@
 #!/bin/bash
 
+red='\033[0;31m'
 yellow='\033[0;33m'
 green='\033[0;32m'
 reset='\033[0m'
 
-
-echo "${yellow}
+echo -e "${yellow}
 ##################################################
 #  Banano Node Docker Post Installer After Party #
 #  https://github.com/amamel/banano-node-docker  #
@@ -16,61 +16,64 @@ ${reset}"
 check_os() {
   local os=$(uname -s)
   if [[ "$os" != "Linux" ]]; then
-    echo "Sorry, '$os' operating system is not yet supported by this script. If you would like to see '$os' operating system supported, please add an issue on Github."
+    echo "=> ${red}Sorry, '$os' operating system is not yet supported by this script. If you would like to see '$os' operating system supported, please add an issue on Github.${reset}"
     exit 1
   fi
 }
 
-# ============================
-# Post Node Setup Config
-# ============================
-
-echo "This script will ask you a series of questions to configure your Banano node setup:"
-echo "Please answer each question with 'true' or 'false'."
+# Configure ufw ports for Banano Nano Node
+read -p "${yellow}Configure ufw ports for Banano Nano Node? [yes/no]${reset}: " configure_ufw
+if [[ $configure_ufw == "yes" ]]; then
+  sudo ufw allow http
+  sudo ufw allow 7071
+  sudo ufw allow 7072
+  sudo ufw allow 7074
+  echo "=> ${green}ufw ports configured.${reset}"
+else
+  echo "=> ${yellow}Skipping ufw configuration.${reset}"
+fi
 
 # Enable RPC (Default 'true' for node setup to enable control)
-read -p "Enable RPC Commands for Initial Node Configuration? [true/false]: " enable_rpc
+read -p "${yellow}Enable RPC Commands for Initial Node Configuration? [true/false]:${reset} " enable_rpc
 if [[ $enable_rpc == "true" ]]; then
-    sed -i 's/enable_control = false/enable_control = true/g' ./banano-node/BananoData/config-rpc.toml
-    sed -i '/^\[rpc\]/{n;s/enable = false/enable = true/}' ./banano-node/BananoData/config-node.toml
-    echo "=> ${green}RPC Commands enabled.${reset}"
+  sed -i 's/enable_control = false/enable_control = true/g' ./banano-node/BananoData/config-rpc.toml
+  sed -i '/^\[rpc\]/{n;s/enable = false/enable = true/}' ./banano-node/BananoData/config-node.toml
+  echo "=> ${green}RPC Commands enabled.${reset}"
 else
-    echo "=> ${yellow}RPC Commands disabled.${reset}"
+  echo "=> ${yellow}RPC Commands disabled.${reset}"
 fi
 
 # Run as PR? (Enable Voting)
-read -p "Enable Voting (Run as PR)? [true/false]: " enable_voting
+read -p "${yellow}Enable Voting (Run as PR)? [true/false]:${reset} " enable_voting
 if [[ $enable_voting == "true" ]]; then
-    sed -i '/^\[node\]$/!b;a\node\enable_voting = true' ./banano-node/BananoData/config-node.toml
-    echo "=> ${green}Voting enabled.${reset}"
+  sed -i '/^\[node\]$/!b;a\node\enable_voting = true' ./banano-node/BananoData/config-node.toml
+  echo "=> ${green}Voting enabled.${reset}"
 else
-    echo "=> ${yellow}Voting disabled.${reset}"
+  echo "=> ${yellow}Voting disabled.${reset}"
 fi
 
 # Using Rocks DB? (Tell Node to Use Rocks)
-read -p "Use Rocks DB? [true/false]: " use_rocksdb
+read -p "${yellow}Use Rocks DB? [true/false]:${reset} " use_rocksdb
 if [[ $use_rocksdb == "true" ]]; then
-    sed -i '/^\[node\]$/a [node.rocksdb]\nenable = true' ./banano-node/BananoData/config-node.toml
-    echo "=> ${green}Rocks DB enabled.${reset}"
+  sed -i '/^\[node\]$/a [node.rocksdb]\nenable = true' ./banano-node/BananoData/config-node.toml
+  echo "=> ${green}Rocks DB enabled.${reset}"
 else
-    echo "=> ${yellow}Rocks DB disabled.${reset}"
+  echo "=> ${yellow}Rocks DB disabled.${reset}"
 fi
 
 # Restart Docker Compose service
-echo "=> Restarting Docker Compose service..."
+echo "=> ${yellow}Restarting Docker Compose service...${reset}"
 docker-compose restart
 echo "=> ${green}Done. Docker Compose service restarted.${reset}"
 
-
+# Function to display the end message and wait for keypress
 end() {
-    echo -e "\n${green}${bold}Banano Node Docker finished successfully. Press any key to close.${reset}"
-    read -n 1 -s -r -p ""  # Wait for user input of any key
+  echo -e "\n${green}${bold}Banano Node Docker Post Install finished successfully. Press any key to close.${reset}"
+  read -n 1 -s -r -p ""  # Wait for user input of any key
 }
 
-# ================================================================================
 # Check if the script finished successfully and call the function
-# ================================================================================
 if [ $? -eq 0 ]; then
-    echo -e "\n\n\n\n"
-    end  # Call the function to display message and wait for keypress
+  echo -e "\n\n\n\n"
+  end  # Call the function to display the message and wait for keypress
 fi
