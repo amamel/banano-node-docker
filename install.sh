@@ -1,9 +1,11 @@
 #!/bin/bash
 
+# Define color codes
 yellow='\033[0;33m'
 green='\033[0;32m'
 reset='\033[0m'
 
+# Display installation header
 echo -e "${yellow}================================${reset}"
 echo -e "${yellow}Banano Node Docker Installation ${reset}"
 echo -e "${yellow}================================${reset}"
@@ -14,6 +16,7 @@ git -C /opt/banano-node-docker pull || git clone https://github.com/amamel/banan
 
 # User prompt for installation option
 
+# Declare associative array for installation options
 declare -A options=(
   ["Banano Node with Node Monitor"]="-t latest -s"
   ["Banano Node with SSL"]="-d domain -e email -s -t latest"
@@ -22,46 +25,53 @@ declare -A options=(
   ["Quit"]="quit"
 )
 
+# Prompt message for selecting an option
 PS3="${yellow}Enter your choice: ${reset}"
+
 selected_option=""
 options_list=()
 
+# Prepare list of options for selection
 for opt in "${!options[@]}"; do
-  options_list+=("$opt")
+  options_list+=("${yellow}$opt${reset}")
 done
 
+IFS=$'\n'  # Set the internal field separator to newline
+
+# Display menu and read user's selection
 select opt in "${options_list[@]}"; do
   case $opt in
-    "Banano Node with Node Monitor")
+    "${yellow}Banano Node with Node Monitor${reset}")
       selected_option=${options[$opt]}
       break
       ;;
-    "Banano Node with SSL")
+    "${yellow}Banano Node with SSL${reset}")
       selected_option=${options[$opt]}
       break
       ;;
-    "Banano Node with Fast Sync DB (Experimental)")
+    "${yellow}Banano Node with Fast Sync DB (Experimental)${reset}")
       selected_option=${options[$opt]}
       break
       ;;
-    "Banano Node with SSL and Fast Sync (Experimental)")
+    "${yellow}Banano Node with SSL and Fast Sync (Experimental)${reset}")
       selected_option=${options[$opt]}
       break
       ;;
-    "Quit")
+    "${yellow}Quit${reset}")
       selected_option=${options[$opt]}
       break
       ;;
   esac
 done
 
+# Process selected option
 case $selected_option in
   "quit")
     echo -e "${yellow}Quitting...${reset}"
     exit
     ;;
   *)
-    echo -e "=> ${green}Starting installation...${reset}"
+    echo -e "=> ${yellow}Starting installation...${reset}"
     if [[ $selected_option == *"SSL"* ]]; then
       read -p "Enter your domain: " domain
       read -p "Enter your email: " email
