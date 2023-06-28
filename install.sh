@@ -1,17 +1,13 @@
 #!/bin/bash
 
-# Define color codes
-yellow='\033[0;33m'
-green='\033[0;32m'
-reset='\033[0m'
 
 # Display installation header
-echo -e "${yellow}================================${reset}"
-echo -e "${yellow}Banano Node Docker Installation ${reset}"
-echo -e "${yellow}================================${reset}"
+echo "================================"
+echo "Banano Node Docker Installation "
+echo "================================"
 
 # Clone or update the Banano Node Docker repository
-echo -e "=> ${yellow}Cloning installation${reset}"
+echo "=> Cloning installation"
 git -C /opt/banano-node-docker pull || git clone https://github.com/amamel/banano-node-docker.git /opt/banano-node-docker
 
 # User prompt for installation option
@@ -67,11 +63,11 @@ done
 # Process selected option
 case $selected_option in
   "quit")
-    echo -e "${yellow}Quitting...${reset}"
+    echo "=> Quitting..."
     exit
     ;;
   *)
-    echo -e "=> ${yellow}Starting installation...${reset}"
+    echo "=> Starting installation..."
     if [[ $selected_option == *"SSL"* ]]; then
       read -p "Enter your domain: " domain
       read -p "Enter your email: " email
