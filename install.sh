@@ -21,7 +21,7 @@ declare -A options=(
 )
 
 # Prompt message for selecting an option
-PS3="Enter your installation choice:"
+PS3="Enter your installation choice: "
 
 selected_option=""
 options_list=()
@@ -42,6 +42,8 @@ select opt in "${options_list[@]}"; do
       ;;
     "Banano Node with SSL")
       selected_option=${options[$opt]}
+      read -p "Enter your domain: " domain
+      read -p "Enter your email: " email
       break
       ;;
     "Banano Node with Fast Sync DB (Experimental)")
@@ -50,6 +52,8 @@ select opt in "${options_list[@]}"; do
       ;;
     "Banano Node with SSL and Fast Sync (Experimental)")
       selected_option=${options[$opt]}
+      read -p "Enter your domain: " domain
+      read -p "Enter your email: " email
       break
       ;;
     "Quit")
@@ -67,10 +71,6 @@ case $selected_option in
     ;;
   *)
     echo "=> Starting installation..."
-    if [[ $selected_option == *"SSL"* ]]; then
-      read -p "Enter your domain: " domain
-      read -p "Enter your email: " email
-    fi
     sudo bash /opt/banano-node-docker/banano.sh ${selected_option[@]} "$domain" "$email"
     ;;
 esac
