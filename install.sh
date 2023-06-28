@@ -26,7 +26,7 @@ declare -A options=(
 )
 
 # Prompt message for selecting an option
-PS3="${yellow}Enter your choice: ${reset}"
+PS3="Enter your installation choice:"
 
 selected_option=""
 options_list=()
@@ -41,23 +41,23 @@ IFS=$'\n'  # Set the internal field separator to newline
 # Display menu and read user's selection
 select opt in "${options_list[@]}"; do
   case $opt in
-    "${yellow}Banano Node with Node Monitor${reset}")
+    "Banano Node with Node Monitor")
       selected_option=${options[$opt]}
       break
       ;;
-    "${yellow}Banano Node with SSL${reset}")
+    "Banano Node with SSL")
       selected_option=${options[$opt]}
       break
       ;;
-    "${yellow}Banano Node with Fast Sync DB (Experimental)${reset}")
+    "Banano Node with Fast Sync DB (Experimental)")
       selected_option=${options[$opt]}
       break
       ;;
-    "${yellow}Banano Node with SSL and Fast Sync (Experimental)${reset}")
+    "Banano Node with SSL and Fast Sync (Experimental)")
       selected_option=${options[$opt]}
       break
       ;;
-    "${yellow}Quit${reset}")
+    "Quit")
       selected_option=${options[$opt]}
       break
       ;;
