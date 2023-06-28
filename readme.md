@@ -46,28 +46,24 @@ If you plan to use SSL with your Banano node, it is important to update the `doc
 
 When the script is executed, it performs a series of functions, which are outlined below:
 
-| Step                                 | Description                                                         |
-|--------------------------------------|---------------------------------------------------------------------|
-| `Verify OS Type is Linux`                        | Verifies if the script is running on a supported operating system. If not supported, it displays an error message and exits. |
-| `Verify all dependencies are installed`              | Ensures that all necessary tools are installed to run the script.   |
-| `verify_docker()`                     | Verifies if Docker is installed on the system.                      |
-| `verify_docker-compose()`   | Verifies if Docker Compose is installed on the system.              |
-| `verify_dockerhub_image_tag()`     | Retrieves and applies the latest Docker image tag for the Banano Node. |
-| `verify_fast_sync_select()`                | Enables the fast synchronization mode for the Banano Node.          |
-| `verify_node_setup()`          | Verifies if the initial setup for the Banano Node has been completed. |
-| `run_docker_stack()`              | Starts the Docker stack for running the Banano Node.                |
-| `run_docker_containers()` | Configures and starts the necessary Docker containers for the Banano Node. |
-| `init_banano_node()`       | Waits for the Banano Node to initialize and become ready.           |
-| `set_banano_node_alias()`             | Sets the alias for the Banano Node.                                 |
-| `verify_wallet_generation()`       | Checks if a wallet is already generated and generates a new wallet if needed. |
-| `run_banano_node_monitor()`     | Configures the Banano node monitor for monitoring the node's status. |
-
-
+| Description                                                         |
+|---------------------------------------------------------------------|
+| Verifies if the script is running on a supported operating system. If not supported, it displays an error message and exits. |
+| Ensures that all necessary tools are installed to run the script.   |
+| Retrieves and applies the latest Docker image tag for the Banano Node. |
+| Enables the fast synchronization mode for the Banano Node.          |
+| Verifies if the initial setup for the Banano Node has been completed. |
+| Starts the Docker stack for running the Banano Node.                |
+| Configures and starts the necessary Docker containers for the Banano Node. |
+| Waits for the Banano Node to initialize and become ready.           |
+| Sets the alias for the Banano Node.                                 |
+| Checks if a wallet is already generated and generates a new wallet if needed. |
+| Configures the Banano node monitor for monitoring the node's status. |
 
 
 ## Additional Notes
 
-- The script supports seamless SSL setup using Let's Encrypt if a domain name is provided.
+- The script supports easy SSL setup using Let's Encrypt if a domain name is provided.
 - To expedite the synchronization process, you can enable fast-syncing by using the `-f` option. This allows you to download the latest ledger files for quicker synchronization.
 - The script automatically updates the Banano Node Monitor configuration file, including essential information such as the node's RPC IP, account address, node name, and other relevant settings.
 - **Important Reminder**: It is crucial to save your wallet seed exactly as it appears in the installer's output. Ensure you securely store this information to maintain access to your wallet.
@@ -84,15 +80,15 @@ docker exec -it banano-node /usr/bin/bananode <command>
 
 **Option 2: Use the shorthand alias provided by the installer for executing Banano node and wallet commands:**
 ```
-banano-node <command>
+benis <command>
 ```
 
 These options provide convenient ways to execute Banano node and wallet commands, giving you flexibility in accessing the Banano node's CLI.
 
 | Alias                        | Description                                                                  |
 |------------------------------|------------------------------------------------------------------------------|
-| `benis`                      | Inf: Executes Banano node commands.                                          |
-| `banano-node`                | Formal: Executes Banano node commands.                                       |
+| `benis`                      | Informal: Executes Banano node commands.                                     |
+| `banano-node`                | Formal: Also, Executes Banano node commands.                                  |
 | `banano-rpc`                 | Executes Banano node commands with RPC mode enabled.                          |
 | `banano-wallet`              | Executes Banano node commands with wallet mode enabled.                       |
 | `banano-status`              | Displays the status of the Banano node.                                       |
