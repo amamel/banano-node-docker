@@ -22,7 +22,7 @@ declare -A options=(
   ["Quit"]="quit"
 )
 
-PS3="Enter your choice: "
+PS3="${yellow}Enter your choice: ${reset}"
 selected_option=""
 options_list=()
 
@@ -61,7 +61,7 @@ case $selected_option in
     exit
     ;;
   *)
-    echo -e "=> ${yellow}Starting installation...${reset}"
+    echo -e "=> ${green}Starting installation...${reset}"
     if [[ $selected_option == *"SSL"* ]]; then
       read -p "Enter your domain: " domain
       read -p "Enter your email: " email
