@@ -4,8 +4,6 @@
     <img src="banano-node-docker.png" alt="Banano Node Docker Logo" width='300px' height='auto'/>
 </div>
 
-Note: This is super beta now and often changing and breaking.
-
 The Banano Node Docker Bash script automates the setup process for running a Banano node using Docker. It pulls the necessary Docker images, sets up the required configuration, and initializes the Banano node. This makes the process of setting up and configuring a Banano node more efficient and secure.
 
 ## Prerequisites
@@ -16,10 +14,22 @@ To ensure that the script runs smoothly, please make sure you have Docker and Do
 
 To download or clone the latest release and run the script, follow the instructions below:
 
-Run Script:
+For non-SSL setup:
 ```
-bash <(curl -s https://raw.githubusercontent.com/amamel/banano-node-docker/master/install.sh)
+cd ~
+git clone https://github.com/amamel/banano-node-docker.git
+cd ~/banano-node-docker
+sudo ./banano.sh -s
 ```
+
+For SSL setup with Let's Encrypt:
+```
+cd ~
+git clone https://github.com/amamel/banano-node-docker.git
+cd ~/banano-node-docker
+sudo ./banano.sh -d yourdomain.com -e youremail@yourdomain.com -s
+```
+If you plan to use SSL with your Banano node, it is important to update the `docker-compose.letsencrypt.yml` file with your domain name and email. This step is necessary to configure SSL certificates correctly for your domain.
 
 ### Options (Available Install Option Flags)
 
@@ -29,28 +39,29 @@ bash <(curl -s https://raw.githubusercontent.com/amamel/banano-node-docker/maste
 | `-d <domain>` | Specify a domain name for the Banano node. Enables SSL using Let's Encrypt. |
 | `-e <email>`  | Specify an email address for Let's Encrypt SSL certificate notifications.  |
 | `-q`      | Run the script in quiet mode, suppressing most of the output.           |
-| `-f`      | Enable fast-syncing by downloading the latest ledger files.              |
+| `-f`      | Enable fast-syncing by downloading the latest ledger files.             |
 
 
 ## Functionality
 
 When the script is executed, it performs a series of functions, which are outlined below:
 
-| Command                               | Step                                 | Description                                                         |
-|---------------------------------------|--------------------------------------|---------------------------------------------------------------------|
-| `verify_os()`                          | Checks the operating system          | Verifies if the script is running on a supported operating system. If not supported, it displays an error message and exits. |
-| `verify_dependencies()`              | Checks for required tools            | Ensures that all necessary tools are installed to run the script.   |
-| `verify_docker()`         | Checks Docker installation           | Verifies if Docker is installed on the system.                      |
-| `verify_docker-compose()` | Checks Docker Compose installation   | Verifies if Docker Compose is installed on the system.              |
-| `verify_dockerhub_image_tag()`     | Apply the latest Docker image tag    | Retrieves and applies the latest Docker image tag for the Banano Node. |
-| `verify_fast_sync_select()`                | Optional fast sync                   | Enables the fast synchronization mode for the Banano Node.          |
-| `verify_node_setup()`          | Checks initial setup                 | Verifies if the initial setup for the Banano Node has been completed. |
-| `run_docker_stack()`              | Spins up the Docker stack            | Starts the Docker stack for running the Banano Node.                |
-| `run_docker_containers()` | Configure and start Docker containers| Configures and starts the necessary Docker containers for the Banano Node. |
-| `init_banano_node()`       | Waits for node to initialize         | Waits for the Banano Node to initialize and become ready.           |
-| `set_banano_node_alias()`             | Sets Banano node alias               | Sets the alias for the Banano Node.                                 |
-| `verify_wallet_generation()`       | Wallet check and wallet generation   | Checks if a wallet is already generated and generates a new wallet if needed. |
-| `run_banano_node_monitor()`     | Configures Banano node monitor       | Configures the Banano node monitor for monitoring the node's status. |
+| Step                                 | Description                                                         |
+|--------------------------------------|---------------------------------------------------------------------|
+| `Verify OS Type is Linux`                        | Verifies if the script is running on a supported operating system. If not supported, it displays an error message and exits. |
+| `Verify all dependencies are installed`              | Ensures that all necessary tools are installed to run the script.   |
+| `verify_docker()`                     | Verifies if Docker is installed on the system.                      |
+| `verify_docker-compose()`   | Verifies if Docker Compose is installed on the system.              |
+| `verify_dockerhub_image_tag()`     | Retrieves and applies the latest Docker image tag for the Banano Node. |
+| `verify_fast_sync_select()`                | Enables the fast synchronization mode for the Banano Node.          |
+| `verify_node_setup()`          | Verifies if the initial setup for the Banano Node has been completed. |
+| `run_docker_stack()`              | Starts the Docker stack for running the Banano Node.                |
+| `run_docker_containers()` | Configures and starts the necessary Docker containers for the Banano Node. |
+| `init_banano_node()`       | Waits for the Banano Node to initialize and become ready.           |
+| `set_banano_node_alias()`             | Sets the alias for the Banano Node.                                 |
+| `verify_wallet_generation()`       | Checks if a wallet is already generated and generates a new wallet if needed. |
+| `run_banano_node_monitor()`     | Configures the Banano node monitor for monitoring the node's status. |
+
 
 
 
@@ -117,16 +128,21 @@ These options provide convenient ways to execute Banano node and wallet commands
 | `banano-export-seed`         | Exports the seed of the Banano wallet.                                        |
 | `banano-import-seed`         | Imports a seed to the Ban
 
-## Recommended Hardware
+## Requirements
 For optimal performance when running a Banano node, consider the following hardware recommendations:
 
-| Hardware          | Recommendation                                                     |
-|-------------------|-------------------------------------------------------------------|
-| Processor         | Choose a modern multicore processor with a clock speed of at least 2.5 GHz. For voting nodes and principal nodes, consider having at least 4 CPU cores.  |
-| RAM               | Allocate a minimum of 4 GB of RAM, although more is preferable depending on network load and transaction volume.   |
-| Storage           | 50 GB of storage space or more, preferably using SSD or NVMe-based storage for faster access and improved performance.  |
-| Network Connection| Ensure a stable and reliable internet connection with sufficient bandwidth.  |
-| VPS or Dedicated Server | Consider utilizing a datacenter environment, especially SSD VPS providers like Contabo, Hetzner, Vultr, OVH, and DigitalOcean, for optimal performance.  |
+**Software:**
+- Ubuntu 20.04
+
+**Minimum Hardware:**
+
+| Hardware            | Recommendation                                                  |
+|---------------------|-----------------------------------------------------------------|
+| Processor           | 2 CPU 2.5 GHz clock speed                                       |
+|                     | Voting/Principal Nodes: 4 CPU                                   |
+| RAM                 | 4 GB+ depending on network load and transaction volume)         |
+| Storage             | Minimum: 100GB SSD/NVMe (Current Banano Ledger ~25GB LMDB       |
+| Network Connection  | 1TB Bandwidth, 24/7 Connectivity                                |
 
 These recommendations will help ensure that your Banano node can handle the computational requirements and provide efficient performance for network synchronization, transaction processing, and other node operations.
 

@@ -216,14 +216,14 @@ fast_sync_lmdb() {
     wget -O snapshot.ldb ${ledgerDownloadLink_LMDB} -q --show-progress
   else
     wget -O snapshot.ldb ${ledgerDownloadLink_LMDB} -q
-    docker-compose stop banano-node &> /dev/null
   fi
 
-  printf "=> ${yellow}Replacing the database file...${reset} "
-  mv -f snapshot.ldb ./banano-node/BananoData/data.ldb
+  printf "=> ${yellow}Moving the database file...${reset} "
+  cp -f snapshot.ldb ./banano-node/BananoData/
   printf "${green}done.${reset}\n"
   echo ""
 }
+
 
 fast_sync_rocksdb() {
   if [[ $quiet = 'false' ]]; then
