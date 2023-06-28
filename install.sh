@@ -1,6 +1,5 @@
 #!/bin/bash
 
-
 # Display installation header
 echo "================================"
 echo "Banano Node Docker Installation "
