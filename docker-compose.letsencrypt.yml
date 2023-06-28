@@ -25,7 +25,8 @@ services:
       - LETSENCRYPT_HOST=banano.sh
       - LETSENCRYPT_EMAIL=hi@banano.sh
     volumes:
-      - ./banano-node-monitor/config.php:/opt/nanoNodeMonitor/config.php
+      - ./banano-node-monitor:/opt/nanoNodeMonitor
+
 
   nginx-proxy:
     image: jwilder/nginx-proxy

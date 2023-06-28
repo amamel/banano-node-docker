@@ -508,34 +508,10 @@ source "$HOME/.zshrc"
 
 
 
-# Node Wallet Setup and Configuration
-
-existingWallet=$(${nodeExec} --wallet_list | awk '/Wallet ID/{print $NF; exit}')
-
-if [[ ! $existingWallet ]]; then
-    [[ $quiet = 'false' ]] && printf "=> ${yellow}No wallet found. Generating a new one... ${reset}"
-
-    walletId=$(${nodeExec} --wallet_create | awk '{ print $NF}' | tr -d '\r')
-    address=$(${nodeExec} --account_create --wallet=$walletId | awk '{ print $NF}')
-
-    [[ $quiet = 'false' ]] && printf "${green}done.${reset}\n\n"
-else
-    [[ $quiet = 'false' ]] && echo "=> ${green}$(echo -e '\u2713') Existing wallet found.${reset}"
-    [[ $quiet = 'false' ]] && echo ''
-
-    address=$(echo "${nodeExec}" --wallet_list | awk '/ban_/ { print $NF; exit }' | tr -d '\r')
-    walletId=$(echo "${existingWallet}" | tr -d '\r')
-fi
-
-
-if [[ $quiet = 'false' && $displaySeed = 'true' ]]; then
-    seed=$(${nodeExec} --wallet_decrypt_unsafe --wallet=$walletId | grep 'Seed' | awk '{ print $NF}' | tr -d '\r')
-fi
-
-
 # Update Node Monitor configuration
 if [ ! -f ./banano-node-monitor/config.php ]; then
     [[ $quiet = 'false' ]] && echo "=> ${yellow}No existing Banano Node Monitor config file found. Fetching a fresh copy...${reset}"
+
     if [[ $quiet = 'false' ]]; then
         docker-compose restart banano-node-monitor
     else
@@ -549,52 +525,50 @@ fi
 # Banano Node Monitor Configuration Settings #
 ##############################################
 
-# Set the block explorer
+if [ -f ./banano-node-monitor/config.sample.php ]; then
+    # Create the config.php file if it doesn't exist
+    cp -n ./banano-node-monitor/config.sample.php ./banano-node-monitor/config.php
+fi
+
+# Perform the necessary sed commands
 sed -i -e "s/\/\/ \$blockExplorer.*;/\$blockExplorer = 'bananocreeper';/g" ./banano-node-monitor/config.php
-
-# Set the currency
 sed -i -e "s/\/\/ \$currency.*;/\$currency = 'banano';/g" ./banano-node-monitor/config.php
-
-# Set the account
 sed -i -e "s/\/\/ \$nanoNodeAccount.*;/\$nanoNodeAccount/g" ./banano-node-monitor/config.php
 sed -i -e "s/\$nanoNodeAccount.*/\$nanoNodeAccount = '$address';/g" ./banano-node-monitor/config.php
-
-# Set the nanoNodeRPCIP variable
 sed -i -e "s/\/\/ \$nanoNodeRPCIP.*;/\$nanoNodeRPCIP/g" ./banano-node-monitor/config.php
 sed -i -e "s/\$nanoNodeRPCIP.*/\$nanoNodeRPCIP = 'banano-node';/g" ./banano-node-monitor/config.php
-
-# Set the nanoNodeRPCPort
 sed -i -e "s/\/\/ \$nanoNodeRPCPort.*;/\$nanoNodeRPCPort = '7072';/g" ./banano-node-monitor/config.php
-
-# Set the nodeLocation
 sed -i -e "s/\/\/ \$nodeLocation.*;/\$nodeLocation = 'Jungle';/g" ./banano-node-monitor/config.php
-
-# Set the theme choice
 sed -i -e "s/\/\/ \$themeChoice.*;/\$themeChoice = 'banano-dark';/g" ./banano-node-monitor/config.php
-
-# Set the welcome message
 sed -i -e "s/\/\/ \$welcomeMsg.*;/\$welcomeMsg = 'Welcome! This node was set up using <a href=\"https:\/\/github.com\/amamel\/banano-node-docker\" target=\"_blank\">Banano Node Docker<\/a>!';/g" ./banano-node-monitor/config.php
-
-# Set the widget type
 sed -i -e "s/\/\/ \$widgetType.*;/\$widgetType = 'monkey';/g" ./banano-node-monitor/config.php
 
 if [[ $domain ]]; then
-    # Set the domain name if it exists
     sed -i -e "s/\/\/ \$nanoNodeName.*;/\$nanoNodeName = '$domain';/g" ./banano-node-monitor/config.php
-else 
-
+else
     ipAddress=$(hostname -I | awk '{print $1}')
     if [[ -z $ipAddress ]]; then
-      ipAddress=$(ip addr show | awk '/inet6/{print $2}' | awk -F'/' '{print $1}')
+        ipAddress=$(ip addr show | awk '/inet6/{print $2}' | awk -F'/' '{print $1}')
     fi
-    # Set the IP address of the node
-    sed -i -e "s/\/\/ \$nanoNodeName.*;/\$nanoNodeName = 'banano-node-docker-$ipAddress';/g" ./banano-node-monitor/config.php
+    sed -i -e "s/\/\/ \$nanoNodeName.*;/\$nanoNodeName = '$ipAddress';/g" ./banano-node-monitor/config.php
 fi
 
 # Remove any carriage returns that may have been included by sed replacements
 sed -i -e 's/\r//g' ./banano-node-monitor/config.php
 
-[[ $quiet = 'false' ]] && printf "${green}done.${reset}\n\n"
+[[ $quiet = 'false' ]] && echo "${green}done.${reset}"
+
+
+
+
+
+
+
+
+
+
+
+
 
 if [[ $quiet = 'false' ]]; then
 
