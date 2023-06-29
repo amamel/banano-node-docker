@@ -14,7 +14,7 @@ To ensure that the script runs smoothly, please make sure you have Docker and Do
 
 To download or clone the latest release and run the script, follow the instructions below:
 
-For non-SSL setup:
+Quick launch:
 ```
 cd ~
 git clone https://github.com/amamel/banano-node-docker.git
@@ -31,7 +31,7 @@ sudo ./banano.sh -d yourdomain.com -e youremail@yourdomain.com -s
 ```
 If you plan to use SSL with your Banano node, it is important to update the `docker-compose.letsencrypt.yml` file with your domain name and email. This step is necessary to configure SSL certificates correctly for your domain.
 
-### Options (Available Install Option Flags)
+### Options
 
 | Option    | Description                                                            |
 |-----------|------------------------------------------------------------------------|
@@ -46,27 +46,43 @@ If you plan to use SSL with your Banano node, it is important to update the `doc
 
 When the script is executed, it performs a series of functions, which are outlined below:
 
-| Description                                                         |
-|---------------------------------------------------------------------|
-| Verifies if the script is running on a supported operating system. If not supported, it displays an error message and exits. |
-| Ensures that all necessary tools are installed to run the script.   |
-| Retrieves and applies the latest Docker image tag for the Banano Node. |
-| Enables the fast synchronization mode for the Banano Node.          |
-| Verifies if the initial setup for the Banano Node has been completed. |
-| Starts the Docker stack for running the Banano Node.                |
-| Configures and starts the necessary Docker containers for the Banano Node. |
-| Waits for the Banano Node to initialize and become ready.           |
-| Sets the alias for the Banano Node.                                 |
-| Checks if a wallet is already generated and generates a new wallet if needed. |
-| Configures the Banano node monitor for monitoring the node's status. |
+- Verifies if the script is running on a supported operating system. If not supported, it displays an error message and exits.
+- Ensures that all necessary tools are installed to run the script.
+- Retrieves and applies the latest Docker image tag for the Banano Node.
+- Enables the fast synchronization mode for the Banano Node.
+- Verifies if the initial setup for the Banano Node has been completed.
+- Starts the Docker stack for running the Banano Node.
+- Configures and starts the necessary Docker containers for the Banano Node.
+- Waits for the Banano Node to initialize and become ready.
+- Sets the alias for the Banano Node.
+- Checks if a wallet is already generated and generates a new wallet if needed.
+- Configures the Banano node monitor for monitoring the node's status.
+
+## Requirements
+For optimal performance when running a Banano node, consider the following hardware recommendations:
+
+**OS:**
+- Ubuntu 20.04/Debian 
+
+**Minimum Hardware:**
+
+| Hardware            | Recommendation                                                  |
+|---------------------|-----------------------------------------------------------------|
+| Processor           | 2 CPU 2.5GHz                                                    |
+|                     | 4 CPU for Voting/Principal Nodes                                |
+| RAM                 | 4 GB+ depending on network load and transaction volume         |
+| Storage             | 50GB SSD/NVMe (Current Ledger ~25GB LMDB)                       |
+| Network Connection  | 1TB Bandwidth, 24/7 Connectivity                                |
+
+
+
 
 
 ## Additional Notes
 
 - The script supports easy SSL setup using Let's Encrypt if a domain name is provided.
-- To expedite the synchronization process, you can enable fast-syncing by using the `-f` option. This allows you to download the latest ledger files for quicker synchronization.
+- To expedite the synchronization process, you can enable fast-syncing by using the `-f` option. This allows you to download the latest ledger files for quicker synchronization. **This is still experimental**.
 - The script automatically updates the Banano Node Monitor configuration file, including essential information such as the node's RPC IP, account address, node name, and other relevant settings.
-- **Important Reminder**: It is crucial to save your wallet seed exactly as it appears in the installer's output. Ensure you securely store this information to maintain access to your wallet.
 
 
 ## Talk to the Banano node Command Line Interface (CLI)
@@ -124,23 +140,6 @@ These options provide convenient ways to execute Banano node and wallet commands
 | `banano-export-seed`         | Exports the seed of the Banano wallet.                                        |
 | `banano-import-seed`         | Imports a seed to the Ban
 
-## Requirements
-For optimal performance when running a Banano node, consider the following hardware recommendations:
-
-**Software:**
-- Ubuntu 20.04
-
-**Minimum Hardware:**
-
-| Hardware            | Recommendation                                                  |
-|---------------------|-----------------------------------------------------------------|
-| Processor           | 2 CPU 2.5 GHz clock speed                                       |
-|                     | Voting/Principal Nodes: 4 CPU                                   |
-| RAM                 | 4 GB+ depending on network load and transaction volume)         |
-| Storage             | Minimum: 100GB SSD/NVMe (Current Banano Ledger ~25GB LMDB       |
-| Network Connection  | 1TB Bandwidth, 24/7 Connectivity                                |
-
-These recommendations will help ensure that your Banano node can handle the computational requirements and provide efficient performance for network synchronization, transaction processing, and other node operations.
 
 ## Self-configurable Installation
 
