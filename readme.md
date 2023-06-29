@@ -12,24 +12,36 @@ To ensure that the script runs smoothly, please make sure you have Docker and Do
 
 ## Usage
 
-To download or clone the latest release and run the script, follow the instructions below:
+To download or clone the latest release, open a bash terminal and launch the installation script:
 
 Quick launch:
+
 ```
 cd ~
 git clone https://github.com/amamel/banano-node-docker.git
 cd ~/banano-node-docker
-sudo ./banano.sh -s
+sudo ./banano.sh -t V25.1
 ```
 
-For SSL setup with Let's Encrypt:
+**That's it!** You can now navigate to your host IP to check your Nano Node Monitor dashboard. **Do not forget to write down** your wallet seed as it appears in the output of the installer.
+
+(Optional) For SSL setup with Let's Encrypt:
+
 ```
 cd ~
 git clone https://github.com/amamel/banano-node-docker.git
 cd ~/banano-node-docker
 sudo ./banano.sh -d yourdomain.com -e youremail@yourdomain.com -s
 ```
-If you plan to use SSL with your Banano node, it is important to update the `docker-compose.letsencrypt.yml` file with your domain name and email. This step is necessary to configure SSL certificates correctly for your domain.
+
+If a domain name is available for your host, Banano Node Docker can also serve your node monitor securely using HTTPS. This feature is enabled (using the `-d` argument with the installer), the stack will also include the following containers:
+
+| Container name        | Description                                                                                               |
+|-----------------------|-----------------------------------------------------------------------------------------------------------|
+| nginx-proxy           | An instance of the popular Nginx web server running in a reverse proxy setup. Serves as a gateway to the host. |
+| nginx-proxy-letsencrypt | A lightweight companion container for the nginx-proxy. Enables automatic creation/renewal of Let's Encrypt certificates. |
+
+If you plan to use SSL with your Banano node, it is important to update the `docker-compose.letsencrypt.yml` file with your domain name and email address. This step is necessary to configure SSL certificates correctly for your domain.
 
 ### Options
 
@@ -41,28 +53,25 @@ If you plan to use SSL with your Banano node, it is important to update the `doc
 | `-q`      | Run the script in quiet mode, suppressing most of the output.           |
 | `-f`      | Enable fast-syncing by downloading the latest ledger files.             |
 
+### Install with fast-syncing
 
-## Functionality
+Banano Node Docker stack can also bootstrap any newly created node (or an existing one) with the latest ledger files using either LMDB or RocksDB. This implies that you are willing to trust third-party sources for your node history. The latest ledger files are obtained from two community sources: [cutecat](https://lmdb.cutecat.party/) and [moonano](https://moonano.net/ledger/), while the script handles the extraction and final file placement.
 
-When the script is executed, it performs a series of functions, which are outlined below:
+Just add the `-f` flag to your installer command:
 
-- Verifies if the script is running on a supported operating system. If not supported, it displays an error message and exits.
-- Ensures that all necessary tools are installed to run the script.
-- Retrieves and applies the latest Docker image tag for the Banano Node.
-- Enables the fast synchronization mode for the Banano Node.
-- Verifies if the initial setup for the Banano Node has been completed.
-- Starts the Docker stack for running the Banano Node.
-- Configures and starts the necessary Docker containers for the Banano Node.
-- Waits for the Banano Node to initialize and become ready.
-- Sets the alias for the Banano Node.
-- Checks if a wallet is already generated and generates a new wallet if needed.
-- Configures the Banano node monitor for monitoring the node's status.
+```
+sudo ./banano.sh -t V25.1 -f
+```
+
+**WARNING: This feature is experimental and may result in loss of data. You are strongly adviced to BACKUP your wallet seed before trying to fast-sync an existing node.**
 
 ## Requirements
+
 For optimal performance when running a Banano node, consider the following hardware recommendations:
 
 **OS:**
-- Ubuntu 20.04/Debian 
+
+- Ubuntu 20.04/Debian
 
 **Minimum Hardware:**
 
@@ -82,14 +91,16 @@ For optimal performance when running a Banano node, consider the following hardw
 
 ## Talk to the Banano node Command Line Interface (CLI)
 
-To execute commands from the Banano node's Command Line Interface (CLI), you have two options:
+Banano node runs inside the banano-node container. In order to execute commands from its [Command Line Interface](https://docs.nano.org/commands/command-line-interface/) you'll have to enter the container or execute them from the Banano node's Command Line Interface (CLI), you have two options:
 
 **Option 1: Enter the Banano node container and execute commands directly:**
+
 ```
 docker exec -it banano-node /usr/bin/bananode <command>
 ```
 
 **Option 2: Use the shorthand alias provided by the installer for executing Banano node and wallet commands:**
+
 ```
 benis <command>
 ```
@@ -139,13 +150,14 @@ Apologies for the confusion. Here is the updated markdown table with only the al
 | `banano-block-count` | Get the block count from the wallet |
 | `banano-work-generate` | Generate work using the wallet |
 
-
 ## Self-configurable Installation
 
 Please check the [wiki](https://github.com/amamel/banano-node-docker/wiki) for more detailed instructions on how to manually self-configure Banano Node Docker.
 
 ## Credits
+
 The developers behind the other tools used in this project deserve sincere appreciation for their valuable contributions. If you find these tools useful, consider donating to or contributing to their projects. Your contributions, such as reporting bugs or creating pull requests, can greatly support the continued development and improvement of these tools.
+
 - [Banano](https://github.com/BananoCoin/banano)
 - [JrCs/docker-letsencrypt-nginx-proxy-companion](https://github.com/JrCs/docker-letsencrypt-nginx-proxy-companion)
 - [jwilder/nginx-proxy](https://github.com/jwilder/nginx-proxy)
@@ -156,11 +168,12 @@ The developers behind the other tools used in this project deserve sincere appre
 - [v2tec/watchtower](https://github.com/v2tec/watchtower)
 - [Very Cute Cat Fast Sync LMBD Ledger](https://lmdb.cutecat.party/)
 
-
 ## Support
+
 If you encounter any issues or have suggestions for improvements, you are encouraged to utilize the "Issues" tab on the GitHub repository. Your feedback is valuable in making this project better. Additionally, you can join the Banano Discord server and navigate to the #frankensteins-lab Banano development channel. It is a great place to engage in conversations, offer suggestions, and receive support from other Banano developers.
 
 If you find this tool helpful and valuable, I kindly ask you to show your support by giving this project a star ⭐️. Your support will help Banano reach more people and make a positive impact. Thank you, and cheers!
 
 ## License
+
 This script is released under the [MIT License](https://opensource.org/licenses/MIT).
