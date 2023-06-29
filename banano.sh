@@ -305,7 +305,7 @@ fi
 if [ -d "./banano-node" ]; then
     # Check if mounted directory follows the new /root structure
     if [ ! -d "./banano-node/BananoData" ]; then
-        if [ ! -d "./banano-node/BananoData" ]; then
+        if [ ! -d "./banano-node/Banano" ]; then
             [[ $quiet = 'false' ]] && printf "${reset}Unsupported directory structure detected. Migrating files... "
 
             # Check if Banano directory already exists
@@ -398,76 +398,7 @@ done
 nodeExec="docker exec -it banano-node /usr/bin/bananode"
 
 
-
 # Set Aliases for Banano Node CLI
-aliases=(
-    # Aliases for Banano Node CLI
-    "benis='${nodeExec}'" # Benis, but CLI b, ok.
-    "banano-node='${nodeExec}'"
-    "banano-rpc='banano-node --rpc'"
-    "banano-wallet='banano-node --wallet'"
-    "banano-status='banano-node --status'"
-    "banano-restart='banano-node --stop && banano-node --daemon'"
-    "banano-update='banano-node --update'"
-    "banano-logs='tail -f /var/log/banano/banano_node.log'"
-
-    # Additional aliases for Banano Wallet RPCs
-    "banano-account-create='banano-wallet --rpc --command account_create'" # Alias to create a Banano account
-    "banano-account-list='banano-wallet --rpc --command account_list'" # Alias to list Banano accounts
-    "banano-account-remove='banano-wallet --rpc --command account_remove'" # Alias to remove a Banano account
-    "banano-account-rename='banano-wallet --rpc --command account_rename'" # Alias to rename a Banano account
-    "banano-account-history='banano-wallet --rpc --command account_history'" # Alias to get account history
-    "banano-account-info='banano-wallet --rpc --command account_info'" # Alias to get account information
-    "banano-account-move='banano-wallet --rpc --command account_move'" # Alias to move an account
-    "banano-account-key='banano-wallet --rpc --command account_key'" # Alias to get the account's public key
-    "banano-account-get='banano-wallet --rpc --command account_get'" # Alias to get the account for a given public key
-    "banano-account-forks='banano-wallet --rpc --command account_forks'" # Alias to get account forks
-    "banano-account-balance-total='banano-wallet --rpc --command account_balance_total'" # Alias to get the total account balance
-    "banano-account-representative='banano-wallet --rpc --command account_representative'" # Alias to get the account representative
-    "banano-account-weight='banano-wallet --rpc --command account_weight'" # Alias to get the account weight
-    "banano-account-weights='banano-wallet --rpc --command account_weights'" # Alias to get the account weights
-    "banano-account-confirmations='banano-wallet --rpc --command account_confirmations'" # Alias to get the account confirmations
-    "banano-account-create-work='banano-wallet --rpc --command account_create_work'" # Alias to create work for an account
-
-    # Additional aliases for Banano Wallet
-    "banano-balance='banano-wallet info --balance'" # Alias to get the wallet balance
-    "banano-accounts='banano-wallet accounts'" # Alias to list wallet accounts
-    "banano-send='banano-wallet send'" # Alias to send Banano from the wallet
-    "banano-import='banano-wallet import'" # Alias to import a Banano wallet
-    "banano-export='banano-wallet export'" # Alias to export a Banano wallet
-    "banano-history='banano-wallet history'" # Alias to get wallet transaction history
-    "banano-receive='banano-wallet receive'" # Alias to receive Banano in the wallet
-    "banano-representatives='banano-wallet representatives'" # Alias to list wallet representatives
-    "banano-delegators='banano-wallet delegators'" # Alias to list wallet delegators
-    "banano-account-info='banano-wallet account_info'" # Alias to get account information from the wallet
-    "banano-block-info='banano-wallet block_info'" # Alias to get block information from the wallet
-    "banano-block-count='banano-wallet block_count'" # Alias to get the block count from the wallet
-    "banano-work-generate='banano-wallet work_generate'" # Alias to generate work using the wallet
-
-    # Additional aliases for Banano Node Monitor
-    "banano-monitor='php banano-node-monitor/config.php'" # Alias to start the Banano node monitor
-
-    # Additional aliases for Banano commands
-    "banano-process='banano-wallet process'" # Alias for processing Banano blocks
-    "banano-broadcast='banano-wallet broadcast'" # Alias for broadcasting Banano blocks
-    "banano-account-create='banano-wallet account_create'" # Alias to create a Banano account
-    "banano-account-remove='banano-wallet account_remove'" # Alias to remove a Banano account
-    "banano-account-move='banano-wallet account_move'" # Alias to move an account
-    "banano-account-rename='banano-wallet account_rename'" # Alias to rename a Banano account
-    "banano-account-history='banano-wallet account_history'" # Alias to get account history
-    "banano-account-key='banano-wallet account_key'" # Alias to get the account's public key
-    "banano-receive-minimum='banano-wallet receive_minimum'" # Alias to get the receive minimum value
-    "banano-proof-of-work-validate='banano-wallet proof_of_work_validate'" # Alias to validate proof of work
-
-    # Additional aliases related to Banano node seed (Always use caution when working with your seed)
-    "banano-display-seed='banano-wallet seed --show'" # Alias to display the seed
-    "banano-generate-seed='banano-wallet seed --generate'" # Alias to generate a new seed
-    "banano-export-seed='banano-wallet seed --export'" # Alias to export the seed
-    "banano-import-seed='banano-wallet seed --import'" # Alias to import a seed
-    "banano-change-seed='banano-wallet seed --change'" # Alias to change the seed
-    "banano-validate-seed='banano-wallet seed --validate'" # Alias to validate the seed
-)
-
 # Function to append alias to shell configuration file if not already present
 append_alias() {
     local alias=$1
@@ -482,10 +413,75 @@ append_alias() {
     fi
 }
 
-# Add aliases to the shell configuration file
+# Function to check if an alias exists in a file
+alias_exists() {
+    local alias_name="$1"
+    local file_path="$2"
+    grep -qF "alias $alias_name" "$file_path"
+}
+
+# Banano Alias List
+aliases=(
+    # Banano Node CLI
+    "Benis='${nodeExec}'"  # Formal, respectful, capital B
+    "benis='${nodeExec}'"  # CLI b, ok
+    "banano-node='${nodeExec}'"  # Alias for Banano Node CLI: Banano Node
+    "banano-rpc='banano-node --rpc'"  # Alias for Banano Node CLI: Banano RPC
+    "banano-wallet='banano-node --wallet'"  # Alias for Banano Node CLI: Banano Wallet
+    "banano-status='banano-node --status'"  # Alias for Banano Node CLI: Banano Node Status
+    "banano-restart='banano-node --stop && banano-node --daemon'"  # Alias for Banano Node CLI: Restart Banano Node
+    "banano-update='banano-node --update'"  # Alias for Banano Node CLI: Update Banano Node
+    "banano-logs='tail -f /var/log/banano/banano_node.log'"  # Alias for Banano Node CLI: View Banano Node Logs
+
+    # Banano Wallet and RPC Commands
+    "banano-account-create='banano-wallet --rpc --command account_create'"  # Alias for Banano Wallet: Create a Banano account
+    "banano-account-list='banano-wallet --rpc --command account_list'"  # Alias for Banano Wallet: List Banano accounts
+    "banano-account-remove='banano-wallet --rpc --command account_remove'"  # Alias for Banano Wallet: Remove a Banano account
+    "banano-account-rename='banano-wallet --rpc --command account_rename'"  # Alias for Banano Wallet: Rename a Banano account
+    "banano-account-history='banano-wallet --rpc --command account_history'"  # Alias for Banano Wallet: Get account history
+    "banano-account-info='banano-wallet --rpc --command account_info'"  # Alias for Banano Wallet: Get account information
+    "banano-account-move='banano-wallet --rpc --command account_move'"  # Alias for Banano Wallet: Move an account
+    "banano-account-key='banano-wallet --rpc --command account_key'"  # Alias for Banano Wallet: Get the account's public key
+    "banano-account-get='banano-wallet --rpc --command account_get'"  # Alias for Banano Wallet: Get the account for a given public key
+    "banano-account-forks='banano-wallet --rpc --command account_forks'"  # Alias for Banano Wallet: Get account forks
+    "banano-account-balance-total='banano-wallet --rpc --command account_balance_total'"  # Alias for Banano Wallet: Get the total account balance
+    "banano-account-representative='banano-wallet --rpc --command account_representative'"  # Alias for Banano Wallet: Get the account representative
+    "banano-account-weight='banano-wallet --rpc --command account_weight'"  # Alias for Banano Wallet: Get the account weight
+    "banano-account-weights='banano-wallet --rpc --command account_weights'"  # Alias for Banano Wallet: Get the account weights
+    "banano-account-confirmations='banano-wallet --rpc --command account_confirmations'"  # Alias for Banano Wallet: Get the account confirmations
+    "banano-account-create-work='banano-wallet --rpc --command account_create_work'"  # Alias for Banano Wallet: Create work for an account
+    "banano-balance='banano-wallet info --balance'"  # Alias for Banano Wallet: Get the wallet balance
+    "banano-accounts='banano-wallet accounts'"  # Alias for Banano Wallet: List wallet accounts
+    "banano-send='banano-wallet send'"  # Alias for Banano Wallet: Send Banano from the wallet
+    "banano-import='banano-wallet import'"  # Alias for Banano Wallet: Import a Banano wallet
+    "banano-export='banano-wallet export'"  # Alias for Banano Wallet: Export a Banano wallet
+    "banano-history='banano-wallet history'"  # Alias for Banano Wallet: Get wallet transaction history
+    "banano-receive='banano-wallet receive'"  # Alias for Banano Wallet: Receive Banano in the wallet
+    "banano-representatives='banano-wallet representatives'"  # Alias for Banano Wallet: List wallet representatives
+    "banano-delegators='banano-wallet delegators'"  # Alias for Banano Wallet: List wallet delegators
+    "banano-account-info='banano-wallet account_info'"  # Alias for Banano Wallet: Get account information from the wallet
+    "banano-block-info='banano-wallet block_info'"  # Alias for Banano Wallet: Get block information from the wallet
+    "banano-block-count='banano-wallet block_count'"  # Alias for Banano Wallet: Get the block count from the wallet
+    "banano-work-generate='banano-wallet work_generate'"  # Alias for Banano Wallet: Generate work using the wallet
+)
+
+# Add aliases to the shell configuration file if they don't already exist
 for alias in "${aliases[@]}"; do
-    append_alias "$alias" "$HOME/.bash_aliases"
-    append_alias "$alias" "$HOME/.zshrc"
+    alias_name=$(echo "$alias" | cut -d= -f1)
+    config_files=("$HOME/.bash_aliases" "$HOME/.zshrc")
+    alias_exists=false
+
+    for file_path in "${config_files[@]}"; do
+        if alias_exists "$alias_name" "$file_path"; then
+            alias_exists=true
+            break
+        fi
+    done
+
+    if ! $alias_exists; then
+        append_alias "$alias" "$HOME/.bash_aliases"
+        append_alias "$alias" "$HOME/.zshrc"
+    fi
 done
 
 # Create .bash_aliases if it doesn't exist
@@ -502,6 +498,7 @@ fi
 echo -n "=> ${yellow}Appending Banano node aliases to shell...${reset}"
 source "$HOME/.bash_aliases"
 source "$HOME/.zshrc"
+
 
 # Print "done" message
 [[ $quiet = 'false' ]] && printf " ${green}done.\n${reset}"
@@ -557,17 +554,6 @@ fi
 sed -i -e 's/\r//g' ./banano-node-monitor/config.php
 
 [[ $quiet = 'false' ]] && echo "${green}done.${reset}"
-
-
-
-
-
-
-
-
-
-
-
 
 
 if [[ $quiet = 'false' ]]; then

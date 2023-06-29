@@ -74,16 +74,11 @@ For optimal performance when running a Banano node, consider the following hardw
 | Storage             | 50GB SSD/NVMe (Current Ledger ~25GB LMDB)                       |
 | Network Connection  | 1TB Bandwidth, 24/7 Connectivity                                |
 
-
-
-
-
 ## Additional Notes
 
 - The script supports easy SSL setup using Let's Encrypt if a domain name is provided.
 - To expedite the synchronization process, you can enable fast-syncing by using the `-f` option. This allows you to download the latest ledger files for quicker synchronization. **This is still experimental**.
 - The script automatically updates the Banano Node Monitor configuration file, including essential information such as the node's RPC IP, account address, node name, and other relevant settings.
-
 
 ## Talk to the Banano node Command Line Interface (CLI)
 
@@ -101,44 +96,48 @@ benis <command>
 
 These options provide convenient ways to execute Banano node and wallet commands, giving you flexibility in accessing the Banano node's CLI.
 
-| Alias                        | Description                                                                  |
-|------------------------------|------------------------------------------------------------------------------|
-| `benis`                      | Informal: Executes Banano node commands.                                     |
-| `banano-node`                | Formal: Also, Executes Banano node commands.                                  |
-| `banano-rpc`                 | Executes Banano node commands with RPC mode enabled.                          |
-| `banano-wallet`              | Executes Banano node commands with wallet mode enabled.                       |
-| `banano-status`              | Displays the status of the Banano node.                                       |
-| `banano-restart`             | Stops and restarts the Banano node daemon.                                    |
-| `banano-update`              | Updates the Banano node to the latest version.                                |
-| `banano-logs`                | Displays the live logs of the Banano node.                                    |
-| `banano-balance`             | Displays the balance of the Banano wallet.                                    |
-| `banano-accounts`            | Lists all accounts in the Banano wallet.                                      |
-| `banano-send`                | Sends Banano from one account to another.                                     |
-| `banano-import`              | Imports a Banano wallet using a seed or private key.                          |
-| `banano-export`              | Exports a Banano wallet seed or private key.                                  |
-| `banano-history`             | Displays the transaction history of the Banano wallet.                        |
-| `banano-receive`             | Generates a new receive address for the Banano wallet.                        |
-| `banano-representatives`     | Lists the representatives in the Banano wallet.                               |
-| `banano-delegators`          | Lists the delegators in the Banano wallet.                                    |
-| `banano-account-info`        | Displays information about a specific Banano account.                         |
-| `banano-block-info`          | Displays information about a specific Banano block.                           |
-| `banano-block-count`         | Displays the total number of blocks in the Banano blockchain.                 |
-| `banano-work-generate`       | Generates proof of work for a Banano block.                                   |
-| `banano-monitor`             | Starts the Banano node monitor to monitor the node's status.                  |
-| `banano-process`             | Processes pending transactions in the Banano wallet.                          |
-| `banano-broadcast`           | Broadcasts pending transactions in the Banano wallet.                         |
-| `banano-account-create`      | Creates a new Banano account in the Banano wallet.                            |
-| `banano-account-remove`      | Removes a Banano account from the Banano wallet.                              |
-| `banano-account-move`        | Moves Banano funds between accounts in the Banano wallet.                     |
-| `banano-account-rename`      | Renames a Banano account in the Banano wallet.                                |
-| `banano-account-history`     | Displays the transaction history for a specific Banano account.               |
-| `banano-account-key`         | Displays the public key of a specific Banano account.                         |
-| `banano-receive-minimum`     | Displays the minimum amount required to receive in the Banano wallet.         |
-| `banano-proof-of-work-validate` | Validates the proof of work for a specific Banano block.                   |
-| `banano-display-seed`        | Displays the seed of the Banano wallet.                                       |
-| `banano-generate-seed`       | Generates a new seed for the Banano wallet.                                   |
-| `banano-export-seed`         | Exports the seed of the Banano wallet.                                        |
-| `banano-import-seed`         | Imports a seed to the Ban
+Apologies for the confusion. Here is the updated markdown table with only the aliases and their descriptions:
+
+| Alias | Description |
+| --- | --- |
+| `Benis` | Banano Node CLI: Formal, respectful, capital B |
+| `benis` | Banano Node CLI: CLI b, ok |
+| `banano-node` | Banano Node CLI: Banano Node |
+| `banano-rpc` | Banano Node CLI: Banano RPC |
+| `banano-wallet` | Banano Node CLI: Banano Wallet |
+| `banano-status` | Banano Node CLI: Banano Node Status |
+| `banano-restart` | Banano Node CLI: Restart Banano Node |
+| `banano-update` | Banano Node CLI: Update Banano Node |
+| `banano-logs` | Banano Node CLI: View Banano Node Logs |
+| `banano-account-create` | Create a Banano account |
+| `banano-account-list` | List Banano accounts |
+| `banano-account-remove` | Remove a Banano account |
+| `banano-account-rename` | Rename a Banano account |
+| `banano-account-history` | Get account history |
+| `banano-account-info` | Get account information |
+| `banano-account-move` | Move an account |
+| `banano-account-key` | Get the account's public key |
+| `banano-account-get` | Get the account for a given public key |
+| `banano-account-forks` | Get account forks |
+| `banano-account-balance-total` | Get the total account balance |
+| `banano-account-representative` | Get the account representative |
+| `banano-account-weight` | Get the account weight |
+| `banano-account-weights` | Get the account weights |
+| `banano-account-confirmations` | Get the account confirmations |
+| `banano-account-create-work` | Create work for an account |
+| `banano-balance` | Get the wallet balance |
+| `banano-accounts` | List wallet accounts |
+| `banano-send` | Send Banano from the wallet |
+| `banano-import` | Import a Banano wallet |
+| `banano-export` | Export a Banano wallet |
+| `banano-history` | Get wallet transaction history |
+| `banano-receive` | Receive Banano in the wallet |
+| `banano-representatives` | List wallet representatives |
+| `banano-delegators` | List wallet delegators |
+| `banano-account-info` | Get account information from the wallet |
+| `banano-block-info` | Get block information from the wallet |
+| `banano-block-count` | Get the block count from the wallet |
+| `banano-work-generate` | Generate work using the wallet |
 
 
 ## Self-configurable Installation

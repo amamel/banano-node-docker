@@ -30,12 +30,12 @@ services:
   nginx-proxy:
     image: jwilder/nginx-proxy
     container_name: nginx-proxy
-    restart: unless-stopped
+    restart: always
     ports:
       - 80:80
       - 443:443
     environment:
-      - DEFAULT_HOST=banano.sh
+      - DEFAULT_HOST=yourdomain.com
     volumes:
       - nginx-proxy-v1:/etc/nginx/vhost.d
       - nginx-proxy-v2:/usr/share/nginx/html
