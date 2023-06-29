@@ -219,7 +219,9 @@ fast_sync_lmdb() {
   fi
 
   printf "=> ${yellow}Moving the database file...${reset} "
-  cp -f snapshot.ldb ./banano-node/BananoData/
+  
+  # Copy snapshot.ldb to ./banano-node/BananoData/ and rename it to data.ldb (overwrite if exists) - Suppress errors
+  cp -f snapshot.ldb ./banano-node/BananoData/data.ldb 2>/dev/null || :
   printf "${green}done.${reset}\n"
   echo ""
 }
