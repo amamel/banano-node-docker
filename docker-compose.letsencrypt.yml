@@ -21,12 +21,11 @@ services:
     hostname: banano-node-monitor
     restart: unless-stopped
     environment:
-      - VIRTUAL_HOST=banano.sh
-      - LETSENCRYPT_HOST=banano.sh
-      - LETSENCRYPT_EMAIL=hi@banano.sh
+      - VIRTUAL_HOST=yourdomain.com
+      - LETSENCRYPT_HOST=yourdomain.com
+      - LETSENCRYPT_EMAIL=youremail@yourdomain.com
     volumes:
       - ./banano-node-monitor:/opt/nanoNodeMonitor
-
 
   nginx-proxy:
     image: jwilder/nginx-proxy
