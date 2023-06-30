@@ -23,7 +23,7 @@ services:
     hostname: banano-node-monitor
     restart: unless-stopped
     volumes:
-      - ./banano-node-monitor/config.php:/opt/nanoNodeMonitor/config.php  # Mount ./banano-node-monitor/config.php file from host to /opt/nanoNodeMonitor/config.php in container
+      - ./banano-node-monitor:/opt/nanoNodeMonitor  # Mount ./banano-node-monitor/config.php file from host to /opt/nanoNodeMonitor/config.php in container
     ports:
       - "80:80"                      # Map container port 80 to host port 80
 

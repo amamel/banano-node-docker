@@ -16,7 +16,7 @@ services:
       - ./banano-node:/root
 
   banano-node-monitor:
-    image: nanotools/nanonodemonitor
+    image: nanotools/nanonodemonitor:latest
     container_name: banano-node-monitor
     hostname: banano-node-monitor
     restart: unless-stopped

@@ -507,6 +507,31 @@ source "$HOME/.zshrc"
 
 
 
+
+# Wallet Setup
+existingWallet="$(${nodeExec} --wallet_list | grep 'Wallet ID' | awk '{ print $NF}')"
+
+if [[ ! $existingWallet ]]; then
+    [[ $quiet = 'false' ]] && printf "=> ${yellow}No wallet found. Generating a new one... ${reset}"
+
+    walletId=$(${nodeExec} --wallet_create | tr -d '\r')
+    address="$(${nodeExec} --account_create --wallet=$walletId | awk '{ print $NF}')"
+    
+    [[ $quiet = 'false' ]] && printf "${green}done.${reset}\n\n"
+else
+    [[ $quiet = 'false' ]] && echo "=> ${yellow}Existing wallet found.${reset}"
+    [[ $quiet = 'false' ]] && echo ''
+
+    address="$(${nodeExec} --wallet_list | grep 'ban_' | awk '{ print $NF}' | tr -d '\r')"
+    walletId=$(echo $existingWallet | tr -d '\r')
+fi
+
+if [[ $quiet = 'false' && $displaySeed = 'true' ]]; then
+    seed=$(${nodeExec} --wallet_decrypt_unsafe --wallet=$walletId | grep 'Seed' | awk '{ print $NF}' | tr -d '\r')
+fi
+
+
+
 # Update Node Monitor configuration
 if [ ! -f ./banano-node-monitor/config.php ]; then
     [[ $quiet = 'false' ]] && echo "=> ${yellow}No existing Banano Node Monitor config file found. Fetching a fresh copy...${reset}"
