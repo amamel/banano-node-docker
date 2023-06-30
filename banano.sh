@@ -219,12 +219,18 @@ fast_sync_lmdb() {
   fi
 
   printf "=> ${yellow}Moving the database file...${reset} "
-  
-  # Copy snapshot.ldb to ./banano-node/BananoData/ and rename it to data.ldb (overwrite if exists) - Suppress errors
-  cp -f snapshot.ldb ./banano-node/BananoData/data.ldb 2>/dev/null || :
+
+  # Copy snapshot.ldb to ./banano-node/BananoData/ and overwrite data.ldb while renaming it
+  mv -f snapshot.ldb ./banano-node/BananoData/data.ldb 2>/dev/null || :
   printf "${green}done.${reset}\n"
+  
+  # Delete the leftover snapshot.ldb file
+  rm -f snapshot.ldb
+  
   echo ""
 }
+
+
 
 
 fast_sync_rocksdb() {
@@ -633,6 +639,6 @@ end() {
 # Check if the script finished successfully and call the function
 # ================================================================================
 if [ $? -eq 0 ]; then
-    echo -e "\n\n\n\n"
+    echo -e "\n\n\n"
     end  # Call the function to display message and wait for keypress
 fi

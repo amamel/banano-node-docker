@@ -41,7 +41,9 @@ If a domain name is available for your host, Banano Node Docker can also serve y
 | nginx-proxy           | An instance of the popular Nginx web server running in a reverse proxy setup. Serves as a gateway to the host. |
 | nginx-proxy-letsencrypt | A lightweight companion container for the nginx-proxy. Enables automatic creation/renewal of Let's Encrypt certificates. |
 
-If you plan to use SSL with your Banano node, it is important to update the `docker-compose.letsencrypt.yml` file with your domain name and email address. This step is necessary to configure SSL certificates correctly for your domain.
+To set up SSL for your Banano node, update the `docker-compose.letsencrypt.yml` file with your domain name and email address. This ensures the SSL certificates are configured correctly for your domain. If you use Cloudflare, clear the cache in Cloudflare and your browser. Also, update your Cloudflare account to reflect the new SSL certificates.
+
+Let's Encrypt has rate limits to prevent abuse on the number of certificates issued for a specific set of domains within a certain time period. If you've reached the rate limit for your domain, you'll need to wait until it is lifted or consider using a different domain for your node.
 
 ### Options
 
@@ -71,7 +73,7 @@ For optimal performance when running a Banano node, consider the following hardw
 
 **OS:**
 
-- Ubuntu 20.04/Debian
+- Ubuntu 20.04
 
 **Minimum Hardware:**
 
