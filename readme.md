@@ -8,7 +8,7 @@ The Banano Node Docker Bash script automates the setup process for running a Ban
 
 ## Prerequisites
 
-To ensure that the script runs smoothly, please make sure you have Docker and Docker Compose installed on your system. If either of these dependencies is missing, the script will attempt to install them automatically for you.
+Docker and Docker Compose are required, if either of these are missing, the script will attempt to install them automatically for you.
 
 ## Usage
 
@@ -65,7 +65,7 @@ Just add the `-f` flag to your installer command:
 sudo ./banano.sh -t V25.1 -f
 ```
 
-**WARNING: This feature is experimental and may result in loss of data. You are strongly adviced to BACKUP your wallet seed before trying to fast-sync an existing node.**
+**This feature is experimental and may result in loss of data. You are strongly adviced to BACKUP your wallet seed before trying to fast-sync an existing node.**
 
 ## Requirements
 
@@ -109,12 +109,9 @@ benis <command>
 
 These options provide convenient ways to execute Banano node and wallet commands, giving you flexibility in accessing the Banano node's CLI.
 
-Apologies for the confusion. Here is the updated markdown table with only the aliases and their descriptions:
-
 | Alias | Description |
 | --- | --- |
-| `Benis` | Banano Node CLI: Formal, respectful, capital B |
-| `benis` | Banano Node CLI: CLI b, ok |
+| `benis` | Banano Node CLI: Shorthand access to Banano Node CLI. Benis. (CLI benis, ok) |
 | `banano-node` | Banano Node CLI: Banano Node |
 | `banano-rpc` | Banano Node CLI: Banano RPC |
 | `banano-wallet` | Banano Node CLI: Banano Wallet |
