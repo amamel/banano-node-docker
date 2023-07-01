@@ -7,7 +7,7 @@ reset='\033[0m'
 
 echo -e "${yellow}
 ##################################################
-#  Banano Node Docker Post Installer After Party #
+#  Banano Node Docker After Party #
 #  https://github.com/amamel/banano-node-docker  #
 ##################################################
 ${reset}"
@@ -34,22 +34,21 @@ else
 fi
 
 # Enable RPC (Default 'true' for node setup to enable control)
-read -p "${yellow}Enable RPC Commands for Initial Node Configuration? [true/false]:${reset} " enable_rpc
+read -p "${yellow}Enable RPC communication with Banano node? [true/false]:${reset} " enable_rpc
 if [[ $enable_rpc == "true" ]]; then
   sed -i 's/enable_control = false/enable_control = true/g' ./banano-node/BananoData/config-rpc.toml
-  sed -i '/^\[rpc\]/{n;s/enable = false/enable = true/}' ./banano-node/BananoData/config-node.toml
-  echo -e "=> ${green}RPC Commands enabled.${reset}"
+  echo -e "=> ${green}RPC communication enabled.${reset}"
 else
-  echo -e "=> ${yellow}RPC Commands disabled.${reset}"
+  echo -e "=> ${yellow}RPC communication disabled (default).${reset}"
 fi
 
 # Run as PR? (Enable Voting)
-read -p "${yellow}Enable Voting (Run as PR)? [true/false]:${reset} " enable_voting
+read -p "${yellow}Enable Voting (Run Banano node as a Principal Representative)? [true/false]:${reset} " enable_voting
 if [[ $enable_voting == "true" ]]; then
   sed -i '/^\[node\]$/!b;a\node\enable_voting = true' ./banano-node/BananoData/config-node.toml
   echo -e "=> ${green}Voting enabled.${reset}"
 else
-  echo -e "=> ${yellow}Voting disabled.${reset}"
+  echo -e "=> ${yellow}Voting disabled (default).${reset}"
 fi
 
 # Using Rocks DB? (Tell Node to Use Rocks)
@@ -58,7 +57,7 @@ if [[ $use_rocksdb == "true" ]]; then
   sed -i '/^\[node\]$/a [node.rocksdb]\nenable = true' ./banano-node/BananoData/config-node.toml
   echo -e "=> ${green}Rocks DB enabled.${reset}"
 else
-  echo -e "=> ${yellow}Rocks DB disabled.${reset}"
+  echo -e "=> ${yellow}Rocks DB disabled (default).${reset}"
 fi
 
 # Restart Docker Compose service
