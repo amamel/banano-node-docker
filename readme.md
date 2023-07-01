@@ -57,7 +57,7 @@ Let's Encrypt has rate limits to prevent abuse on the number of certificates iss
 
 ### Install with fast-syncing
 
-Banano Node Docker stack can also bootstrap any newly created node (or an existing one) with the latest ledger files using either LMDB or RocksDB. This implies that you are willing to trust third-party sources for your node history. The latest ledger files are obtained from two community sources: [cutecat](https://lmdb.cutecat.party/) and [moonano](https://moonano.net/ledger/), while the script handles the extraction and final file placement.
+Banano Node Docker stack can also bootstrap any newly created node (or an existing one) with the latest ledger files using either LMDB or RocksDB. This implies that you are willing to trust third-party sources for your node history. The latest ledger files are obtained from the Banano community: [cutecat](https://lmdb.cutecat.party/) and [moonano](https://moonano.net/ledger/), while the script handles the extraction and file placement.
 
 Just add the `-f` flag to your installer command:
 
@@ -88,7 +88,7 @@ For optimal performance when running a Banano node, consider the following hardw
 ## Additional Notes
 
 - The script supports easy SSL setup using Let's Encrypt if a domain name is provided.
-- To expedite the synchronization process, you can enable fast-syncing by using the `-f` option. This allows you to download the latest ledger files for quicker synchronization. **This is still experimental**.
+- To expedite the synchronization process, you can enable fast-syncing by using the `-f` option. This allows you to download the latest ledger files for quicker synchronization.
 - The script automatically updates the Banano Node Monitor configuration file, including essential information such as the node's RPC IP, account address, node name, and other relevant settings.
 
 ## Talk to the Banano node Command Line Interface (CLI)
