@@ -12,8 +12,6 @@ echo "================================"
 echo "[i] Cloning installation"
 git -C /opt/banano-node-docker pull || git clone https://github.com/amamel/banano-node-docker.git /opt/banano-node-docker
 
-# User prompt for installation option
-
 # Declare associative array for installation options
 declare -A options=(
   ["Banano Node with Node Monitor"]="-t latest -s"
@@ -23,42 +21,53 @@ declare -A options=(
   ["Quit"]="quit"
 )
 
-# Prompt message for selecting an option
-PS3="Enter your installation choice: "
-
 selected_option=""
+valid_options=("1" "2" "3" "4" "5")
 
 # Display menu and read user's selection
-select opt in "${!options[@]}"; do
-  case $opt in
-  "Banano Node with Node Monitor")
-    selected_option=${options[$opt]}
-    break
-    ;;
-  "Banano Node Fast Sync")
-    selected_option=${options[$opt]}
-    break
-    ;;
-  "Banano Node with SSL")
-    selected_option=${options[$opt]}
-    read -p "Enter your domain: " domain
-    read -p "Enter your email: " email
-    break
-    ;;
-  "Banano Node with SSL, & Fast Sync")
-    selected_option=${options[$opt]}
-    read -p "Enter your domain: " domain
-    read -p "Enter your email: " email
-    break
-    ;;
-  "Quit")
-    selected_option=${options[$opt]}
-    break
-    ;;
-  *)
+while [[ -z $selected_option ]]; do
+  echo "Please select an installation option:"
+  echo "1) Banano Node with Node Monitor"
+  echo "2) Banano Node Fast Sync"
+  echo "3) Banano Node with SSL"
+  echo "4) Banano Node with SSL, & Fast Sync"
+  echo "5) Quit"
+
+  read -p "Enter your installation choice: " choice
+
+  if [[ " ${valid_options[@]} " =~ " $choice " ]]; then
+    case $choice in
+    1)
+      selected_option=${options["Banano Node with Node Monitor"]}
+      break
+      ;;
+    2)
+      selected_option=${options["Banano Node Fast Sync"]}
+      break
+      ;;
+    3)
+      selected_option=${options["Banano Node with SSL"]}
+      read -p "Enter your domain: " domain
+      read -p "Enter your email: " email
+      break
+      ;;
+    4)
+      selected_option=${options["Banano Node with SSL, & Fast Sync"]}
+      read -p "Enter your domain: " domain
+      read -p "Enter your email: " email
+      break
+      ;;
+    5)
+      selected_option=${options["Quit"]}
+      break
+      ;;
+    *)
+      echo "Invalid choice. Please try again."
+      ;;
+    esac
+  else
     echo "Invalid choice. Please try again."
-    ;;
-  esac
+  fi
 done
 
 # Process selected option
