@@ -27,11 +27,9 @@ valid_options=("1" "2" "3" "4" "5")
 # Display menu and read user's selection
 while [[ -z $selected_option ]]; do
   echo "Please select an installation option:"
-  echo "1) Banano Node with Node Monitor"
-  echo "2) Banano Node Fast Sync"
-  echo "3) Banano Node with SSL"
-  echo "4) Banano Node with SSL, & Fast Sync"
-  echo "5) Quit"
+  for option in "${!options[@]}"; do
+    echo "$option) ${options[$option]}"
+  done
 
   read -p "Enter your installation choice: " choice
 
