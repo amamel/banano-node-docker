@@ -17,7 +17,7 @@ To download or clone the latest release, open a bash terminal and launch the ins
 ## ❯ Quick Install
 
 ```bash
-curl -sL "https://raw.github.com/amamel/banano-node-docker/master/install.sh" | sh
+curl -sL "https://raw.github.com/amamel/banano-node-docker/master/install.sh" | bash
 ```
 Note: If using SSL, read more about SSL / HTTPS with Let's Encrypt before running installer below.
 
