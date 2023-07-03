@@ -422,7 +422,7 @@ alias_exists() {
 # Banano Alias List
 aliases=(
   # Banano Node CLI
-  "benis='${nodeExec}'"                                         # CLI b, ok
+  "benis='${nodeExec}'"                                         # Shorthand access to Banano Node CLI
   "banano-node='${nodeExec}'"                                   # Alias for Banano Node CLI: Banano Node
   "banano-rpc='banano-node --rpc'"                              # Alias for Banano Node CLI: Banano RPC
   "banano-wallet='banano-node --wallet'"                        # Alias for Banano Node CLI: Banano Wallet
@@ -581,7 +581,7 @@ if [[ $quiet = 'false' ]]; then
   echo "${yellow} | ${bold}Wallet ID:${reset} ${green}${walletId}                                  ${reset}"
   echo "${yellow} | ${bold}Please ensure you save the wallet ID and seed.                          ${reset}"
   echo "${yellow} | ${bold}To start managing the wallet, use the following command:                ${reset}"
-  echo "${yellow} | ${green}benis --daemon                                                         ${reset}"
+  echo "${yellow} | ${green}benis --banano-wallet                                                  ${reset}"
   echo "${yellow} |================================================================================${reset}"
   if [[ $displaySeed = 'true' ]]; then
     echo "${yellow} | ${bold}SEED:${reset} ${red}${seed}                                         ${reset}"

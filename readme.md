@@ -14,18 +14,27 @@ Docker and Docker Compose are required, if either of these are missing, the scri
 
 To download or clone the latest release, open a bash terminal and launch the installation script:
 
-Quick launch:
+## ❯ Quick Install
 
+```bash
+curl -sL "https://raw.github.com/amamel/banano-node-docker/master/install.sh" | sh
 ```
-cd ~
-git clone https://github.com/amamel/banano-node-docker.git
-cd ~/banano-node-docker
-sudo ./banano.sh -t V25.1
-```
+Note: If using SSL, read more about SSL / HTTPS with Let's Encrypt before running installer below.
 
-**That's it!** You can now navigate to your host IP to check your Nano Node Monitor dashboard. **Do not forget to write down** your wallet seed as it appears in the output of the installer.
 
-(Optional) For SSL setup with Let's Encrypt:
+
+## ❯ Manual Install
+
+
+
+
+| Option    | Description                                                            |
+|-----------|------------------------------------------------------------------------|
+| `-s`      | Display the seed for the generated wallet.                              |
+| `-d <domain>` | Specify a domain name for the Banano node. Enables SSL using Let's Encrypt. |
+| `-e <email>`  | Specify an email address for Let's Encrypt SSL certificate notifications.  |
+| `-q`      | Run the script in quiet mode, suppressing most of the output.           |
+| `-f`      | Enable fast-syncing by downloading the latest ledger files.             |
 
 ```
 cd ~
@@ -41,19 +50,13 @@ If a domain name is available for your host, Banano Node Docker can also serve y
 | nginx-proxy           | An instance of the popular Nginx web server running in a reverse proxy setup. Serves as a gateway to the host. |
 | nginx-proxy-letsencrypt | A lightweight companion container for the nginx-proxy. Enables automatic creation/renewal of Let's Encrypt certificates. |
 
+#### SSL / HTTPS with Let's Encrypt
+
 To set up SSL for your Banano node, update the `docker-compose.letsencrypt.yml` file with your domain name and email address. This ensures the SSL certificates are configured correctly for your domain. If you use Cloudflare, clear the cache in Cloudflare and your browser. Also, update your Cloudflare account to reflect the new SSL certificates.
 
 Let's Encrypt has rate limits to prevent abuse on the number of certificates issued for a specific set of domains within a certain time period. If you've reached the rate limit for your domain, you'll need to wait until it is lifted or consider using a different domain for your node.
 
-### Options
 
-| Option    | Description                                                            |
-|-----------|------------------------------------------------------------------------|
-| `-s`      | Display the seed for the generated wallet.                              |
-| `-d <domain>` | Specify a domain name for the Banano node. Enables SSL using Let's Encrypt. |
-| `-e <email>`  | Specify an email address for Let's Encrypt SSL certificate notifications.  |
-| `-q`      | Run the script in quiet mode, suppressing most of the output.           |
-| `-f`      | Enable fast-syncing by downloading the latest ledger files.             |
 
 ### Install with fast-syncing
 
