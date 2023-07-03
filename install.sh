@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Enable error handling
+set -e
+
 # Display installation header
 echo "================================"
 echo "Banano Node Docker"
@@ -72,9 +75,16 @@ case $selected_option in
 *)
   echo "[i] Starting installation..."
   if [[ $selected_option == *"SSL"* ]]; then
-    sudo bash /opt/banano-node-docker/banano.sh ${selected_option[@]} -d "$domain" -e "$email"
+    sudo bash /opt/banano-node-docker/banano.sh ${options[$opt]} -d "$domain" -e "$email"
   else
-    sudo bash /opt/banano-node-docker/banano.sh ${selected_option[@]}
+    sudo bash /opt/banano-node-docker/banano.sh ${options[$opt]}
   fi
   ;;
 esac
+
+# Error handling
+if [ $? -ne 0 ]; then
+  exit_code=$?
+  echo "[ERROR] An unexpected error occurred. Exit code: $exit_code"
+  exit $exit_code
+fi
