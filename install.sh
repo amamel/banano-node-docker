@@ -34,36 +34,18 @@ for opt in "${!options[@]}"; do
   options_list+=("$opt")
 done
 
-IFS=$'\n' # Set the internal field separator to newline
-
 # Display menu and read user's selection
-select opt in "${options_list[@]}"; do
-  case $opt in
-  "Banano Node with Node Monitor")
-    selected_option=${options[$opt]}
+while true; do
+  for ((i = 1; i <= ${#options_list[@]}; i++)); do
+    echo "$i) ${options_list[$i - 1]}"
+  done
+  read -p "Enter your installation choice: " choice
+  if [[ "$choice" =~ ^[0-9]+$ ]] && ((choice >= 1 && choice <= ${#options_list[@]})); then
+    selected_option=${options[${options_list[$choice - 1]}]}
     break
-    ;;
-  "Banano Node Fast Sync")
-    selected_option=${options[$opt]}
-    break
-    ;;
-  "Banano Node with SSL")
-    selected_option=${options[$opt]}
-    read -p "Enter your domain: " domain
-    read -p "Enter your email: " email
-    break
-    ;;
-  "Banano Node with SSL, & Fast Sync")
-    selected_option=${options[$opt]}
-    read -p "Enter your domain: " domain
-    read -p "Enter your email: " email
-    break
-    ;;
-  "Quit")
-    selected_option=${options[$opt]}
-    break
-    ;;
-  esac
+  else
+    echo "Invalid choice. Please try again."
+  fi
 done
 
 # Process selected option
@@ -75,9 +57,9 @@ case $selected_option in
 *)
   echo "[i] Starting installation..."
   if [[ $selected_option == *"SSL"* ]]; then
-    sudo bash /opt/banano-node-docker/banano.sh ${options[$opt]} -d "$domain" -e "$email"
+    sudo bash /opt/banano-node-docker/banano.sh ${selected_option[@]} -d "$domain" -e "$email"
   else
-    sudo bash /opt/banano-node-docker/banano.sh ${options[$opt]}
+    sudo bash /opt/banano-node-docker/banano.sh ${selected_option[@]}
   fi
   ;;
 esac
