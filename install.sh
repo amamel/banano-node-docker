@@ -27,25 +27,38 @@ declare -A options=(
 PS3="Enter your installation choice: "
 
 selected_option=""
-options_list=()
-
-# Prepare list of options for selection
-for opt in "${!options[@]}"; do
-  options_list+=("$opt")
-done
 
 # Display menu and read user's selection
-while true; do
-  for ((i = 1; i <= ${#options_list[@]}; i++)); do
-    echo "$i) ${options_list[$i - 1]}"
-  done
-  read -p "Enter your installation choice: " choice
-  if [[ "$choice" =~ ^[0-9]+$ ]] && ((choice >= 1 && choice <= ${#options_list[@]})); then
-    selected_option=${options[${options_list[$choice - 1]}]}
+select opt in "${!options[@]}"; do
+  case $opt in
+  "Banano Node with Node Monitor")
+    selected_option=${options[$opt]}
     break
-  else
+    ;;
+  "Banano Node Fast Sync")
+    selected_option=${options[$opt]}
+    break
+    ;;
+  "Banano Node with SSL")
+    selected_option=${options[$opt]}
+    read -p "Enter your domain: " domain
+    read -p "Enter your email: " email
+    break
+    ;;
+  "Banano Node with SSL, & Fast Sync")
+    selected_option=${options[$opt]}
+    read -p "Enter your domain: " domain
+    read -p "Enter your email: " email
+    break
+    ;;
+  "Quit")
+    selected_option=${options[$opt]}
+    break
+    ;;
+  *)
     echo "Invalid choice. Please try again."
-  fi
+    ;;
+  esac
 done
 
 # Process selected option
