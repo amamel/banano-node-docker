@@ -14,11 +14,11 @@ git -C /opt/banano-node-docker pull || git clone https://github.com/amamel/banan
 
 # Declare associative array for installation options
 declare -A options=(
-  ["Banano Node with Node Monitor"]="-t latest -s"
-  ["Banano Node Fast Sync"]="-f -t latest"
-  ["Banano Node with SSL"]="-d domain -e email -s -t latest"
-  ["Banano Node with SSL, & Fast Sync"]="-d domain -e email -s -f -t latest"
-  ["Quit"]="quit"
+  ["1"]="Banano Node with Node Monitor"
+  ["2"]="Banano Node Fast Sync"
+  ["3"]="Banano Node with SSL"
+  ["4"]="Banano Node with SSL, & Fast Sync"
+  ["5"]="Quit"
 )
 
 selected_option=""
@@ -36,35 +36,8 @@ while [[ -z $selected_option ]]; do
   read -p "Enter your installation choice: " choice
 
   if [[ " ${valid_options[@]} " =~ " $choice " ]]; then
-    case $choice in
-    1)
-      selected_option=${options["Banano Node with Node Monitor"]}
-      break
-      ;;
-    2)
-      selected_option=${options["Banano Node Fast Sync"]}
-      break
-      ;;
-    3)
-      selected_option=${options["Banano Node with SSL"]}
-      read -p "Enter your domain: " domain
-      read -p "Enter your email: " email
-      break
-      ;;
-    4)
-      selected_option=${options["Banano Node with SSL, & Fast Sync"]}
-      read -p "Enter your domain: " domain
-      read -p "Enter your email: " email
-      break
-      ;;
-    5)
-      selected_option=${options["Quit"]}
-      break
-      ;;
-    *)
-      echo "Invalid choice. Please try again."
-      ;;
-    esac
+    selected_option=${options["$choice"]}
+    break
   else
     echo "Invalid choice. Please try again."
   fi
@@ -72,16 +45,18 @@ done
 
 # Process selected option
 case $selected_option in
-"quit")
+"Quit")
   echo "[i] Quitting..."
   exit
   ;;
 *)
   echo "[i] Starting installation..."
-  if [[ $selected_option == *"SSL"* ]]; then
-    sudo bash /opt/banano-node-docker/banano.sh ${selected_option[@]} -d "$domain" -e "$email"
+  if [[ $selected_option == "Banano Node with SSL" || $selected_option == "Banano Node with SSL, & Fast Sync" ]]; then
+    read -p "Enter your domain: " domain
+    read -p "Enter your email: " email
+    sudo bash /opt/banano-node-docker/banano.sh ${selected_option,,} -d "$domain" -e "$email"
   else
-    sudo bash /opt/banano-node-docker/banano.sh ${selected_option[@]}
+    sudo bash /opt/banano-node-docker/banano.sh ${selected_option,,}
   fi
   ;;
 esac
