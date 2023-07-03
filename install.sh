@@ -21,10 +21,10 @@ declare -A options=(
   ["5"]="Quit"
 )
 
+# Prompt for user input until a valid option is chosen
 selected_option=""
 valid_options=("1" "2" "3" "4" "5")
 
-# Display menu and read user's selection
 while [[ -z $selected_option ]]; do
   echo "Please select an installation option:"
   for option in "${!options[@]}"; do
