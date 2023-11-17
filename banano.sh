@@ -211,26 +211,26 @@ verify_docker_compose
 # Define the fast-sync database download links
 ################################################################################
 # LMDB Ledger Link
-ledgerDownloadLink_LMDB='https://lmdb.cutecat.party/snapshot.ldb'
+ledgerDownloadLink_LMDB='https://ledger.banano.trade/download/data.ldb'
 # RocksDB Ledger Link
 ledgerDownloadLink_RocksDB='https://ledgerfiles.moonano.net/files/latest.tar.gz'
 ################################################################################
 fast_sync_lmdb() {
   if [[ $quiet = 'false' ]]; then
     printf "[i] ${yellow}Downloading the LMDB database for fast-syncing...${reset}\n"
-    wget -O snapshot.ldb ${ledgerDownloadLink_LMDB} -q --show-progress
+    wget -O data.ldb ${ledgerDownloadLink_LMDB} -q --show-progress
   else
-    wget -O snapshot.ldb ${ledgerDownloadLink_LMDB} -q
+    wget -O data.ldb ${ledgerDownloadLink_LMDB} -q
   fi
 
   printf "[i] ${yellow}Moving the database file...${reset} "
 
-  # Copy snapshot.ldb to ./banano-node/BananoData/ and overwrite data.ldb while renaming it
-  mv -f snapshot.ldb ./banano-node/BananoData/data.ldb 2>/dev/null || :
+  # Copy data.ldb to ./banano-node/BananoData/ and overwrite data.ldb while renaming it
+  mv -f data.ldb ./banano-node/BananoData/data.ldb 2>/dev/null || :
   printf "[${green}✓${reset}] ${green}done.${reset}\n"
 
-  # Delete the leftover snapshot.ldb file
-  rm -f snapshot.ldb
+  # Delete the leftover data.ldb file
+  rm -f data.ldb
 
   echo ""
 }
