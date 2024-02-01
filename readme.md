@@ -168,7 +168,7 @@ The developers behind the other tools used in this project deserve sincere appre
 - [Nanocurrency](https://github.com/nanocurrency/nano-node)
 - [Nano Node Monitor](https://github.com/NanoTools/nanoNodeMonitor)
 - [v2tec/watchtower](https://github.com/v2tec/watchtower)
-- [Very Cute Cat Fast Sync LMBD Ledger](https://lmdb.cutecat.party/)
+- [Banano.trade LMBD Ledger](https://ledger.banano.trade/)
 
 ## Support
 
