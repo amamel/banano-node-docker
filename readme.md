@@ -85,7 +85,7 @@ For optimal performance when running a Banano node, consider the following hardw
 | Processor           | 2 CPU 2.5GHz                                                    |
 |                     | 4 CPU for Voting/Principal Nodes                                |
 | RAM                 | 4 GB+ depending on network load and transaction volume         |
-| Storage             | 50GB SSD/NVMe (Current Ledger ~25GB LMDB)                       |
+| Storage             | 60GB SSD/NVMe (Current Ledger ~30GB LMDB)                       |
 | Network Connection  | 1TB Bandwidth, 24/7 Connectivity                                |
 
 ## Additional Notes
@@ -93,6 +93,7 @@ For optimal performance when running a Banano node, consider the following hardw
 - The script supports easy SSL setup using Let's Encrypt if a domain name is provided.
 - To expedite the synchronization process, you can enable fast-syncing by using the `-f` option. This allows you to download the latest ledger files for quicker synchronization.
 - The script automatically updates the Banano Node Monitor configuration file, including essential information such as the node's RPC IP, account address, node name, and other relevant settings.
+- If you choose to install with fast-syncing, please make sure to have room for twice the ledger file, because you may have to extract from an archive of the ledger file.
 
 ## Talk to the Banano node Command Line Interface (CLI)
 
